@@ -3,336 +3,378 @@ This code was largely written by oldwnenzi at https://bl.ocks.org/sgcc/7ad094c9a
 Edited by Donovan West
 */
 class D3ForceGraph {
-    constructor(graphDiv, svgId) {
-      let t = this;
-  
-      t.graphDiv = graphDiv;
-      t.rect = t.graphDiv.getBoundingClientRect();
-      t.width = t.graphDiv.scrollWidth;
-      t.height = t.graphDiv.scrollHeight;
-      t.center = {x: t.width / 2, y: t.height / 2};
-  
-      t.svgId = svgId;
-      t.updateRefCount = 0;
-    }
-  
-    init() {
-      let t = this;
-  
-      t.graphData = { "nodes": [], "links": [] };
-  
-      // graph area
-      let svg = d3.select(t.graphDiv)
-        .append("svg")
-        .attr('id', t.svgId)
-        .attr('width', t.width)
-        .attr('height', t.height);
-  
-      // Needs to be second, just after the svg itself.
-      let background = t.initBackground(t, svg);
-      // background
-  
-      // Holds child components (nodes, links), i.e. all but the background
-      let svgGroup = svg
-          .append('svg:g')
-            .attr("id", "svgGroup");
-      t.svgGroup = svgGroup;
-  
-      let graphLinksGroup =
-        svgGroup
-          .append("g")
-          .attr("id", `links_${t.svgId}`)
-          .attr("class", "links");
-      t.graphLinksGroup = graphLinksGroup;
-  
-      let graphNodesGroup =
-        svgGroup
-          .append("g")
-          .attr("id", `nodes_${t.svgId}`)
-          .attr("class", "nodes");
-      t.graphNodesGroup = graphNodesGroup;
-  
-      let zoom =
-        d3.zoom()
-          .on("zoom", () => t.handleZoom(svgGroup));
-      background.call(zoom);
-  
-  
-      let simulation = t.initSimulation();
-      t.simulation = simulation;
-  
-      // update();
-      t.update(t, simulation, graphNodesGroup, graphLinksGroup);
-    }
-  
-    initBackground(t, svg) {
-      let result = svg
-        .append("rect")
-        .attr("id", "backgroundId")
-        .attr("fill", "#FFFFFF")
-        .attr("class", "view")
-        .attr("x", 0.5)
-        .attr("y", 0.5)
-        .attr("width", t.width - 1)
-        .attr("height", t.height - 1)
-        .on("click", () => t.handleBackgroundClicked());
-  
-      return result;
-    }
-  
-    initSimulation() {
-      let t = this;
-  
-      let result = d3.forceSimulation()
-        .velocityDecay(0.55)
-        .force("link", d3.forceLink()
-                         .distance(100)
-                         .id(d => d.id))
-        .force("charge", d3.forceManyBody().strength(-100).distanceMin(10000))
-        .force("collide", d3.forceCollide(25))
-        .force("center", d3.forceCenter(t.center.x, t.center.y));
-  
-      return result;
-    }
-  
-    getRadius(d) {
-  /*    const min = 5;
-      const max = 50;
-      let r = Math.trunc(500 / (d.id || 1));-
-      if (r < min) r = min;
-      if (r > max) r = max;
-  */
-      return Math.floor(Math.random()*20)+3;
-    }
-    getColor(d) { return "#1DB954"; }
-  
-    handleDragStarted(d, simulation) {
-      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-  
-      d.fx = d.x;
-      d.fy = d.y;
-    }
-    handleDragged(d) {
-      d.fx = d3.event.x;
-      d.fy = d3.event.y;
-    }
-    handleDragEnded(d, simulation) {
-      if (!d3.event.active) simulation.alphaTarget(0);
-  
-      d.fx = undefined;
-      d.fy = undefined;
-    }
-  
-    handleBackgroundClicked() {
-      console.log(`background clicked in numero 2`);
-    }
-  
-    handleZoom(svgGroup) {
+  constructor(graphDiv, svgId) {
+    let t = this;
+
+    t.graphDiv = graphDiv;
+    t.rect = t.graphDiv.getBoundingClientRect();
+    t.width = t.graphDiv.scrollWidth;
+    t.height = t.graphDiv.scrollHeight;
+    t.center = {x: t.width / 2, y: t.height / 2};
+
+    t.svgId = svgId;
+    t.updateRefCount = 0;
+  }
+
+  init() {
+    let t = this;
+
+    t.graphData = { "nodes": [], "links": [] };
+
+    // graph area
+    let svg = d3.select(t.graphDiv)
+      .append("svg")
+      .attr('id', t.svgId)
+      .attr('width', t.width)
+      .attr('height', t.height);
+
+    // Needs to be second, just after the svg itself.
+    let background = t.initBackground(t, svg);
+    // background
+
+    // Holds child components (nodes, links), i.e. all but the background
+    let svgGroup = svg
+        .append('svg:g')
+          .attr("id", "svgGroup");
+    t.svgGroup = svgGroup;
+
+    let graphLinksGroup =
       svgGroup
-        .attr("transform",
-        `translate(${d3.event.transform.x}, ${d3.event.transform.y})` + " " +
-        `scale(${d3.event.transform.k})`);
-    }
-  
-    update(t, simulation, graphNodesGroup, graphLinksGroup) {
-      let nodes = t.graphData.nodes;
-      let links = t.graphData.links;
-  
-      let drag =
-        d3.drag()
-          .on("start", d => t.handleDragStarted(d, simulation))
-          .on("drag", d => t.handleDragged(d))
-          .on("end", d => t.handleDragEnded(d, simulation));
-  
-      // nodes
-      let graphNodesData =
-        graphNodesGroup
-          .selectAll("g")
-          .data(nodes, d => d.id);
-      let graphNodesEnter =
-        graphNodesData
-          .enter()
-            .append("g")
-            .attr("id", d => d.id || null)
-            .on("contextmenu", (d, i)  => {
-               t.remove(d);
-               d3.event.preventDefault();
-            })
-            .on("mouseover", d => console.log(`d.id: ${d.id}`))
-            .on("click", d => t.handleNodeClicked(d))
-            .call(drag);
-      let graphNodesExit =
-        graphNodesData
-          .exit()
-          // .call((s) => console.log(`selection exiting. s: ${JSON.stringify(s)}`))
-          .remove();
-  
-      let graphNodeCircles =
-        graphNodesEnter
-          .append("circle")
-          .classed('node', true)
-          .attr("cursor", "pointer")
-          .attr("r", d => t.getRadius(d))
-          .attr("fill", d => t.getColor(d));
-  
-      let graphNodeLabels =
-        graphNodesEnter
-          .append("text")
-          .attr("id", d => "label_" + d.id)
-          .attr("font-size", `10px`)
-          .attr("text-anchor", "middle")
-          .text(d => `${d.id}`);
-  
-      // merge
-      graphNodesData =
-        graphNodesEnter.merge(graphNodesData);
-  
-      // links
-      let graphLinksData =
-        graphLinksGroup
-          .selectAll("line")
-          .data(links);
-      let graphLinksEnter =
-         graphLinksData
-          .enter()
-            .append("line");
-      let graphLinksExit =
+        .append("g")
+        .attr("id", `links_${t.svgId}`)
+        .attr("class", "links");
+    t.graphLinksGroup = graphLinksGroup;
+
+    let graphNodesGroup =
+      svgGroup
+        .append("g")
+        .attr("id", `nodes_${t.svgId}`)
+        .attr("class", "nodes");
+    t.graphNodesGroup = graphNodesGroup;
+
+    let zoom =
+      d3.zoom()
+        .on("zoom", () => t.handleZoom(svgGroup));
+    background.call(zoom);
+
+
+    let simulation = t.initSimulation();
+    t.simulation = simulation;
+
+    // update();
+    t.update(t, simulation, graphNodesGroup, graphLinksGroup);
+  }
+
+  initBackground(t, svg) {
+    let result = svg
+      .append("rect")
+      .attr("id", "backgroundId")
+      .attr("fill", "#FFFFFF")
+      .attr("class", "view")
+      .attr("x", 0.5)
+      .attr("y", 0.5)
+      .attr("width", t.width - 1)
+      .attr("height", t.height - 1)
+      .on("click", () => t.handleBackgroundClicked());
+
+    return result;
+  }
+
+  initSimulation() {
+    let t = this;
+
+    let result = d3.forceSimulation()
+      .velocityDecay(0.55)
+      .force("link", d3.forceLink()
+                        .distance(100)
+                        .id(d => d.id))
+      .force("charge", d3.forceManyBody().strength(-100).distanceMin(10000))
+      .force("collide", d3.forceCollide(25))
+      .force("center", d3.forceCenter(t.center.x, t.center.y));
+
+    return result;
+  }
+
+  getRadius(d) {
+/*    const min = 5;
+    const max = 50;
+    let r = Math.trunc(500 / (d.id || 1));-
+    if (r < min) r = min;
+    if (r > max) r = max;
+*/
+    return Math.floor(Math.random()*20)+3;
+  }
+  getColor(d) { return "#1DB954"; }
+
+  handleDragStarted(d, simulation) {
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+
+    d.fx = d.x;
+    d.fy = d.y;
+  }
+  handleDragged(d) {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+  }
+  handleDragEnded(d, simulation) {
+    if (!d3.event.active) simulation.alphaTarget(0);
+
+    d.fx = undefined;
+    d.fy = undefined;
+  }
+
+  handleBackgroundClicked() {
+    console.log(`background clicked in numero 2`);
+  }
+
+  handleZoom(svgGroup) {
+    svgGroup
+      .attr("transform",
+      `translate(${d3.event.transform.x}, ${d3.event.transform.y})` + " " +
+      `scale(${d3.event.transform.k})`);
+  }
+
+  update(t, simulation, graphNodesGroup, graphLinksGroup) {
+    let nodes = t.graphData.nodes;
+    let links = t.graphData.links;
+
+    let drag =
+      d3.drag()
+        .on("start", d => t.handleDragStarted(d, simulation))
+        .on("drag", d => t.handleDragged(d))
+        .on("end", d => t.handleDragEnded(d, simulation));
+
+    // nodes
+    let graphNodesData =
+      graphNodesGroup
+        .selectAll("g")
+        .data(nodes, d => d.id);
+    let graphNodesEnter =
+      graphNodesData
+        .enter()
+          .append("g")
+          .attr("id", d => d.id || null)
+          .on("contextmenu", (d, i)  => {
+              t.remove(d);
+              d3.event.preventDefault();
+          })
+          .on("mouseover", d => console.log(`d.id: ${d.id}`))
+          .on("click", d => t.handleNodeClicked(d))
+          .call(drag);
+    let graphNodesExit =
+      graphNodesData
+        .exit()
+        // .call((s) => console.log(`selection exiting. s: ${JSON.stringify(s)}`))
+        .remove();
+
+    let graphNodeCircles =
+      graphNodesEnter
+        .append("circle")
+        .classed('node', true)
+        .attr("cursor", "pointer")
+        .attr("r", d => t.getRadius(d))
+        .attr("fill", d => t.getColor(d));
+
+    let graphNodeLabels =
+      graphNodesEnter
+        .append("text")
+        .attr("id", d => "label_" + d.id)
+        .attr("font-size", `10px`)
+        .attr("text-anchor", "middle")
+        .text(d => `${d.id}`);
+
+    // merge
+    graphNodesData =
+      graphNodesEnter.merge(graphNodesData);
+
+    // links
+    let graphLinksData =
+      graphLinksGroup
+        .selectAll("line")
+        .data(links);
+    let graphLinksEnter =
         graphLinksData
-          .exit()
-          .remove();
-      // merge
-      graphLinksData =
-        graphLinksEnter.merge(graphLinksData);
-  
-      simulation
-        .nodes(nodes)
-        .on("tick", handleTicked)
-        .on("end", () => t.handleEnd());
-  
-      simulation
-        .force("link")
-        .links(links);
-  
-      function handleTicked() {
-        graphLinksData
-          .attr("x1", d => d.source.x)
-          .attr("y1", d => d.source.y)
-          .attr("x2", d => d.target.x)
-          .attr("y2", d => d.target.y);
-  
-        // Translate the groups
-        graphNodesData
-            .attr("transform", d => {
-              return 'translate(' + [d.x, d.y] + ')';
-            });
-      }
-    }
-  
-    add(nodesToAdd, linksToAdd) {
-      let t = this;
-  
-      if (nodesToAdd) {
-        nodesToAdd.forEach(n => t.graphData.nodes.push(n));
-      }
-      if (linksToAdd) {
-        linksToAdd.forEach(l => t.graphData.links.push(l));
-      }
-  
-      // update();
-      t.update(t, t.simulation, t.graphNodesGroup, t.graphLinksGroup)
-      t.simulation.restart();
-      t.simulation.alpha(1);
-    }
-  
-    remove(dToRemove) {
-      console.log(`dToRemove: ${JSON.stringify(dToRemove)}`)
-  
-      let t = this;
-  
-      let currentNodes = t.graphData.nodes;
-      let currentLinks = t.graphData.links;
-      let nIndex = currentNodes.indexOf(dToRemove);
-      if (nIndex > -1) {
-        currentNodes.splice(nIndex, 1);
-      }
-  
-      let toRemoveLinks = currentLinks.filter(l => {
-        return l.source.id === dToRemove.id || l.target.id === dToRemove.id;
-      });
-      toRemoveLinks.forEach(l => {
-        let lIndex = currentLinks.indexOf(l);
-        currentLinks.splice(lIndex, 1);
-      })
-  
-      t.update(t, t.simulation, t.graphNodesGroup, t.graphLinksGroup)
-      t.simulation.restart();
-      t.simulation.alpha(1);
-    }
-  
-    handleNodeClicked(d) {
-      console.log(`node clicked: ${JSON.stringify(d)}`);
-  
-      let t = this;
-  
-      let newId = Math.trunc(Math.random() * 1000);
-      let newNode = {"id": newId, "name": "server 22", x: d.x, y: d.y};
-      let newNodes = [newNode];
-      let newLinks = [{source: d.id, target: newNode.id}]
-  
-      t.add(newNodes, newLinks);
-    }
-  
-    handleEnd() {
-      console.log("end yo");
+        .enter()
+          .append("line");
+    let graphLinksExit =
+      graphLinksData
+        .exit()
+        .remove();
+    // merge
+    graphLinksData =
+      graphLinksEnter.merge(graphLinksData);
+
+    simulation
+      .nodes(nodes)
+      .on("tick", handleTicked)
+      .on("end", () => t.handleEnd());
+
+    simulation
+      .force("link")
+      .links(links);
+
+    function handleTicked() {
+      graphLinksData
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+
+      // Translate the groups
+      graphNodesData
+          .attr("transform", d => {
+            return 'translate(' + [d.x, d.y] + ')';
+          });
     }
   }
-  
-  let graphDiv = document.querySelector("#ib-d3-graph-div");
-  let graph = new D3ForceGraph(graphDiv, "testSvgId");
-  graph.init();
-  
-  setTimeout(() => {
-    let initialCount = 10;
-    let nodes = [ {"id": 0, "name": "root node"} ];
-    let links = [];
-    for (var i = 1; i < initialCount; i++) {
-      let randomIndex = Math.trunc(Math.random() * nodes.length);
-      let randomNode = nodes[randomIndex];
-      let newNode = {id: i, name: `node ${i}`};
-      let newLink = {source: randomIndex, target: newNode.id};
-  
-      nodes.push(newNode);
-      links.push(newLink);
-    }
-  
-    graph.add(nodes, links);
-  
-    let count = 0;
-    let interval = setInterval(() => {
-      let randomIndex = Math.trunc(Math.random() * graph.graphData.nodes.length);
-      let randomNode = graph.graphData.nodes[randomIndex];
-      let randomId = Math.trunc(Math.random() * 100000);
-      let newNode = {"id": randomId, "name": "server " + randomId};
-      if (randomNode.x) {
-        newNode.x = randomNode.x;
-        newNode.y = randomNode.y;
-      }
-      let newLink = {source: randomNode.id, target: randomId};
-      graph.add([newNode], [newLink]);
-      count ++;
-      if (count % 100 === 0) {
-        console.log(`count: ${count}`)
-        if (count % 200 === 0) {
-          clearInterval(interval);
-        }
-      }
-  
-    }, 10)
-  
-  }, 500);
 
-  /* things to learn
-    intervals
-    If I can call graph from another file/script. Maybe using rollup
-    branding guidelines 
-  */
+  add(nodesToAdd, linksToAdd) {
+    let t = this;
+
+    if (nodesToAdd) {
+      nodesToAdd.forEach(n => t.graphData.nodes.push(n));
+    }
+    if (linksToAdd) {
+      linksToAdd.forEach(l => t.graphData.links.push(l));
+    }
+
+    // update();
+    t.update(t, t.simulation, t.graphNodesGroup, t.graphLinksGroup)
+    t.simulation.restart();
+    t.simulation.alpha(1);
+  }
+
+  remove(dToRemove) {
+    console.log(`dToRemove: ${JSON.stringify(dToRemove)}`)
+
+    let t = this;
+
+    let currentNodes = t.graphData.nodes;
+    let currentLinks = t.graphData.links;
+    let nIndex = currentNodes.indexOf(dToRemove);
+    if (nIndex > -1) {
+      currentNodes.splice(nIndex, 1);
+    }
+
+    let toRemoveLinks = currentLinks.filter(l => {
+      return l.source.id === dToRemove.id || l.target.id === dToRemove.id;
+    });
+    toRemoveLinks.forEach(l => {
+      let lIndex = currentLinks.indexOf(l);
+      currentLinks.splice(lIndex, 1);
+    })
+
+    t.update(t, t.simulation, t.graphNodesGroup, t.graphLinksGroup)
+    t.simulation.restart();
+    t.simulation.alpha(1);
+  }
+
+  handleNodeClicked(d) {
+    console.log(`node clicked: ${JSON.stringify(d)}`);
+
+    let t = this;
+
+    let newId = Math.trunc(Math.random() * 1000);
+    let newNode = {"id": newId, "name": "server 22", x: d.x, y: d.y};
+    let newNodes = [newNode];
+    let newLinks = [{source: d.id, target: newNode.id}]
+
+    t.add(newNodes, newLinks);
+  }
+
+  handleEnd() {
+    console.log("end yo");
+  }
+}
+  
+let graphDiv = document.querySelector("#ib-d3-graph-div");
+let graph = new D3ForceGraph(graphDiv, "testSvgId");
+graph.init();
+
+setTimeout(() => {
+  let initialCount = 10;
+  let nodes = [ {"id": 0, "name": "root node"} ];
+  let links = [];
+  for (var i = 1; i < initialCount; i++) {
+    let randomIndex = Math.trunc(Math.random() * nodes.length);
+    let randomNode = nodes[randomIndex];
+    let newNode = {id: i, name: `node ${i}`};
+    let newLink = {source: randomIndex, target: newNode.id};
+
+    nodes.push(newNode);
+    links.push(newLink);
+  }
+
+  graph.add(nodes, links);
+
+  let count = 0;
+  let interval = setInterval(() => {
+    let randomIndex = Math.trunc(Math.random() * graph.graphData.nodes.length);
+    let randomNode = graph.graphData.nodes[randomIndex];
+    let randomId = Math.trunc(Math.random() * 100000);
+    let newNode = {"id": randomId, "name": "server " + randomId};
+    if (randomNode.x) {
+      newNode.x = randomNode.x;
+      newNode.y = randomNode.y;
+    }
+    let newLink = {source: randomNode.id, target: randomId};
+    graph.add([newNode], [newLink]);
+    count ++;
+    if (count % 100 === 0) {
+      console.log(`count: ${count}`)
+      if (count % 200 === 0) {
+        clearInterval(interval);
+      }
+    }
+
+  }, 10)
+
+}, 500);
+
+const spotifyApi = new SpotifyWebApi();
+const clientId = 'e6bf2e305d98443190c472ee318fd511';
+const clientSecret = '96bad35ecf9c41f581a761eb3a85348b';
+//let accessToken = '';
+/*
+const result = fetch('https://accounts.spotify.com/api/token', {
+  method: 'POST',
+  headers: {
+      'Content-Type' : 'application/x-www-form-urlencoded', 
+      'Authorization' : 'Basic ' + btoa(clientId + ':' + clientSecret)
+  },
+  body: 'grant_type=client_credentials'
+});
+console.log(result);
+const data = result.json();
+const accessToken = data.access_token;
+*/
+
+const _getToken = async () => {
+
+  const result = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+          'Content-Type' : 'application/x-www-form-urlencoded', 
+          'Authorization' : 'Basic ' + btoa(clientId + ':' + clientSecret)
+      },
+      body: 'grant_type=client_credentials'
+  });
+
+  const data = await result.json();
+  //console.log(data.access_token);
+  //accessToken = await data.access_token;
+  return data.access_token;
+}
+
+//accessToken = _getToken();
+const test = async () => {
+  const accessToken = "bearer " + await _getToken();
+
+  console.log(accessToken);
+  spotifyApi.setAccessToken(accessToken);
+  spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE', function (err, data) {
+    if (err) console.error(err);
+    else console.log('Artist albums', data);
+  });
+}
+test();
