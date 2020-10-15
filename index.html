@@ -1,22 +1,44 @@
-<html>
-<head>
-  <title>Drawing a simple network without filtering</title>
-  <meta charset="utf-8" />
-<svg width="960" height="600"></svg>
-<script src="https://d3js.org/d3.v6.min.js"></script>
-<script src="app.js"></script>
-</head>
+<!DOCTYPE html>
+<meta charset="utf-8">
 <style>
 
-  .link {
-    stroke: #000;
-    stroke-width: 1.5px;
-  }
+.links line {
+  stroke: #191414;
+  stroke-width: 1.0px;
+  stroke-opacity: 1.5;
+}
+
+.nodes circle {
+  stroke: green;
+  stroke-width: 0.5px;
+}
+
+#ib-d3-graph-div {
+  height: 100vh;
+}
   
-  .node {
-    fill: #f00;
-    stroke: black;
-  }
+#testSvgId {
+  height: 100vh;
+}
   
+#backgroundId {
+  height: 100vh;
+}
+
+text {
+  font: bold 12px monospace;
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+}
+
 </style>
-</html>
+<body>
+  <div id="ib-d3-graph-div"></div>
+  <!-- <svg id="testSvgId" width="960" height="500"></svg> -->
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="app.js"></script>
+</body>

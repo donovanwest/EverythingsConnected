@@ -1,173 +1,338 @@
-const svg = d3.select("svg");
-const width = svg.attr("width");
-const height = svg.attr("height");
-
-let time1 = Date.now();
-let time2 = 0;
-let nodeNum=0;
-let temp = 0;
-
-  //intialize data
-  let graph = {
-    nodes: [
-      { id: 0 },
-      { id: 1 },
-      { id: 2 },
-      { id: 3 },
-      { id: 4 },
-      { id: 5 },
-      { id: 6 },
-      { id: 7 }
-    ],
-    links: [
-      { source: 1, target: 2 },
-      { source: 2, target: 3 },
-      { source: 3, target: 4 },
-      { source: 3, target: 1 },
-      { source: 4, target: 2 },
-      { source: 7, target: 6 }
-    ]
-  };
-console.log(graph);
-const simulation = d3
-  .forceSimulation(graph.nodes)
-  .force("link", d3.forceLink(graph.links))
-  .force("charge", d3.forceManyBody().strength(-100))
-  .force("center", d3.forceCenter(width / 2, height / 2).strength(1))
-  .on("tick", ticked);
-
-
-let link = svg.append("g")
-  .attr("stroke", "#999")
-  .attr("class", "link")
-  .selectAll("line")
-  .data(graph.links)
-  .join("line")
-  .attr("stroke-width", 3);
-
-let node = svg
-  .append("g")
-  .attr("class", "node")
-  .selectAll(".node")
-  .data(graph.nodes)
-  .enter()
-  .append("circle")
-  .attr("r", 10)
-  .attr("class", "node")
-  .attr("fill", "red");
-
-function ticked() {
-  time2 = Date.now();
-  if(time2 - time1 > 2000){
-    time1 = Date.now();
-    addNodes();
-  }
-  link
-    .attr("x1", function(d) {
-      return d.source.x;
-    })
-    .attr("y1", function(d) {
-      return d.source.y;
-    })
-    .attr("x2", function(d) {
-      return d.target.x;
-    })
-    .attr("y2", function(d) {
-      return d.target.y;
-    });
-
-  node
-    .attr("cx", function(d) {
-      return d.x;
-    })
-    .attr("cy", function(d) {
-      return d.y;
-    });
-}
-
-const drag = d3
-  .drag()
-  .on("start", dragstarted)
-  .on("drag", dragged)
-  .on("end", dragended);
-  node.call(drag);
-function dragstarted(event) {
-  //your alpha hit 0 it stops! make it run again
-  if (!event.active) simulation.alphaTarget(0.3).restart();
-  event.subject.fx = event.subject.x;
-  event.subject.fy = event.subject.y;
-}
-function dragged(event) {
-  event.subject.fx = event.x;
-  event.subject.fy = event.y;
-}
-
-function dragended(event) {
-  // alpha min is 0, head there
-  if (!event.active) simulation.alphaTarget(0);
-  event.subject.fx = null;
-  event.subject.fy = null;
-  
-}
-
-function addNodes(){
-  console.log(graph);
-  console.log("pushing node " + nodeNum);
-  // graph.nodes.push({id: nodeNum});
-  //graph.links.push({source: nodeNum, target: (Math.floor((Math.random() * nodeNum)))})
-  nodeNum = nodeNum+1;
-
-  node = svg
-  //.append("g")
-  //.attr("class", "node")
-  .selectAll("node")
-  .data(graph.nodes)
-  .enter()
-  .append("circle")
-  .attr("class", "node")
-  .attr("r", 10)
-
-  node.exit().remove();
-
-  //node.exit().remove();
-  //simulation.restart();
-
-/*    
-  node = svg
-    .append("g")
-    .attr("class", "nodes")
-    .selectAll("circle")
-    .data(graph.nodes)
-    .enter()
-    .append("circle")
-    .attr("r", 10)
-    .attr("fill", "green");
-  simulation.alpha(0.3).restart();
-
-  link = svg.append("g")
-    .attr("stroke", "#999")
-    .selectAll("line")
-    .data(graph.links)
-    .join("line")
-    .attr("stroke-width", 3); */
-  //simulation.alpha(0.3).restart();
-}
 /*
-function restart() {
-  node = node.data(graph.nodes);
-  node.enter().insert("circle")
-      .attr("class", "nodes")
-      .attr("r", 10)
-      .attr("fill", "green");
-  node.exit().remove();
-
-  link = link.data(graph.links);
-  link.enter().insert("line")
-      .attr("class", "links")
-      .attr("stroke", "#999")
-      .attr("stroke-width", 3);
-  link.exit().remove();
-
-  simulation.restart();
-}
+This code was largely written by oldwnenzi at https://bl.ocks.org/sgcc/7ad094c9acd1877785ee39cde67eb6c7
+Edited by Donovan West
 */
+class D3ForceGraph {
+    constructor(graphDiv, svgId) {
+      let t = this;
+  
+      t.graphDiv = graphDiv;
+      t.rect = t.graphDiv.getBoundingClientRect();
+      t.width = t.graphDiv.scrollWidth;
+      t.height = t.graphDiv.scrollHeight;
+      t.center = {x: t.width / 2, y: t.height / 2};
+  
+      t.svgId = svgId;
+      t.updateRefCount = 0;
+    }
+  
+    init() {
+      let t = this;
+  
+      t.graphData = { "nodes": [], "links": [] };
+  
+      // graph area
+      let svg = d3.select(t.graphDiv)
+        .append("svg")
+        .attr('id', t.svgId)
+        .attr('width', t.width)
+        .attr('height', t.height);
+  
+      // Needs to be second, just after the svg itself.
+      let background = t.initBackground(t, svg);
+      // background
+  
+      // Holds child components (nodes, links), i.e. all but the background
+      let svgGroup = svg
+          .append('svg:g')
+            .attr("id", "svgGroup");
+      t.svgGroup = svgGroup;
+  
+      let graphLinksGroup =
+        svgGroup
+          .append("g")
+          .attr("id", `links_${t.svgId}`)
+          .attr("class", "links");
+      t.graphLinksGroup = graphLinksGroup;
+  
+      let graphNodesGroup =
+        svgGroup
+          .append("g")
+          .attr("id", `nodes_${t.svgId}`)
+          .attr("class", "nodes");
+      t.graphNodesGroup = graphNodesGroup;
+  
+      let zoom =
+        d3.zoom()
+          .on("zoom", () => t.handleZoom(svgGroup));
+      background.call(zoom);
+  
+  
+      let simulation = t.initSimulation();
+      t.simulation = simulation;
+  
+      // update();
+      t.update(t, simulation, graphNodesGroup, graphLinksGroup);
+    }
+  
+    initBackground(t, svg) {
+      let result = svg
+        .append("rect")
+        .attr("id", "backgroundId")
+        .attr("fill", "#FFFFFF")
+        .attr("class", "view")
+        .attr("x", 0.5)
+        .attr("y", 0.5)
+        .attr("width", t.width - 1)
+        .attr("height", t.height - 1)
+        .on("click", () => t.handleBackgroundClicked());
+  
+      return result;
+    }
+  
+    initSimulation() {
+      let t = this;
+  
+      let result = d3.forceSimulation()
+        .velocityDecay(0.55)
+        .force("link", d3.forceLink()
+                         .distance(100)
+                         .id(d => d.id))
+        .force("charge", d3.forceManyBody().strength(-100).distanceMin(10000))
+        .force("collide", d3.forceCollide(25))
+        .force("center", d3.forceCenter(t.center.x, t.center.y));
+  
+      return result;
+    }
+  
+    getRadius(d) {
+  /*    const min = 5;
+      const max = 50;
+      let r = Math.trunc(500 / (d.id || 1));-
+      if (r < min) r = min;
+      if (r > max) r = max;
+  */
+      return Math.floor(Math.random()*20)+3;
+    }
+    getColor(d) { return "#1DB954"; }
+  
+    handleDragStarted(d, simulation) {
+      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  
+      d.fx = d.x;
+      d.fy = d.y;
+    }
+    handleDragged(d) {
+      d.fx = d3.event.x;
+      d.fy = d3.event.y;
+    }
+    handleDragEnded(d, simulation) {
+      if (!d3.event.active) simulation.alphaTarget(0);
+  
+      d.fx = undefined;
+      d.fy = undefined;
+    }
+  
+    handleBackgroundClicked() {
+      console.log(`background clicked in numero 2`);
+    }
+  
+    handleZoom(svgGroup) {
+      svgGroup
+        .attr("transform",
+        `translate(${d3.event.transform.x}, ${d3.event.transform.y})` + " " +
+        `scale(${d3.event.transform.k})`);
+    }
+  
+    update(t, simulation, graphNodesGroup, graphLinksGroup) {
+      let nodes = t.graphData.nodes;
+      let links = t.graphData.links;
+  
+      let drag =
+        d3.drag()
+          .on("start", d => t.handleDragStarted(d, simulation))
+          .on("drag", d => t.handleDragged(d))
+          .on("end", d => t.handleDragEnded(d, simulation));
+  
+      // nodes
+      let graphNodesData =
+        graphNodesGroup
+          .selectAll("g")
+          .data(nodes, d => d.id);
+      let graphNodesEnter =
+        graphNodesData
+          .enter()
+            .append("g")
+            .attr("id", d => d.id || null)
+            .on("contextmenu", (d, i)  => {
+               t.remove(d);
+               d3.event.preventDefault();
+            })
+            .on("mouseover", d => console.log(`d.id: ${d.id}`))
+            .on("click", d => t.handleNodeClicked(d))
+            .call(drag);
+      let graphNodesExit =
+        graphNodesData
+          .exit()
+          // .call((s) => console.log(`selection exiting. s: ${JSON.stringify(s)}`))
+          .remove();
+  
+      let graphNodeCircles =
+        graphNodesEnter
+          .append("circle")
+          .classed('node', true)
+          .attr("cursor", "pointer")
+          .attr("r", d => t.getRadius(d))
+          .attr("fill", d => t.getColor(d));
+  
+      let graphNodeLabels =
+        graphNodesEnter
+          .append("text")
+          .attr("id", d => "label_" + d.id)
+          .attr("font-size", `10px`)
+          .attr("text-anchor", "middle")
+          .text(d => `${d.id}`);
+  
+      // merge
+      graphNodesData =
+        graphNodesEnter.merge(graphNodesData);
+  
+      // links
+      let graphLinksData =
+        graphLinksGroup
+          .selectAll("line")
+          .data(links);
+      let graphLinksEnter =
+         graphLinksData
+          .enter()
+            .append("line");
+      let graphLinksExit =
+        graphLinksData
+          .exit()
+          .remove();
+      // merge
+      graphLinksData =
+        graphLinksEnter.merge(graphLinksData);
+  
+      simulation
+        .nodes(nodes)
+        .on("tick", handleTicked)
+        .on("end", () => t.handleEnd());
+  
+      simulation
+        .force("link")
+        .links(links);
+  
+      function handleTicked() {
+        graphLinksData
+          .attr("x1", d => d.source.x)
+          .attr("y1", d => d.source.y)
+          .attr("x2", d => d.target.x)
+          .attr("y2", d => d.target.y);
+  
+        // Translate the groups
+        graphNodesData
+            .attr("transform", d => {
+              return 'translate(' + [d.x, d.y] + ')';
+            });
+      }
+    }
+  
+    add(nodesToAdd, linksToAdd) {
+      let t = this;
+  
+      if (nodesToAdd) {
+        nodesToAdd.forEach(n => t.graphData.nodes.push(n));
+      }
+      if (linksToAdd) {
+        linksToAdd.forEach(l => t.graphData.links.push(l));
+      }
+  
+      // update();
+      t.update(t, t.simulation, t.graphNodesGroup, t.graphLinksGroup)
+      t.simulation.restart();
+      t.simulation.alpha(1);
+    }
+  
+    remove(dToRemove) {
+      console.log(`dToRemove: ${JSON.stringify(dToRemove)}`)
+  
+      let t = this;
+  
+      let currentNodes = t.graphData.nodes;
+      let currentLinks = t.graphData.links;
+      let nIndex = currentNodes.indexOf(dToRemove);
+      if (nIndex > -1) {
+        currentNodes.splice(nIndex, 1);
+      }
+  
+      let toRemoveLinks = currentLinks.filter(l => {
+        return l.source.id === dToRemove.id || l.target.id === dToRemove.id;
+      });
+      toRemoveLinks.forEach(l => {
+        let lIndex = currentLinks.indexOf(l);
+        currentLinks.splice(lIndex, 1);
+      })
+  
+      t.update(t, t.simulation, t.graphNodesGroup, t.graphLinksGroup)
+      t.simulation.restart();
+      t.simulation.alpha(1);
+    }
+  
+    handleNodeClicked(d) {
+      console.log(`node clicked: ${JSON.stringify(d)}`);
+  
+      let t = this;
+  
+      let newId = Math.trunc(Math.random() * 1000);
+      let newNode = {"id": newId, "name": "server 22", x: d.x, y: d.y};
+      let newNodes = [newNode];
+      let newLinks = [{source: d.id, target: newNode.id}]
+  
+      t.add(newNodes, newLinks);
+    }
+  
+    handleEnd() {
+      console.log("end yo");
+    }
+  }
+  
+  let graphDiv = document.querySelector("#ib-d3-graph-div");
+  let graph = new D3ForceGraph(graphDiv, "testSvgId");
+  graph.init();
+  
+  setTimeout(() => {
+    let initialCount = 10;
+    let nodes = [ {"id": 0, "name": "root node"} ];
+    let links = [];
+    for (var i = 1; i < initialCount; i++) {
+      let randomIndex = Math.trunc(Math.random() * nodes.length);
+      let randomNode = nodes[randomIndex];
+      let newNode = {id: i, name: `node ${i}`};
+      let newLink = {source: randomIndex, target: newNode.id};
+  
+      nodes.push(newNode);
+      links.push(newLink);
+    }
+  
+    graph.add(nodes, links);
+  
+    let count = 0;
+    let interval = setInterval(() => {
+      let randomIndex = Math.trunc(Math.random() * graph.graphData.nodes.length);
+      let randomNode = graph.graphData.nodes[randomIndex];
+      let randomId = Math.trunc(Math.random() * 100000);
+      let newNode = {"id": randomId, "name": "server " + randomId};
+      if (randomNode.x) {
+        newNode.x = randomNode.x;
+        newNode.y = randomNode.y;
+      }
+      let newLink = {source: randomNode.id, target: randomId};
+      graph.add([newNode], [newLink]);
+      count ++;
+      if (count % 100 === 0) {
+        console.log(`count: ${count}`)
+        if (count % 200 === 0) {
+          clearInterval(interval);
+        }
+      }
+  
+    }, 10)
+  
+  }, 500);
+
+  /* things to learn
+    intervals
+    If I can call graph from another file/script. Maybe using rollup
+    branding guidelines 
+  */
