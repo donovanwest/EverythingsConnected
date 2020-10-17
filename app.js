@@ -158,7 +158,7 @@ class D3ForceGraph {
               t.remove(d);
               d3.event.preventDefault();
           })
-          .on("mouseover", d => console.log(`d.id: ${d.id}`))
+          //.on("mouseover", d => console.log(`d.id: ${d.id}`))
           .on("click", d => t.handleNodeClicked(d))
           .call(drag);
     let graphNodesExit =
@@ -331,26 +331,24 @@ setTimeout(() => {
 
 }, 500);
 
+class artistPriority{
+  constructor(artistId, priority){
+    this.artistId = artistId;
+    this.priority = priority;
+  }
+}
+
 const spotifyApi = new SpotifyWebApi();
-const clientId = 'e6bf2e305d98443190c472ee318fd511';
-const clientSecret = '96bad35ecf9c41f581a761eb3a85348b';
-//let accessToken = '';
-/*
-const result = fetch('https://accounts.spotify.com/api/token', {
-  method: 'POST',
-  headers: {
-      'Content-Type' : 'application/x-www-form-urlencoded', 
-      'Authorization' : 'Basic ' + btoa(clientId + ':' + clientSecret)
-  },
-  body: 'grant_type=client_credentials'
-});
-console.log(result);
-const data = result.json();
-const accessToken = data.access_token;
-*/
+const queue = new TinyQueue([new artistPriority("0QWrMNukfcVOmgEU0FEDyD", 0)], (a,b) => a.priority - b.priority);
+
+//This is a temporary measure so that my code can stay on github publicly without revelaing my clientId and Secret.
+//I plan to implement oauth stuff eventuall, but for now this is easiest.
+import {clientId, clientSecret} from "./Credentials.js"
+
+const dict = {};
+let checkedList = [];
 
 const _getToken = async () => {
-
   const result = await fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',
       headers: {
@@ -359,22 +357,49 @@ const _getToken = async () => {
       },
       body: 'grant_type=client_credentials'
   });
-
   const data = await result.json();
-  //console.log(data.access_token);
-  //accessToken = await data.access_token;
   return data.access_token;
 }
 
-//accessToken = _getToken();
-const test = async () => {
-  const accessToken = "bearer " + await _getToken();
+const proccessArtist = (artistId) => {
+  let connectedArtists = new Set();
+  spotifyApi.getArtistAlbums(artistId, function (err, data) {
+    if (err) console.error(err);
+    else
+      data.items.forEach(album => {        
+      //proccessAlbum(album.id, artistPriority.artistId, artistPriority)  
+        spotifyApi.getAlbumTracks(album.id, function (err, data) {
+          if (err) console.error(err);
+          else data.items.forEach(track => {
+            const artistList = track.artists.map(d => {dict[d.id]=d.name; return d.id;});
+            if(artistList.length > 1 && artistList.includes(artistId)){ 
+              artistList.forEach((newArtistId) => {
+                //console.log(newArtistId);
+                if(!(checkedList.includes(newArtistId))){
+                  //queue.push(newArtistId);
+                  connectedArtists.add(newArtistId);
+                  console.log(dict[newArtistId]);
+                  //console.log(dict);
+                }
+              })
+            }
+          })
+        });
+      });
+  });
+  return connectedArtists;
+}
 
+const test = async () => {
+  const accessToken = await _getToken();
   console.log(accessToken);
   spotifyApi.setAccessToken(accessToken);
-  spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE', function (err, data) {
-    if (err) console.error(err);
-    else console.log('Artist albums', data);
-  });
+  while(queue.length > 0 && queue.peek().priority < 2){
+    const artistPriority = queue.pop();
+    console.log(artistPriority.artistId);
+    checkedList.push(artistPriority.artistId);
+    let connectedArtists = proccessArtist(artistPriority.artistId);
+  }
 }
 test();
+
