@@ -339,7 +339,6 @@ class artistPriority{
 }
 
 const spotifyApi = new SpotifyWebApi();
-const queue = new TinyQueue([new artistPriority("0QWrMNukfcVOmgEU0FEDyD", 0)], (a,b) => a.priority - b.priority);
 
 //This is a temporary measure so that my code can stay on github publicly without revelaing my clientId and Secret.
 //I plan to implement oauth stuff eventuall, but for now this is easiest.
@@ -361,45 +360,70 @@ const _getToken = async () => {
   return data.access_token;
 }
 
-const proccessArtist = (artistId) => {
+const getToken = () => {
+  const result = fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+          'Content-Type' : 'application/x-www-form-urlencoded', 
+          'Authorization' : 'Basic ' + btoa(clientId + ':' + clientSecret)
+      },
+      body: 'grant_type=client_credentials'
+  });
+  //const data = result.json();
+  console.log(result);
+  return result.access_token;
+}
+
+function proccessArtist(artistId){
+  return new Promise((resolve) => {
   let connectedArtists = new Set();
-  spotifyApi.getArtistAlbums(artistId, function (err, data) {
+  let connectedArtistsData = [];
+  spotifyApi.getArtistAlbums(artistId, function (err, artistAlbumData) {
     if (err) console.error(err);
     else
-      data.items.forEach(album => {        
-      //proccessAlbum(album.id, artistPriority.artistId, artistPriority)  
-        spotifyApi.getAlbumTracks(album.id, function (err, data) {
+      artistAlbumData.items.forEach(album => {        
+          spotifyApi.getAlbumTracks(album.id, function (err, albumTrackData) {
           if (err) console.error(err);
-          else data.items.forEach(track => {
+          else albumTrackData.items.forEach(track => {
             const artistList = track.artists.map(d => {dict[d.id]=d.name; return d.id;});
+            let index = 0;
             if(artistList.length > 1 && artistList.includes(artistId)){ 
               artistList.forEach((newArtistId) => {
-                //console.log(newArtistId);
-                if(!(checkedList.includes(newArtistId))){
-                  //queue.push(newArtistId);
+                if(!(checkedList.includes(newArtistId)) && !(connectedArtists.has(newArtistId))){
                   connectedArtists.add(newArtistId);
-                  console.log(dict[newArtistId]);
-                  //console.log(dict);
+                  connectedArtistsData.push({"artistId" : newArtistId, "artistName" : track.artists[index].name, "trackName" : track.name});
+                  //console.log(dict[newArtistId]);
                 }
+                index++;
               })
             }
           })
         });
       });
   });
-  return connectedArtists;
+  resolve(connectedArtistsData);
+});
 }
 
+
 const test = async () => {
+  const queue = new TinyQueue([new artistPriority("0QWrMNukfcVOmgEU0FEDyD", 0)], (a,b) => a.priority - b.priority);
   const accessToken = await _getToken();
   console.log(accessToken);
   spotifyApi.setAccessToken(accessToken);
   while(queue.length > 0 && queue.peek().priority < 2){
-    const artistPriority = queue.pop();
-    console.log(artistPriority.artistId);
-    checkedList.push(artistPriority.artistId);
-    let connectedArtists = proccessArtist(artistPriority.artistId);
+    const ap = queue.pop();
+    console.log(ap.artistId);
+    checkedList.push(ap.artistId);
+    //let connectedArtistsData = await proccessArtist(ap.artistId);
+    //const promise = new Promise()
+    proccessArtist(ap.artistId).then((connectedArtistsData) => {
+      console.log(connectedArtistsData);
+      for(let i = 0; i < connectedArtistsData.length; i++){
+        console.log(connectedArtistsData[i]);
+        queue.push(new artistPriority(connectedArtistData[i].artistId, ap.priority+1));
+      }
+    })
   }
 }
 test();
-
