@@ -1,5 +1,5 @@
 /*
-This code was largely written by oldwnenzi at https://bl.ocks.org/sgcc/7ad094c9acd1877785ee39cde67eb6c7
+The code for d3 and graphs was largely written by oldwnenzi at https://bl.ocks.org/sgcc/7ad094c9acd1877785ee39cde67eb6c7
 Edited by Donovan West
 */
 class D3ForceGraph {
@@ -373,19 +373,60 @@ const getToken = () => {
   console.log(result);
   return result.access_token;
 }
+/*
+async function getAlbumTracks(albumId, connectedArtists, artistId){
+  let connectedArtistsData = [];
+  spotifyApi.getAlbumTracks(albumId, function (err, albumTrackData) {
+    if (err) console.error(err);
+    else albumTrackData.items.forEach(track => {
+      const artistList = track.artists.map(d => {return d.id;});
+      let index = 0;
+      if(artistList.length > 1 && artistList.includes(artistId)){ 
+        artistList.forEach((newArtistId) => {
+          if(!(checkedList.includes(newArtistId)) && !(connectedArtists.has(newArtistId))){
+            //connectedArtists.add(newArtistId);
+            connectedArtistsData.push({"artistId" : newArtistId, "artistName" : track.artists[index].name, "trackName" : track.name});
+          }
+          index++;
+        })
+      }
+    })
+  });
+  console.log(connectedArtistData);
+  return connectedArtistsData;
+}
 
+async function getArtistAlbums(artistId){
+  let connectedArtists = new Set();
+  let connectedArtistsData = [];
+  spotifyApi.getArtistAlbums(artistId, function (err, artistAlbumData) {
+    if (err) console.error(err);
+    else{
+      artistAlbumData.items.forEach(album => {        
+        const data = getAlbumTracks(album.id, connectedArtists, artistId);
+        data.forEach((entry) =>{
+          connectedArtists.add(entry.artistId);
+          connectedArtistsData.push(entry);
+        })
+      });
+      console.log(connectedArtistData);
+      return connectedArtistsData;
+    }
+  })
+}
+*/
 function proccessArtist(artistId){
   return new Promise((resolve) => {
   let connectedArtists = new Set();
   let connectedArtistsData = [];
   spotifyApi.getArtistAlbums(artistId, function (err, artistAlbumData) {
     if (err) console.error(err);
-    else
+    else{
       artistAlbumData.items.forEach(album => {        
           spotifyApi.getAlbumTracks(album.id, function (err, albumTrackData) {
           if (err) console.error(err);
           else albumTrackData.items.forEach(track => {
-            const artistList = track.artists.map(d => {dict[d.id]=d.name; return d.id;});
+            const artistList = track.artists.map(d => {return d.id;});
             let index = 0;
             if(artistList.length > 1 && artistList.includes(artistId)){ 
               artistList.forEach((newArtistId) => {
@@ -400,8 +441,10 @@ function proccessArtist(artistId){
           })
         });
       });
+      console.log(connectedArtistsData);
+      resolve(connectedArtistsData);
+    }
   });
-  resolve(connectedArtistsData);
 });
 }
 
@@ -415,15 +458,14 @@ const test = async () => {
     const ap = queue.pop();
     console.log(ap.artistId);
     checkedList.push(ap.artistId);
-    //let connectedArtistsData = await proccessArtist(ap.artistId);
-    //const promise = new Promise()
-    proccessArtist(ap.artistId).then((connectedArtistsData) => {
-      console.log(connectedArtistsData);
-      for(let i = 0; i < connectedArtistsData.length; i++){
-        console.log(connectedArtistsData[i]);
-        queue.push(new artistPriority(connectedArtistData[i].artistId, ap.priority+1));
-      }
-    })
+    let connectedArtistsData = await proccessArtist(ap.artistId);
+    //let connectedArtistsData = await getArtistAlbums(ap.artistId);
+    console.log(connectedArtistsData);
+    //queue.push(new artistPriority("4JxdBEK730fH7tgcyG3vuv", ap.priority+1));
+    for(let i = 0; i < connectedArtistsData.length; i++){
+      console.log(connectedArtistsData[i]);
+      queue.push(new artistPriority(connectedArtistData[i].artistId, ap.priority+1));
+    }
   }
 }
 test();
