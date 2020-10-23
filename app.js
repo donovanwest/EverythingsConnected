@@ -415,7 +415,10 @@ async function getArtistAlbums(artistId){
   })
 }
 */
-function proccessArtist(artistId){
+
+const queue = new TinyQueue([new artistPriority("0QWrMNukfcVOmgEU0FEDyD", 0)], (a,b) => a.priority - b.priority);
+
+function proccessArtist(artistId, priority){
   return new Promise((resolve) => {
   let connectedArtists = new Set();
   let connectedArtistsData = [];
@@ -433,6 +436,7 @@ function proccessArtist(artistId){
                 if(!(checkedList.includes(newArtistId)) && !(connectedArtists.has(newArtistId))){
                   connectedArtists.add(newArtistId);
                   connectedArtistsData.push({"artistId" : newArtistId, "artistName" : track.artists[index].name, "trackName" : track.name});
+                  queue.push(newArtistId, priority+1);
                   //console.log(dict[newArtistId]);
                 }
                 index++;
@@ -442,6 +446,8 @@ function proccessArtist(artistId){
         });
       });
       console.log(connectedArtistsData);
+      console.log(queue);
+
       resolve(connectedArtistsData);
     }
   });
@@ -450,7 +456,6 @@ function proccessArtist(artistId){
 
 
 const test = async () => {
-  const queue = new TinyQueue([new artistPriority("0QWrMNukfcVOmgEU0FEDyD", 0)], (a,b) => a.priority - b.priority);
   const accessToken = await _getToken();
   console.log(accessToken);
   spotifyApi.setAccessToken(accessToken);
@@ -464,8 +469,9 @@ const test = async () => {
     //queue.push(new artistPriority("4JxdBEK730fH7tgcyG3vuv", ap.priority+1));
     for(let i = 0; i < connectedArtistsData.length; i++){
       console.log(connectedArtistsData[i]);
-      queue.push(new artistPriority(connectedArtistData[i].artistId, ap.priority+1));
+      //queue.push(new artistPriority(connectedArtistData[i].artistId, ap.priority+1));
     }
+    console.log(queue);
   }
 }
 test();
