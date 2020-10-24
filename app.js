@@ -360,62 +360,6 @@ const _getToken = async () => {
   return data.access_token;
 }
 
-const getToken = () => {
-  const result = fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: {
-          'Content-Type' : 'application/x-www-form-urlencoded', 
-          'Authorization' : 'Basic ' + btoa(clientId + ':' + clientSecret)
-      },
-      body: 'grant_type=client_credentials'
-  });
-  //const data = result.json();
-  console.log(result);
-  return result.access_token;
-}
-/*
-async function getAlbumTracks(albumId, connectedArtists, artistId){
-  let connectedArtistsData = [];
-  spotifyApi.getAlbumTracks(albumId, function (err, albumTrackData) {
-    if (err) console.error(err);
-    else albumTrackData.items.forEach(track => {
-      const artistList = track.artists.map(d => {return d.id;});
-      let index = 0;
-      if(artistList.length > 1 && artistList.includes(artistId)){ 
-        artistList.forEach((newArtistId) => {
-          if(!(checkedList.includes(newArtistId)) && !(connectedArtists.has(newArtistId))){
-            //connectedArtists.add(newArtistId);
-            connectedArtistsData.push({"artistId" : newArtistId, "artistName" : track.artists[index].name, "trackName" : track.name});
-          }
-          index++;
-        })
-      }
-    })
-  });
-  console.log(connectedArtistData);
-  return connectedArtistsData;
-}
-
-async function getArtistAlbums(artistId){
-  let connectedArtists = new Set();
-  let connectedArtistsData = [];
-  spotifyApi.getArtistAlbums(artistId, function (err, artistAlbumData) {
-    if (err) console.error(err);
-    else{
-      artistAlbumData.items.forEach(album => {        
-        const data = getAlbumTracks(album.id, connectedArtists, artistId);
-        data.forEach((entry) =>{
-          connectedArtists.add(entry.artistId);
-          connectedArtistsData.push(entry);
-        })
-      });
-      console.log(connectedArtistData);
-      return connectedArtistsData;
-    }
-  })
-}
-*/
-
 const queue = new TinyQueue([new artistPriority("0QWrMNukfcVOmgEU0FEDyD", 0)], (a,b) => a.priority - b.priority);
 
 function proccessArtist(artistId, priority){
