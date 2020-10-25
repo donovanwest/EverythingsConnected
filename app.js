@@ -88,8 +88,8 @@ class D3ForceGraph {
       .force("link", d3.forceLink()
                         .distance(100)
                         .id(d => d.id))
-      .force("charge", d3.forceManyBody().strength(-100).distanceMin(10000))
-      .force("collide", d3.forceCollide(25))
+      .force("charge", d3.forceManyBody().strength(-100).distanceMin(100000))
+      .force("collide", d3.forceCollide(30))
       .force("center", d3.forceCenter(t.center.x, t.center.y));
 
     return result;
@@ -102,7 +102,7 @@ class D3ForceGraph {
     if (r < min) r = min;
     if (r > max) r = max;
 */
-    return Math.floor(Math.random()*20)+3;
+    return 20;
   }
   getColor(d) { return "#1DB954"; }
 
@@ -124,7 +124,7 @@ class D3ForceGraph {
   }
 
   handleBackgroundClicked() {
-    console.log(`background clicked in numero 2`);
+    console.log(`background clicked`);
   }
 
   handleZoom(svgGroup) {
@@ -181,7 +181,7 @@ class D3ForceGraph {
         .attr("id", d => "label_" + d.id)
         .attr("font-size", `10px`)
         .attr("text-anchor", "middle")
-        .text(d => `${d.id}`);
+        .text(d => `${d.name}`);
 
     // merge
     graphNodesData =
@@ -290,7 +290,7 @@ class D3ForceGraph {
 let graphDiv = document.querySelector("#ib-d3-graph-div");
 let graph = new D3ForceGraph(graphDiv, "testSvgId");
 graph.init();
-
+/*
 setTimeout(() => {
   let initialCount = 10;
   let nodes = [ {"id": 0, "name": "root node"} ];
@@ -330,6 +330,8 @@ setTimeout(() => {
   }, 10)
 
 }, 500);
+
+*/
 const spotifyApi = new SpotifyWebApi();
 
 import {clientId, clientSecret} from "./Credentials.js"
@@ -389,7 +391,7 @@ function getSeveralAlbums(albumIds, artistId, connectedArtists){
                         let index = 0;
                         if(artistList.length > 1 && artistList.includes(artistId)){ 
                             artistList.forEach((newArtistId) => {
-                                if(!(newArtistId === artistId) && !(connectedArtists.has(newArtistId) && !(checkedArtists.has(newArtistId)))){
+                                if(!(newArtistId === artistId) && !(connectedArtists.has(newArtistId))){
                                     connectedArtists.add(newArtistId);
                                     connectedArtistsData.push({"artistId" : newArtistId, "artistName" : track.artists[index].name, "trackName" : track.name});
                                 }
@@ -427,9 +429,12 @@ class artistPriority{
       this.priority = priority;
     }
 }
+const startingArtist = {"id" : "0QWrMNukfcVOmgEU0FEDyD" , "name" : "Jacob Collier"}
+const queue = new TinyQueue([new artistPriority(startingArtist.id, 0)], (a,b) => a.priority - b.priority);
+const dict = {};
+dict[startingArtist.id] = startingArtist.name;
+graph.add([{"id" : startingArtist.id, "name" : startingArtist.name}], []);
 
-const queue = new TinyQueue([new artistPriority("4JxdBEK730fH7tgcyG3vuv", 0)], (a,b) => a.priority - b.priority);
-const dict = {"4JxdBEK730fH7tgcyG3vuv" : "No B.S. Brass"};
 let checkedArtists = new Set();
 
 const runArtistSearch = async () => {
@@ -439,7 +444,7 @@ const runArtistSearch = async () => {
 
     let c = 0;
     //const artists = ["0QWrMNukfcVOmgEU0FEDyD", "4JxdBEK730fH7tgcyG3vuv", "3F2Rn7Xw3VlTiPZJo6xuwf", "5rwUYLyUq8gBsVaOUcUxpE", "3lFDsTyYNPQc8WzJExnQWn", "7guDJrEfX3qb6FEbdPA5qi"];
-    while(queue.length > 0 && queue.peek().priority <= 2){
+    while(queue.length > 0 && queue.peek().priority < 1){
         const ap = queue.pop();
         checkedArtists.add(ap.artistId);
         console.log("Artist: " + dict[ap.artistId] + " Priority: " + ap.priority);
@@ -448,10 +453,14 @@ const runArtistSearch = async () => {
         const connectedArtistsData = await getConnectedArtists(albumIds, ap.artistId);
         console.log("Number of connected Artists: " + connectedArtistsData.length);
         connectedArtistsData.forEach(artistConnection => {
+          if(!checkedArtists.has(artistConnection.artistId)){
             queue.push(new artistPriority(artistConnection.artistId, ap.priority+1));
+            graph.add([{"id" : artistConnection.artistId, "name" : artistConnection.artistName}], [{"source" : ap.artistId, "target" : artistConnection.artistId}]);
+          }
         });
     }
     console.log("Checked artists: " + checkedArtists.size);
     console.log("Size of queue to check: " + queue.length);
+    console.log(graph);
 }
 runArtistSearch();
