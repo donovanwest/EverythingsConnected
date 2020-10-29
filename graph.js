@@ -107,7 +107,11 @@ export class D3ForceGraph {
 
 
 
-  getColor(d) { return "#1DB954"; }
+  getColor(d) { 
+    const colors = ["#1DB954", "#8A2BE2", "#00FFFF", "#FF8C00",  "#1E90FF", "#FF69B4", "#FFFF00"];
+    return colors[d.priority];    
+    //return "#1DB954"; 
+  }
 
   handleDragStarted(d, simulation) {
     if (!d3.event.active) simulation.alphaTarget(0.3).restart();
@@ -273,7 +277,7 @@ export class D3ForceGraph {
   }
 
   handleNodeClicked(d) {
-    console.log(`node clicked: ${JSON.stringify(d)}`);
+    //console.log(`node clicked: ${JSON.stringify(d)}`);
     const event = new CustomEvent("queueArtist", {"detail" : d});
     document.dispatchEvent(event);
     //queueArtist(d);
