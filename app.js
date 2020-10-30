@@ -6,7 +6,7 @@ document.addEventListener("queueArtist", queueArtist);
 let graphDiv = document.querySelector("#ib-d3-graph-div");
 let graph = new D3ForceGraph(graphDiv, "testSvgId");
 const api = new apiCalls();
-graph.init();
+
 
 class artistPriority{
     constructor(artistId, priority){
@@ -26,8 +26,15 @@ let oneAtATime = true;
 let initialized = false;
 
 async function init(){
+  const url = String(window.location)
+  console.log(url);
+  if(url.search('#') === -1){
+    api.login()
+  }
+  graph.init();
   const queryName = window.prompt("Enter artist name", "Artist Name");
-  const accessToken = await api.getToken();
+  const accessToken = api.parseForToken(url);
+  //const accessToken = await api.getToken();
   api.setAccessToken(accessToken);
   const artist = await api.searchForArtist(queryName);
   const startingArtist = {"id" : artist[0] , "name" : artist[1]};

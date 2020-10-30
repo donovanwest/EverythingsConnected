@@ -101,7 +101,7 @@ export class D3ForceGraph {
     if(priority <= 0)
         return 40;
     else 
-        return this.getRadius(priority-1)-10
+        return this.getRadius(priority-1) * (4/5)
     //return radius;
   }
 

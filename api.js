@@ -12,6 +12,38 @@ export class apiCalls{
         spotifyApi.setAccessToken(at);
     }
 
+    login(){
+        console.log("logging in");
+        const redirect_uri = "http://127.0.0.1:5500/EverythingsConnected/index.html";
+        //const redirect_uri = "https://www.k-state.edu/";
+        const scopes = ['user-library-read', 'playlist-read-private', 'playlist-read-collaborative'];
+
+        let popup = window.open(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopes}&show_dialog=true`, '_self');
+        //popup.close();
+        console.log(popup);
+        popup.onclose((payload) => {
+            console.log(payload);
+            console.log(String(window.location));
+        })
+    //    popup.onclose((payload) => {
+    //        console.log(payload);
+    //    })
+        /*
+        window.spotifyCallback = (payload) => {
+            popup.close()
+            console.log(payload);
+        }
+        */
+    }
+
+    parseForToken(url){
+        const startIndex = url.indexOf('=');
+        const endIndex = url.indexOf('&', startIndex+1);
+        const accessToken = url.substring(startIndex+1, endIndex);
+        console.log(accessToken);
+        return accessToken;
+    }
+
     getToken = async () => {
         const result = await fetch('https://accounts.spotify.com/api/token', {
             method: 'POST',
