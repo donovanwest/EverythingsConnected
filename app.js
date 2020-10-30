@@ -14,22 +14,38 @@ class artistPriority{
       this.priority = priority;
     }
 }
-//const startingArtist = {"id" : "0QWrMNukfcVOmgEU0FEDyD" , "name" : "Jacob Collier"}
-const startingArtist = {"id" : "7pXu47GoqSYRajmBCjxdD6" , "name" : "Vulfpeck"}
-const queue = new TinyQueue([new artistPriority(startingArtist.id, 0)], (a,b) => a.priority - b.priority);
+//const startingArtist = {"id" : "0QWrMNukfcVOmgEU0FEDyD" jaj, "name" : "Jacob Collier"}
+//const test = window.prompt("Enter artist name", "Artist Name");
+//console.log(test);
+const queue = new TinyQueue([], (a,b) => a.priority - b.priority);
 
-dict[startingArtist.id] = startingArtist.name;
-graph.add([{"id" : startingArtist.id, "name" : startingArtist.name, "priority" : 0}], []);
 
-let checkedArtists = new Set([startingArtist.id]);
-let nonLeafArtists = new Set([startingArtist.id]);
-console.log(checkedArtists);
-console.log(nonLeafArtists);
+const checkedArtists = new Set();
+const nonLeafArtists = new Set();
 let oneAtATime = true; 
+let initialized = false;
+
+async function init(){
+  const queryName = window.prompt("Enter artist name", "Artist Name");
+  const accessToken = await api.getToken();
+  api.setAccessToken(accessToken);
+  const artist = await api.searchForArtist(queryName);
+  const startingArtist = {"id" : artist[0] , "name" : artist[1]};
+  queue.push(new artistPriority(startingArtist.id, 0))
+  dict[startingArtist.id] = startingArtist.name;
+  graph.add([{"id" : startingArtist.id, "name" : startingArtist.name, "priority" : 0}], []);
+  checkedArtists.add(startingArtist.id);
+  nonLeafArtists.add(startingArtist.id);
+}
 
 const runArtistSearch = async () => {
-    const accessToken = await api.getToken();
-    api.setAccessToken(accessToken);
+    if(!initialized){
+      await init();
+      initialized = true;
+    } else{
+      const accessToken = await api.getToken();
+      api.setAccessToken(accessToken);
+    }
 
     //const artists = ["0QWrMNukfcVOmgEU0FEDyD", "4JxdBEK730fH7tgcyG3vuv", "3F2Rn7Xw3VlTiPZJo6xuwf", "5rwUYLyUq8gBsVaOUcUxpE", "3lFDsTyYNPQc8WzJExnQWn", "7guDJrEfX3qb6FEbdPA5qi"];
     while(queue.length > 0 && (queue.peek().priority < 2 || oneAtATime)){
@@ -42,7 +58,7 @@ const runArtistSearch = async () => {
         console.log("Number of connected Artists: " + connectedArtistsData.length);
         connectedArtistsData.forEach(artistConnection => {
           if(!checkedArtists.has(artistConnection.artistId)){
-            checkedArtists.add(artistConnection.artistId)
+            checkedArtists.add(artistConnection.artistId);
             if(!oneAtATime) queue.push(new artistPriority(artistConnection.artistId, ap.priority+1));
             graph.add([{"id" : artistConnection.artistId, "name" : artistConnection.artistName, "priority" : ap.priority+1}], []);
           }

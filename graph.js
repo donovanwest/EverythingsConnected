@@ -109,7 +109,7 @@ export class D3ForceGraph {
 
   getColor(d) { 
     const colors = ["#1DB954", "#8A2BE2", "#00FFFF", "#FF8C00",  "#1E90FF", "#FF69B4", "#FFFF00"];
-    return colors[d.priority];    
+    return colors[d.priority%colors.length];    
     //return "#1DB954"; 
   }
 
@@ -162,7 +162,7 @@ export class D3ForceGraph {
           .append("g")
           .attr("id", d => d.id || null)
           .on("contextmenu", (d, i)  => {
-              t.remove(d);
+              //t.remove(d);
               d3.event.preventDefault();
           })
           //.on("mouseover", d => console.log(`d.id: ${d.id}`))
@@ -294,6 +294,6 @@ export class D3ForceGraph {
   }
 
   handleEnd() {
-    console.log("end yo");
+    //console.log("end yo");
   }
 }

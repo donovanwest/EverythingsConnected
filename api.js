@@ -25,6 +25,15 @@ export class apiCalls{
         return data.access_token;
     }
     
+    searchForArtist(name){
+        console.log(name);
+        return new Promise((resolve) => {
+            spotifyApi.searchArtists(name, function(err, results){
+                //console.log(artists);
+                resolve([results.artists.items[0].id, results.artists.items[0].name]);
+            })
+        })
+    }
 
     getAlbumsOffset(artistId, offset){
         return new Promise((resolve) => {
