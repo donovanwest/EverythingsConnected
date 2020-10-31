@@ -14,32 +14,32 @@ class artistPriority{
       this.priority = priority;
     }
 }
-//const startingArtist = {"id" : "0QWrMNukfcVOmgEU0FEDyD" jaj, "name" : "Jacob Collier"}
-//const test = window.prompt("Enter artist name", "Artist Name");
-//console.log(test);
+
 const queue = new TinyQueue([], (a,b) => a.priority - b.priority);
 
 
 const checkedArtists = new Set();
 const nonLeafArtists = new Set();
-let oneAtATime = true; 
+let oneAtATime = false; 
 let initialized = false;
 
 async function init(){
+  let loggingIn = false;
   const url = String(window.location)
-  console.log(url);
   if(url.search('#') === -1){
+    loggingIn = true;
     api.login()
   }
-  graph.init();
-  const queryName = window.prompt("Enter artist name", "Artist Name");
   const accessToken = api.parseForToken(url);
-  //const accessToken = await api.getToken();
   api.setAccessToken(accessToken);
+  let queryName;
+  if(!loggingIn) queryName = window.prompt("Enter artist name", "Vulfpeck");
+  console.log(queryName);
   const artist = await api.searchForArtist(queryName);
   const startingArtist = {"id" : artist[0] , "name" : artist[1]};
   queue.push(new artistPriority(startingArtist.id, 0))
   dict[startingArtist.id] = startingArtist.name;
+  graph.init();
   graph.add([{"id" : startingArtist.id, "name" : startingArtist.name, "priority" : 0}], []);
   checkedArtists.add(startingArtist.id);
   nonLeafArtists.add(startingArtist.id);
@@ -54,13 +54,11 @@ const runArtistSearch = async () => {
       api.setAccessToken(accessToken);
     }
 
-    //const artists = ["0QWrMNukfcVOmgEU0FEDyD", "4JxdBEK730fH7tgcyG3vuv", "3F2Rn7Xw3VlTiPZJo6xuwf", "5rwUYLyUq8gBsVaOUcUxpE", "3lFDsTyYNPQc8WzJExnQWn", "7guDJrEfX3qb6FEbdPA5qi"];
     while(queue.length > 0 && (queue.peek().priority < 2 || oneAtATime)){
         const ap = queue.pop();
         nonLeafArtists.add(ap.artistId);
         console.log("Artist: " + dict[ap.artistId] + " Priority: " + ap.priority);
         const albumIds = await api.getAlbums(ap.artistId);
-        //console.log(albumIds.length);
         const connectedArtistsData = await api.getConnectedArtists(albumIds, ap.artistId);
         console.log("Number of connected Artists: " + connectedArtistsData.length);
         connectedArtistsData.forEach(artistConnection => {
@@ -71,6 +69,7 @@ const runArtistSearch = async () => {
           }
           graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId}]);
         });
+
     }
     if(!oneAtATime){
       console.log("Checked artists: " + checkedArtists.size);

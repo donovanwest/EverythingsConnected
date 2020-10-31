@@ -3,44 +3,23 @@ import {clientId, clientSecret} from "./Credentials.js";
 const spotifyApi = new SpotifyWebApi();
 export const dict = {};
 
-//const access_token = "";
 
 export class apiCalls{
     
     setAccessToken(at){
-        //access_token = at;
         spotifyApi.setAccessToken(at);
     }
 
     login(){
-        console.log("logging in");
         const redirect_uri = "http://127.0.0.1:5500/EverythingsConnected/index.html";
-        //const redirect_uri = "https://www.k-state.edu/";
         const scopes = ['user-library-read', 'playlist-read-private', 'playlist-read-collaborative'];
-
-        let popup = window.open(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopes}&show_dialog=true`, '_self');
-        //popup.close();
-        console.log(popup);
-        popup.onclose((payload) => {
-            console.log(payload);
-            console.log(String(window.location));
-        })
-    //    popup.onclose((payload) => {
-    //        console.log(payload);
-    //    })
-        /*
-        window.spotifyCallback = (payload) => {
-            popup.close()
-            console.log(payload);
-        }
-        */
+        let redirect = window.open(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopes}&show_dialog=true`, '_self');
     }
 
     parseForToken(url){
         const startIndex = url.indexOf('=');
         const endIndex = url.indexOf('&', startIndex+1);
         const accessToken = url.substring(startIndex+1, endIndex);
-        console.log(accessToken);
         return accessToken;
     }
 
@@ -58,10 +37,8 @@ export class apiCalls{
     }
     
     searchForArtist(name){
-        console.log(name);
         return new Promise((resolve) => {
             spotifyApi.searchArtists(name, function(err, results){
-                //console.log(artists);
                 resolve([results.artists.items[0].id, results.artists.items[0].name]);
             })
         })

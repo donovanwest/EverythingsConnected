@@ -89,7 +89,7 @@ export class D3ForceGraph {
       .velocityDecay(0.55)
       .force("link", d3.forceLink()
                         .distance(300)
-                        .id(d => d.id))
+                        .id(d => d.id).strength(0.1))
       .force("charge", d3.forceManyBody().strength(-50).distanceMin(100000))
       .force("collide", d3.forceCollide(30))
       .force("center", d3.forceCenter(t.center.x, t.center.y));
@@ -280,17 +280,6 @@ export class D3ForceGraph {
     //console.log(`node clicked: ${JSON.stringify(d)}`);
     const event = new CustomEvent("queueArtist", {"detail" : d});
     document.dispatchEvent(event);
-    //queueArtist(d);
-/*
-    let t = this;
-
-    let newId = Math.trunc(Math.random() * 1000);
-    let newNode = {"id": newId, "name": "server 22", x: d.x, y: d.y};
-    let newNodes = [newNode];
-    let newLinks = [{source: d.id, target: newNode.id}]
-
-    t.add(newNodes, newLinks);
-    */
   }
 
   handleEnd() {
