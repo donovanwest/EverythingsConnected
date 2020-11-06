@@ -1,0 +1,68 @@
+
+.container{
+    display:grid;
+}
+
+.links line {
+    stroke: #191414;
+    stroke-width: 1.0px;
+    stroke-opacity: 1.5;
+  }
+  
+  .nodes circle {
+    stroke: green;
+    stroke-width: 0.5px;
+  }
+
+  #sidebar {
+      background-color: #fafafa;
+      border: #666;
+      border-style: solid;
+      border-width: 3px;
+      height: 400px;
+      margin-top: 50px;
+      margin-left: 10px;
+      width: 250px;
+      position: fixed;
+
+  }
+
+  #loginButton {
+    size: 200px;
+    background-color: #1DB954; 
+    margin: 10px;
+    width: 90%;
+    height: 30px;
+  }
+
+  #artistEntry {
+      margin-left: 10px;
+  }
+
+  #searchArtist {
+      margin-top: 7px;
+      margin-left: 10px;
+      width: 90%;
+  }
+  
+  #ib-d3-graph-div {
+    height: 100vh;
+  }
+    
+  #testSvgId {
+    height: 100vh;
+  }
+    
+  #backgroundId {
+    height: 100vh;
+  }
+  
+  text {
+    font: bold 12px monospace;
+  }
+  
+  body {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+  }

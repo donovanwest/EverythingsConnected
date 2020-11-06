@@ -1,44 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style>
-
-.links line {
-  stroke: #191414;
-  stroke-width: 1.0px;
-  stroke-opacity: 1.5;
-}
-
-.nodes circle {
-  stroke: green;
-  stroke-width: 0.5px;
-}
-
-#ib-d3-graph-div {
-  height: 100vh;
-}
-  
-#testSvgId {
-  height: 100vh;
-}
-  
-#backgroundId {
-  height: 100vh;
-}
-
-text {
-  font: bold 12px monospace;
-}
-
-body {
-  margin: 0px;
-  padding: 0px;
-  height: 100%;
-}
-
-</style>
-<body>
-  <div id="ib-d3-graph-div"></div>
-  <!-- <svg id="testSvgId" width="960" height="500"></svg> -->
+<head>
+  <link rel="stylesheet" href="style.css">
+  <title>Everything's Connected</title>
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="spotify-web-api.js"></script>
   <script src="https://unpkg.com/tinyqueue@2.0.0/tinyqueue.min.js"></script>
@@ -47,5 +11,19 @@ body {
   <script type = "module" src="api.js"></script>
   <script type="module" src="app.js"></script>
   <!-- <script type="module" src="test.js"></script> -->
-  
+</head>
+<body>
+    <div id="sidebar">
+      <button id="loginButton">Login to Spotify</button>
+      <input id="artistEntry" type="text" value="Artist's Name">
+      <button id="searchArtist">Search for Artist</button>
+      <form id="searchModeSelection">
+        <input type="radio" id="full" name="searchMode" value="fullSearch">
+        <label for="full">Full Search</label><br>
+        <input type="radio" id="oneAtATime" name="searchMode" value="One At A Time">
+        <label for="oneAtATime">One at a Time</label>
+      </form>
+    </div>
+
+    <div id="ib-d3-graph-div"></div>
 </body>

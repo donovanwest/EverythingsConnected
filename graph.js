@@ -86,7 +86,7 @@ export class D3ForceGraph {
     let t = this;
 
     let result = d3.forceSimulation()
-      .velocityDecay(0.55)
+      .velocityDecay(0.3)
       .force("link", d3.forceLink()
                         .distance(300)
                         .id(d => d.id).strength(0.1))

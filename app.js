@@ -20,7 +20,7 @@ const queue = new TinyQueue([], (a,b) => a.priority - b.priority);
 
 const checkedArtists = new Set();
 const nonLeafArtists = new Set();
-let oneAtATime = false; 
+let oneAtATime = true; 
 let initialized = false;
 
 async function init(){
@@ -32,8 +32,8 @@ async function init(){
   }
   const accessToken = api.parseForToken(url);
   api.setAccessToken(accessToken);
-  let queryName;
-  if(!loggingIn) queryName = window.prompt("Enter artist name", "Vulfpeck");
+  let queryName = "jacob collier";
+  //if(!loggingIn) queryName = window.prompt("Enter artist name", "jacob collier");
   console.log(queryName);
   const artist = await api.searchForArtist(queryName);
   const startingArtist = {"id" : artist[0] , "name" : artist[1]};
