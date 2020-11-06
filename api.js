@@ -13,7 +13,7 @@ export class apiCalls{
     login(){
         const redirect_uri = "http://127.0.0.1:5500/EverythingsConnected/index.html";
         const scopes = ['user-library-read', 'playlist-read-private', 'playlist-read-collaborative'];
-        let redirect = window.open(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopes}&show_dialog=true`, '_self');
+        window.open(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopes}&show_dialog=true`, '_self');
     }
 
     parseForToken(url){

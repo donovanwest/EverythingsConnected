@@ -3,8 +3,17 @@ import {apiCalls, dict} from "./api.js";
 
 document.addEventListener("queueArtist", queueArtist);
 
+const slider = document.getElementById("degreeSlider");
+const degreeLabel = document.getElementById("degreeLabel");
+const oaatRadio = document.getElementById("oneAtATime");
+const fullRadio = document.getElementById("full");
+const loginButton = document.getElementById("loginButton");
+const searchArtistButton = document.getElementById("searchArtist");
+const artistEntry = document.getElementById("artistEntry");
+
 let graphDiv = document.querySelector("#ib-d3-graph-div");
 let graph = new D3ForceGraph(graphDiv, "testSvgId");
+graph.init();
 const api = new apiCalls();
 
 
@@ -15,46 +24,30 @@ class artistPriority{
     }
 }
 
-const queue = new TinyQueue([], (a,b) => a.priority - b.priority);
+let queue = new TinyQueue([], (a,b) => a.priority - b.priority);
 
 
 const checkedArtists = new Set();
 const nonLeafArtists = new Set();
 let oneAtATime = true; 
 let initialized = false;
+let loggedIn = false;
+let maxDegrees = 2;
 
 async function init(){
-  let loggingIn = false;
-  const url = String(window.location)
-  if(url.search('#') === -1){
-    loggingIn = true;
-    api.login()
-  }
-  const accessToken = api.parseForToken(url);
-  api.setAccessToken(accessToken);
-  let queryName = "jacob collier";
-  //if(!loggingIn) queryName = window.prompt("Enter artist name", "jacob collier");
+  let queryName = artistEntry.value;
   console.log(queryName);
   const artist = await api.searchForArtist(queryName);
   const startingArtist = {"id" : artist[0] , "name" : artist[1]};
   queue.push(new artistPriority(startingArtist.id, 0))
   dict[startingArtist.id] = startingArtist.name;
-  graph.init();
   graph.add([{"id" : startingArtist.id, "name" : startingArtist.name, "priority" : 0}], []);
   checkedArtists.add(startingArtist.id);
   nonLeafArtists.add(startingArtist.id);
 }
 
 const runArtistSearch = async () => {
-    if(!initialized){
-      await init();
-      initialized = true;
-    } else{
-      const accessToken = await api.getToken();
-      api.setAccessToken(accessToken);
-    }
-
-    while(queue.length > 0 && (queue.peek().priority < 2 || oneAtATime)){
+    while(queue.length > 0 && (queue.peek().priority < maxDegrees || oneAtATime)){
         const ap = queue.pop();
         nonLeafArtists.add(ap.artistId);
         console.log("Artist: " + dict[ap.artistId] + " Priority: " + ap.priority);
@@ -77,7 +70,16 @@ const runArtistSearch = async () => {
     }
     console.log(graph);
 }
-runArtistSearch();
+
+const url = String(window.location)
+if(url.search('#') === -1){
+  loggedIn = false;
+} else {
+  loggedIn = true;
+  loginButton.disabled = true;
+  const accessToken = api.parseForToken(url);
+  api.setAccessToken(accessToken);
+}
 
 function queueArtist(event){
   console.log("Node clicked with name " + event.detail.name + " and priority " + event.detail.priority);
@@ -86,3 +88,35 @@ function queueArtist(event){
     runArtistSearch();
   }
 }
+
+slider.oninput = function() {
+  degreeLabel.textContent = slider.value;
+  maxDegrees = slider.value;
+}
+
+oaatRadio.oninput = function() {
+  oneAtATime = true;
+  console.log(oneAtATime);
+  slider.disabled = true;
+  degreeLabel.style.color = "#ccc";
+  queue = new TinyQueue([], (a,b) => a.priority - b.priority);
+}
+
+fullRadio.oninput = function() {
+  oneAtATime = false;
+  console.log(oneAtATime);
+  slider.disabled = false;
+  degreeLabel.disabled = false;
+  degreeLabel.style.color = "#000";
+}
+
+loginButton.onclick = function(){
+  api.login();
+}
+
+searchArtistButton.onclick = async function(){
+  await init();
+  runArtistSearch();
+}
+
+

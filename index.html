@@ -20,7 +20,10 @@
       <form id="searchModeSelection">
         <input type="radio" id="full" name="searchMode" value="fullSearch">
         <label for="full">Full Search</label><br>
-        <input type="radio" id="oneAtATime" name="searchMode" value="One At A Time">
+        <label for="slider" disabled>Degrees of separation: </label>
+        <input type="range" min="0" max="10" value="2" id="degreeSlider" disabled>
+        <label id="degreeLabel" disabled>2</label><br>
+        <input type="radio" id="oneAtATime" name="searchMode" value="One At A Time" checked>
         <label for="oneAtATime">One at a Time</label>
       </form>
     </div>
