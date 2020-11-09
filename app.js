@@ -39,9 +39,21 @@ async function init(){
   console.log(queryName);
   const artist = await api.searchForArtist(queryName);
   const startingArtist = {"id" : artist[0] , "name" : artist[1]};
-  queue.push(new artistPriority(startingArtist.id, 0))
   dict[startingArtist.id] = startingArtist.name;
-  graph.add([{"id" : startingArtist.id, "name" : startingArtist.name, "priority" : 0}], []);
+  if(!checkedArtists.has(startingArtist.id)){
+    graph.add([{"id" : startingArtist.id, "name" : startingArtist.name, "priority" : 0}], []);
+    queue.push(new artistPriority(startingArtist.id, 0))
+  } else {
+    let priority;
+    graph.graphData.nodes.forEach(node => {
+      if(node.id === startingArtist.id){
+        priority = node.priority;
+      }
+    });
+    maxDegrees += priority - 1;
+    queue.push(new artistPriority(startingArtist.id, priority))
+  }
+
   checkedArtists.add(startingArtist.id);
   nonLeafArtists.add(startingArtist.id);
 }
@@ -64,6 +76,9 @@ const runArtistSearch = async () => {
         });
 
     }
+    queue = new TinyQueue([], (a,b) => a.priority - b.priority);
+    if(slider.value != maxDegrees)
+      maxDegrees = value;
     if(!oneAtATime){
       console.log("Checked artists: " + checkedArtists.size);
       console.log("Size of queue to check: " + queue.length);
@@ -99,7 +114,6 @@ oaatRadio.oninput = function() {
   console.log(oneAtATime);
   slider.disabled = true;
   degreeLabel.style.color = "#ccc";
-  queue = new TinyQueue([], (a,b) => a.priority - b.priority);
 }
 
 fullRadio.oninput = function() {
@@ -119,4 +133,9 @@ searchArtistButton.onclick = async function(){
   runArtistSearch();
 }
 
-
+artistEntry.onkeyup = async function(e){
+  if(e.keyCode == '13'){
+    await init();
+    runArtistSearch();
+  }
+}
