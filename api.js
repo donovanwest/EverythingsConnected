@@ -39,7 +39,7 @@ export class apiCalls{
     searchForArtist(name){
         return new Promise((resolve) => {
             spotifyApi.searchArtists(name, function(err, results){
-                resolve([results.artists.items[0].id, results.artists.items[0].name]);
+                resolve(results.artists.items[0]);
             })
         })
     }
@@ -116,6 +116,46 @@ export class apiCalls{
                 })
             }
             resolve(connectedArtistsData);
+        })
+    }
+
+    getArtists(artistIds){
+        return new Promise(async (resolve) => {
+            spotifyApi.getArtists(artistIds, function(err, rawData){
+                if (err) console.error(err);
+                else{
+                    const artistData = rawData.artists.map(d => {
+                        let o = new Object();
+                        o.popularity = d.popularity;
+                        if(d.images.length == 0){
+                            o.image = null;
+                            o.width = null;
+                            o.height = null;
+                        }
+                        else{
+                            o.image = d.images[0].url;
+                            o.width = d.images[0].width;
+                            o.height = d.images[0].height
+                        }
+                        return o;
+                    })
+                    resolve(artistData);
+                }
+            })
+            
+        })
+    }
+
+    getArtistsData(artistIds){
+        return new Promise(async (resolve) => {
+            let artistData = [];
+            for(let lower = 0; lower < artistIds.length; lower+=50){
+                let upper = lower+50;
+                if(upper > artistIds.length) upper = artistIds.length;
+                const newData = await this.getArtists(artistIds.slice(lower, upper));
+                artistData = [...artistData, ...newData];
+            }
+            resolve(artistData);
         })
     }
 

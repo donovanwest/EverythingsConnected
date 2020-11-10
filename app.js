@@ -38,24 +38,24 @@ async function init(){
   let queryName = artistEntry.value;
   console.log(queryName);
   const artist = await api.searchForArtist(queryName);
-  const startingArtist = {"id" : artist[0] , "name" : artist[1]};
-  dict[startingArtist.id] = startingArtist.name;
-  if(!checkedArtists.has(startingArtist.id)){
-    graph.add([{"id" : startingArtist.id, "name" : startingArtist.name, "priority" : 0}], []);
-    queue.push(new artistPriority(startingArtist.id, 0))
+  dict[artist.id] = artist.name;
+  if(!checkedArtists.has(artist.id)){
+    graph.add([{"id" : artist.id, "name" : artist.name, "priority" : 0, 
+    "popularity" : artist.popularity, "image" : artist.images[0].url, "width" : artist.images[0].width, "height" : artist.images[0].heigth}], []);
+    queue.push(new artistPriority(artist.id, 0))
   } else {
     let priority;
     graph.graphData.nodes.forEach(node => {
-      if(node.id === startingArtist.id){
+      if(node.id === artist.id){
         priority = node.priority;
       }
     });
     maxDegrees += priority - 1;
-    queue.push(new artistPriority(startingArtist.id, priority))
+    queue.push(new artistPriority(artist.id, priority))
   }
 
-  checkedArtists.add(startingArtist.id);
-  nonLeafArtists.add(startingArtist.id);
+  checkedArtists.add(artist.id);
+  nonLeafArtists.add(artist.id);
 }
 
 const runArtistSearch = async () => {
@@ -66,12 +66,16 @@ const runArtistSearch = async () => {
         const albumIds = await api.getAlbums(ap.artistId);
         const connectedArtistsData = await api.getConnectedArtists(albumIds, ap.artistId);
         console.log("Number of connected Artists: " + connectedArtistsData.length);
+        const artistData = await api.getArtistsData(connectedArtistsData.map(d => d.artistId));
+        let index = 0;
         connectedArtistsData.forEach(artistConnection => {
           if(!checkedArtists.has(artistConnection.artistId)){
             checkedArtists.add(artistConnection.artistId);
             if(!oneAtATime) queue.push(new artistPriority(artistConnection.artistId, ap.priority+1));
-            graph.add([{"id" : artistConnection.artistId, "name" : artistConnection.artistName, "priority" : ap.priority+1}], []);
+            graph.add([{"id" : artistConnection.artistId, "name" : artistConnection.artistName, "priority" : ap.priority+1, 
+            "popularity" : artistData[index].popularity, "image" : artistData[index].image, "width" : artistData[index].width, "height" : artistData[index].height}], []);
           }
+          index++;
           graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId}]);
         });
 

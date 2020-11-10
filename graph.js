@@ -2,7 +2,6 @@
 The code for d3 and graphs was largely written by oldwnenzi at https://bl.ocks.org/sgcc/7ad094c9acd1877785ee39cde67eb6c7
 Edited by Donovan West
 */
-//import {queueArtist} from "./app.js";
 
 export class D3ForceGraph {
   constructor(graphDiv, svgId) {
@@ -16,6 +15,10 @@ export class D3ForceGraph {
 
     t.svgId = svgId;
     t.updateRefCount = 0;
+    t.clipPathId = 0;
+
+    t.showImages = true;
+    t.popBasedSize = true;
   }
 
   init() {
@@ -60,6 +63,7 @@ export class D3ForceGraph {
     background.call(zoom);
 
 
+
     let simulation = t.initSimulation();
     t.simulation = simulation;
 
@@ -91,25 +95,39 @@ export class D3ForceGraph {
                         .distance(300)
                         .id(d => d.id).strength(0.1))
       .force("charge", d3.forceManyBody().strength(-50).distanceMin(100000))
-      .force("collide", d3.forceCollide(30))
+      .force("collide", d3.forceCollide(40))
       .force("center", d3.forceCenter(t.center.x, t.center.y));
 
     return result;
   }
-
+/*
   getRadius(priority) {
     if(priority <= 0)
         return 40;
     else 
         return this.getRadius(priority-1) * (4/5)
-    //return radius;
+  }
+  */
+  getRadius(d) {
+    if(this.popBasedSize){
+      return Math.max(d.popularity*0.40, 5) ;
+    } else {
+      let radius = 40;
+      for(let k = 0; k < d.priority; k++){
+        radius *= 4/5;
+      }
+      return radius;
+    }
   }
 
 
 
   getColor(d) { 
     const colors = ["#1DB954", "#8A2BE2", "#00FFFF", "#FF8C00",  "#1E90FF", "#FF69B4", "#FFFF00"];
-    return colors[d.priority%colors.length];    
+    if(this.showImages)
+      return colors[0];
+    else
+      return colors[d.priority%colors.length];    
     //return "#1DB954"; 
   }
 
@@ -179,9 +197,26 @@ export class D3ForceGraph {
         .append("circle")
         .classed('node', true)
         .attr("cursor", "pointer")
-        .attr("r", d => Math.max(t.getRadius(d.priority), 5))
-        .attr("fill", d => t.getColor(d));
+        .attr("r", d => t.getRadius(d))
+        .attr("fill", d => t.getColor(d))
 
+    if(t.showImages){
+      t.clipPathId++;
+        graphNodesEnter.append("clipPath")
+          .attr("id", "clipCircle" + t.clipPathId)
+              .append("circle")
+              .attr("r", d => t.getRadius(d));
+      
+      let images = 
+        graphNodesEnter
+          .append("svg:image")
+          .attr("xlink:href", d => d.image)
+          .attr("x", d => t.getRadius(d) * -1)
+          .attr("y", d => t.getRadius(d) * -1)
+          .attr("height", d => t.getRadius(d) * 2)
+          .attr("width", d => t.getRadius(d) * 2)
+          .attr("clip-path", "url(#clipCircle" + t.clipPathId + ")")
+    }
     let graphNodeLabels =
       graphNodesEnter
         .append("text")
