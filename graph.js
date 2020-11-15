@@ -93,9 +93,9 @@ export class D3ForceGraph {
       .velocityDecay(0.3)
       .force("link", d3.forceLink()
                         .distance(300)
-                        .id(d => d.id).strength(0.1))
-      .force("charge", d3.forceManyBody().strength(-50).distanceMin(100000))
-      .force("collide", d3.forceCollide(40))
+                        .id(d => d.id))
+      .force("charge", d3.forceManyBody().strength(-200).theta(0.5))
+      .force("collide", d3.forceCollide(d => this.getRadius(d)+5))
       .force("center", d3.forceCenter(t.center.x, t.center.y));
 
     return result;
@@ -110,7 +110,7 @@ export class D3ForceGraph {
   */
   getRadius(d) {
     if(this.popBasedSize){
-      return Math.max(d.popularity*0.40, 5) ;
+      return Math.max(d.popularity, 5) ;
     } else {
       let radius = 40;
       for(let k = 0; k < d.priority; k++){
@@ -120,8 +120,6 @@ export class D3ForceGraph {
     }
   }
 
-
-
   getColor(d) { 
     const colors = ["#1DB954", "#8A2BE2", "#00FFFF", "#FF8C00",  "#1E90FF", "#FF69B4", "#FFFF00"];
     if(this.showImages)
@@ -129,6 +127,18 @@ export class D3ForceGraph {
     else
       return colors[d.priority%colors.length];    
     //return "#1DB954"; 
+  }
+
+  getComputedTextLength(d){
+    const text = d3.selectAll("#label_" + d.id);
+    const textLength = text.node().getComputedTextLength();
+    //const padding = 30;
+    const diameter = 2 * this.getRadius(d);
+    const padding = diameter*0.2
+    //const labelAvailiableWidth = diameter - padding;
+    //console.log(node.node().getComputedTextLength());
+    //return (labelAvailiableWidth / textLength) + "em";
+    return Math.min(diameter, (diameter-padding)/textLength) + "em";
   }
 
   handleDragStarted(d, simulation) {
@@ -183,7 +193,6 @@ export class D3ForceGraph {
               //t.remove(d);
               d3.event.preventDefault();
           })
-          //.on("mouseover", d => console.log(`d.id: ${d.id}`))
           .on("click", d => t.handleNodeClicked(d))
           .call(drag);
     let graphNodesExit =
@@ -220,10 +229,15 @@ export class D3ForceGraph {
     let graphNodeLabels =
       graphNodesEnter
         .append("text")
+        .text(d => `${d.name}`)
         .attr("id", d => "label_" + d.id)
-        .attr("font-size", `10px`)
+        .style("font-family", "Rubik Mono One", "monospace")
+        .style("font-size", d => t.getComputedTextLength(d))
         .attr("text-anchor", "middle")
-        .text(d => `${d.name}`);
+        .attr("fill", "#FFFFFF")
+        .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black");
+        
+        
 
     // merge
     graphNodesData =
