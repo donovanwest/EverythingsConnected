@@ -2,6 +2,12 @@
 The code for d3 and graphs was largely written by oldwnenzi at https://bl.ocks.org/sgcc/7ad094c9acd1877785ee39cde67eb6c7
 Edited by Donovan West
 */
+const showImagesElement = document.getElementById("showImages");
+const popBasedSizeElement = document.getElementById("popBasedSize");
+const songNameLabel = document.getElementById("songName");
+
+let showImages = showImagesElement.checked;
+let popBasedSize = popBasedSizeElement.checked;
 
 export class D3ForceGraph {
   constructor(graphDiv) {
@@ -17,8 +23,7 @@ export class D3ForceGraph {
     t.updateRefCount = 0;
     t.clipPathId = 0;
 
-    t.showImages = true;
-    t.popBasedSize = true;
+    
   }
 
   init() {
@@ -109,7 +114,7 @@ export class D3ForceGraph {
   }
   */
   getRadius(d) {
-    if(this.popBasedSize){
+    if(popBasedSize){
       return Math.max(d.popularity, 5) ;
     } else {
       let radius = 40;
@@ -122,7 +127,7 @@ export class D3ForceGraph {
 
   getColor(d) { 
     const colors = ["#1DB954", "#8A2BE2", "#00FFFF", "#FF8C00",  "#1E90FF", "#FF69B4", "#FFFF00"];
-    if(this.showImages)
+    if(showImages)
       return "#000";
     else
       return colors[d.priority%colors.length];    
@@ -132,12 +137,8 @@ export class D3ForceGraph {
   getComputedTextLength(d){
     const text = d3.selectAll("#label_" + d.id);
     const textLength = text.node().getComputedTextLength();
-    //const padding = 30;
     const diameter = 2 * this.getRadius(d);
     const padding = diameter*0.2
-    //const labelAvailiableWidth = diameter - padding;
-    //console.log(node.node().getComputedTextLength());
-    //return (labelAvailiableWidth / textLength) + "em";
     return Math.min(diameter, (diameter-padding)/textLength) + "em";
   }
 
@@ -190,7 +191,6 @@ export class D3ForceGraph {
           .append("g")
           .attr("id", d => d.id || null)
           .on("contextmenu", (d, i)  => {
-              //t.remove(d);
               d3.event.preventDefault();
           })
           .on("click", d => t.handleNodeClicked(d))
@@ -198,7 +198,6 @@ export class D3ForceGraph {
     let graphNodesExit =
       graphNodesData
         .exit()
-        // .call((s) => console.log(`selection exiting. s: ${JSON.stringify(s)}`))
         .remove();
 
     let graphNodeCircles =
@@ -209,7 +208,7 @@ export class D3ForceGraph {
         .attr("r", d => t.getRadius(d))
         .attr("fill", d => t.getColor(d))
 
-    if(t.showImages){
+    if(showImages){
       t.clipPathId++;
         graphNodesEnter.append("clipPath")
           .attr("id", "clipCircle" + t.clipPathId)
@@ -249,7 +248,7 @@ export class D3ForceGraph {
     let graphLinksEnter = graphLinksData.enter()
       .append("line")
       .attr("id", d => d.source + "," + d.target)
-      .on("click", d => console.log(d.label));
+      .on("click", d => songNameLabel.textContent = d.label);
     
 /*
     let linkLabel = graphLinksGroup.selectAll(".link-label").data(links);
@@ -351,4 +350,12 @@ export class D3ForceGraph {
   handleEnd() {
     //console.log("end yo");
   }
+}
+
+showImagesElement.oninput = function(){
+  showImages = showImagesElement.checked;
+}
+
+popBasedSizeElement.oninput = function(){
+  popBasedSize = popBasedSizeElement.checked;
 }

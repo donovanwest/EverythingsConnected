@@ -10,6 +10,9 @@ const fullRadio = document.getElementById("full");
 const loginButton = document.getElementById("loginButton");
 const searchArtistButton = document.getElementById("searchArtist");
 const artistEntry = document.getElementById("artistEntry");
+const totalArtists = document.getElementById("totalArtists")
+
+
 
 let graphDiv = document.querySelector("#ib-d3-graph-div");
 let graph = new D3ForceGraph(graphDiv);
@@ -78,11 +81,13 @@ const runArtistSearch = async () => {
           index++;
           graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName}]);
         });
+        totalArtists.textContent = "Total Artists: " + checkedArtists.size;
+
 
     }
     queue = new TinyQueue([], (a,b) => a.priority - b.priority);
     if(slider.value != maxDegrees)
-      maxDegrees = value;
+      maxDegrees = slider.value;
     if(!oneAtATime){
       console.log("Checked artists: " + checkedArtists.size);
       console.log("Size of queue to check: " + queue.length);
@@ -143,3 +148,5 @@ artistEntry.onkeyup = async function(e){
     runArtistSearch();
   }
 }
+
+

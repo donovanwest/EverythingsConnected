@@ -49,6 +49,16 @@
       margin-left: 10px;
       margin-top: 10px;
   }
+
+  #displayModeSelection {
+      margin-left: 10px;
+      margin-top: 20px;
+  }
+
+  #songName, #totalArtists {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
   
   #ib-d3-graph-div {
     height: 100vh;
