@@ -5,8 +5,7 @@
 
 .links line {
     stroke: #191414;
-    stroke-width: 1.0px;
-    stroke-opacity: 1.5;
+    stroke-width: 2.0px;
   }
   
   .nodes circle {

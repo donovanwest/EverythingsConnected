@@ -12,7 +12,7 @@ const searchArtistButton = document.getElementById("searchArtist");
 const artistEntry = document.getElementById("artistEntry");
 
 let graphDiv = document.querySelector("#ib-d3-graph-div");
-let graph = new D3ForceGraph(graphDiv, "testSvgId");
+let graph = new D3ForceGraph(graphDiv);
 graph.init();
 const api = new apiCalls();
 
@@ -76,7 +76,7 @@ const runArtistSearch = async () => {
             "popularity" : artistData[index].popularity, "image" : artistData[index].image, "width" : artistData[index].width, "height" : artistData[index].height}], []);
           }
           index++;
-          graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId}]);
+          graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName}]);
         });
 
     }

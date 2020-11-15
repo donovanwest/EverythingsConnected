@@ -4,7 +4,7 @@ Edited by Donovan West
 */
 
 export class D3ForceGraph {
-  constructor(graphDiv, svgId) {
+  constructor(graphDiv) {
     let t = this;
 
     t.graphDiv = graphDiv;
@@ -13,7 +13,7 @@ export class D3ForceGraph {
     t.height = t.graphDiv.scrollHeight;
     t.center = {x: t.width / 2, y: t.height / 2};
 
-    t.svgId = svgId;
+    t.svgId = "graph";
     t.updateRefCount = 0;
     t.clipPathId = 0;
 
@@ -123,7 +123,7 @@ export class D3ForceGraph {
   getColor(d) { 
     const colors = ["#1DB954", "#8A2BE2", "#00FFFF", "#FF8C00",  "#1E90FF", "#FF69B4", "#FFFF00"];
     if(this.showImages)
-      return colors[0];
+      return "#000";
     else
       return colors[d.priority%colors.length];    
     //return "#1DB954"; 
@@ -244,14 +244,31 @@ export class D3ForceGraph {
       graphNodesEnter.merge(graphNodesData);
 
     // links
-    let graphLinksData =
-      graphLinksGroup
-        .selectAll("line")
-        .data(links);
-    let graphLinksEnter =
-        graphLinksData
-        .enter()
-          .append("line");
+    let graphLinksData = graphLinksGroup.selectAll("line").data(links);
+
+    let graphLinksEnter = graphLinksData.enter()
+      .append("line")
+      .attr("id", d => d.source + "," + d.target)
+      .on("click", d => console.log(d.label));
+    
+/*
+    let linkLabel = graphLinksGroup.selectAll(".link-label").data(links);
+
+
+    linkLabel.enter().append("svg:text")
+    .attr("text-anchor", "middle")
+    .attr("class","link-label")
+    .attr("x", "70vw")
+    .attr("y", "70vw")
+    .append("svg:textPath")
+    .attr("startOffset", "50%")
+    .attr("xlink:href", d =>  "#" + d.source + "," + d.target)
+    .text(d => d.label);
+
+    linkLabel.exit().remove();
+    console.log(linkLabel);
+
+*/
     let graphLinksExit =
       graphLinksData
         .exit()
