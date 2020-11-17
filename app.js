@@ -11,6 +11,10 @@ const loginButton = document.getElementById("loginButton");
 const searchArtistButton = document.getElementById("searchArtist");
 const artistEntry = document.getElementById("artistEntry");
 const totalArtists = document.getElementById("totalArtists")
+const infoLabel = document.getElementById("infoLabel");
+const searchForm = document.getElementById("searchModeSelection")
+const displayForm = document.getElementById("displayModeSelection")
+
 
 
 
@@ -33,8 +37,6 @@ let queue = new TinyQueue([], (a,b) => a.priority - b.priority);
 const checkedArtists = new Set();
 const nonLeafArtists = new Set();
 let oneAtATime = true; 
-let initialized = false;
-let loggedIn = false;
 let maxDegrees = 2;
 
 async function init(){
@@ -97,9 +99,14 @@ const runArtistSearch = async () => {
 
 const url = String(window.location)
 if(url.search('#') === -1){
-  loggedIn = false;
+  searchArtistButton.disabled = true;
+  fullRadio.disabled = true;
+  oaatRadio.disabled = true;
+  artistEntry.disabled = true;
+  document.getElementById("showImages").disabled = true;
+  document.getElementById("popBasedSize").disabled = true;
 } else {
-  loggedIn = true;
+  infoLabel.hidden = true;
   loginButton.disabled = true;
   const accessToken = api.parseForToken(url);
   api.setAccessToken(accessToken);

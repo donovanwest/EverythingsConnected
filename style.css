@@ -1,4 +1,8 @@
 
+* {
+  font-family: Helvetica;
+  font-size: 15px;
+}
 .container{
     display:grid;
 }
@@ -18,7 +22,7 @@
       border: #666;
       border-style: solid;
       border-width: 3px;
-      height: 400px;
+      height: 500px;
       margin-top: 50px;
       margin-left: 10px;
       width: 250px;
@@ -28,10 +32,26 @@
 
   #loginButton {
     size: 200px;
-    background-color: #1DB954; 
+    background-color: #1ed760; 
+    border-radius: 100px;
     margin: 10px;
     width: 90%;
     height: 30px;
+    color: white;
+    font-size: larger;
+    font-family: Helvetica;
+    border-width: 0px;
+  }
+
+  #loginButton:hover {
+    background-color: #1DB954;
+  }
+
+  #loginButton:disabled {
+    background-color: #eee;
+    color: lightgray;
+    border-color: lightgray;
+
   }
 
   #artistEntry {
@@ -55,9 +75,16 @@
       margin-top: 20px;
   }
 
-  #songName, #totalArtists {
+  #sidebar p {
     margin-left: 10px;
     margin-right: 10px;
+  }
+
+  #infoLabel {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    font-size: larger;
   }
   
   #ib-d3-graph-div {
@@ -70,6 +97,10 @@
     
   #backgroundId {
     height: 100vh;
+  }
+  
+  .label {
+    font-weight: bolder;
   }
   
   text {

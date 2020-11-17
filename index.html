@@ -13,30 +13,34 @@
   <!-- <script type="module" src="test.js"></script> -->
 </head>
 <body>
-    <div id="sidebar">
-      <button id="loginButton">Login to Spotify</button>
-      <input id="artistEntry" type="text" value="jacob collier">
-      <button id="searchArtist">Search for Artist</button>
-      <form id="searchModeSelection">
-        <input type="radio" id="full" name="searchMode" value="fullSearch">
-        <label for="full">Full Search</label><br>
-        <label for="slider" disabled>Degrees of separation: </label>
-        <input type="range" min="0" max="10" value="2" id="degreeSlider" disabled>
-        <label id="degreeLabel" disabled>2</label><br>
-        <input type="radio" id="oneAtATime" name="searchMode" value="One At A Time" checked>
-        <label for="oneAtATime">One at a Time</label>
-      </form>
-      <form id="displayModeSelection">
-        <input type="checkbox" id="showImages" value="showImages" checked>
-        <lable for="showImages">Show Images</lable><br>
-        <input type="checkbox" id="popBasedSize" value="popBasedSize" checked>
-        <lable for="showImages">Base Circle Size on Popularity</lable><br>
-      </form>
-      <br><br>
-      <p id="totalArtists">Total Artists: </p>
-      <p id="songName"><p>
-    </div>
+  <div id="sidebar">
+    <p id="infoLabel">You must log in to Spotify to use this app. <a href="learnMore.html">Learn more</a></p>
+    <button id="loginButton">Login to Spotify</button>
+    <input id="artistEntry" type="text" value="jacob collier">
+    <button id="searchArtist">Search for Artist</button>
+    <p class="label">Search Options</p>
+    <form id="searchModeSelection">
+      <input type="radio" id="full" name="searchMode" value="fullSearch">
+      <label for="full">Full Search</label><br>
+      <label for="slider" disabled>Degrees of separation: </label>
+      <input type="range" min="0" max="10" value="2" id="degreeSlider" disabled>
+      <label id="degreeLabel" disabled>2</label><br>
+      <input type="radio" id="oneAtATime" name="searchMode" value="One At A Time" checked>
+      <label for="oneAtATime">One at a Time</label>
+    </form>
+    <P class="label">Display Options</P>
+    <form id="displayModeSelection">
+      <input type="checkbox" id="showImages" value="showImages" checked>
+      <lable for="showImages">Show Images</lable><br>
+      <input type="checkbox" id="popBasedSize" value="popBasedSize" checked>
+      <lable for="popBasedSize">Base Circle Size on Popularity</lable><br>
+    </form>
+    <br><br>
+    <p class="label" id="totalArtists">Total Artists: </p>
+    <p id="nameOfSongLabel" class="label">Name of song connecting them:</p>
+    <p id="songName"><p>
+  </div>
 
-    <div id="ib-d3-graph-div"></div>
+  <div id="ib-d3-graph-div"></div>
 </body>
 

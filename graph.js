@@ -5,6 +5,7 @@ Edited by Donovan West
 const showImagesElement = document.getElementById("showImages");
 const popBasedSizeElement = document.getElementById("popBasedSize");
 const songNameLabel = document.getElementById("songName");
+document.getElementById("nameOfSongLabel").hidden = true;
 
 let showImages = showImagesElement.checked;
 let popBasedSize = popBasedSizeElement.checked;
@@ -248,7 +249,10 @@ export class D3ForceGraph {
     let graphLinksEnter = graphLinksData.enter()
       .append("line")
       .attr("id", d => d.source + "," + d.target)
-      .on("click", d => songNameLabel.textContent = d.label);
+      .on("click", d => {
+        document.getElementById("nameOfSongLabel").hidden = false;
+        songNameLabel.textContent = d.label
+      });
     
 /*
     let linkLabel = graphLinksGroup.selectAll(".link-label").data(links);
