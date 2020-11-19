@@ -304,7 +304,7 @@ export class D3ForceGraph {
     }
   }
 
-  add(nodesToAdd, linksToAdd) {
+  async add(nodesToAdd, linksToAdd) {
     let t = this;
 
     if (nodesToAdd) {

@@ -68,11 +68,18 @@ const runArtistSearch = async () => {
         const ap = queue.pop();
         nonLeafArtists.add(ap.artistId);
         console.log("Artist: " + dict[ap.artistId] + " Priority: " + ap.priority);
+        let timeStart = new Date();
         const albumIds = await api.getAlbums(ap.artistId);
+        console.log("getAlbums time: " + (new Date() - timeStart) + "ms");
+        timeStart = new Date();
         const connectedArtistsData = await api.getConnectedArtists(albumIds, ap.artistId);
+        console.log("getConnectedArtists time: " + (new Date() - timeStart) + "ms");
         console.log("Number of connected Artists: " + connectedArtistsData.length);
+        timeStart = new Date();
         const artistData = await api.getArtistsData(connectedArtistsData.map(d => d.artistId));
+        console.log("getArtistsData time: " + (new Date() - timeStart) + "ms");
         let index = 0;
+        timeStart = new Date();
         connectedArtistsData.forEach(artistConnection => {
           if(!checkedArtists.has(artistConnection.artistId)){
             checkedArtists.add(artistConnection.artistId);
@@ -83,6 +90,7 @@ const runArtistSearch = async () => {
           index++;
           graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName}]);
         });
+        console.log("addingArtists time: " + (new Date() - timeStart) + "ms");
         totalArtists.textContent = "Total Artists: " + checkedArtists.size;
 
 
@@ -145,7 +153,9 @@ loginButton.onclick = function(){
 }
 
 searchArtistButton.onclick = async function(){
+  let timeStart = new Date();
   await init();
+  console.log("init time: " + (new Date() - timeStart) + "ms");
   runArtistSearch();
 }
 

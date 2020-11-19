@@ -47,7 +47,7 @@ export class apiCalls{
                 if (err) console.error(err);
                 else{
                     const albumIds = artistAlbumData.items.map(d => d.id);
-                    resolve(albumIds);
+                    resolve([albumIds, artistAlbumData.total]);
                 }        
             })
         })
@@ -56,24 +56,28 @@ export class apiCalls{
     
     getAlbums(artistId){
         return new Promise(async (resolve) => {
-            let albumIds = [];
-            let offset = 0;
-            let complete = false;
-            while(!complete){
-                const newAlbumIds = await this.getAlbumsOffset(artistId, offset);
-                albumIds = [...albumIds, ...newAlbumIds];
-                if(newAlbumIds.length === 50)
-                    offset += 50;
-                else
-                    complete = true;
+            const initalData = await this.getAlbumsOffset(artistId, 0);
+            let albumIds = initalData[0];
+            let total = initalData[1];
+            let tasks = [];
+            let offset = albumIds.length;
+            while(offset < total){
+                
+                tasks.push(this.getAlbumsOffset(artistId, offset));   
+                offset += 50;                
             }
+            let result = await Promise.all(tasks);
+            result.forEach(group => {
+                albumIds = [...albumIds, ...group[0]];
+            })
             resolve(albumIds);
         })
     }
     
-    getSeveralAlbums(albumIds, artistId, connectedArtists){
+    getSeveralAlbums(albumIds, artistId){ //, connectedArtists){
         return new Promise((resolve) => {
             let connectedArtistsData = [];
+            let connectedArtists = new Set();
             spotifyApi.getAlbums(albumIds, function (err, albumsData){
                 if (err) console.error(err);
                 else{
@@ -103,15 +107,24 @@ export class apiCalls{
         return new Promise(async (resolve) => {
             let connectedArtistsData = [];
             let connectedArtists = new Set();
+            let tasks = [];
             for(let lower = 0; lower < albumIds.length; lower+=20){
                 let upper = lower+20;
                 if(upper > albumIds.length) upper = albumIds.length;
-                const newData = await this.getSeveralAlbums(albumIds.slice(lower, upper), artistId, connectedArtists);
-                newData.forEach(dataPoint => {
-                    connectedArtistsData.push(dataPoint);
-                    connectedArtists.add(dataPoint.id);
-                })
+                //const newData = await this.getSeveralAlbums(albumIds.slice(lower, upper), artistId, connectedArtists);
+                tasks.push(this.getSeveralAlbums(albumIds.slice(lower, upper), artistId));              
             }
+            const results = await Promise.all(tasks);
+            results.forEach(group => {
+                group.forEach(dataPoint => {
+                    if(!connectedArtists.has(dataPoint.artistId)){
+                        connectedArtistsData.push(dataPoint);
+                        connectedArtists.add(dataPoint.artistId);
+                    }
+                })
+            })
+            
+
             resolve(connectedArtistsData);
         })
     }
@@ -146,12 +159,18 @@ export class apiCalls{
     getArtistsData(artistIds){
         return new Promise(async (resolve) => {
             let artistData = [];
+            let tasks = [];
             for(let lower = 0; lower < artistIds.length; lower+=50){
                 let upper = lower+50;
                 if(upper > artistIds.length) upper = artistIds.length;
-                const newData = await this.getArtists(artistIds.slice(lower, upper));
-                artistData = [...artistData, ...newData];
+                //const newData = await this.getArtists(artistIds.slice(lower, upper));
+                tasks.push(this.getArtists(artistIds.slice(lower, upper)))
+                //artistData = [...artistData, ...newData];
             }
+            let result = await Promise.all(tasks);
+            result.forEach(group => {
+                artistData = [...artistData, ...group];
+            });
             resolve(artistData);
         })
     }
