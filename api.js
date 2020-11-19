@@ -1,9 +1,6 @@
-import {clientId, clientSecret} from "./Credentials.js";
-
 const spotifyApi = new SpotifyWebApi();
+const clientId = "e6bf2e305d98443190c472ee318fd511";
 export const dict = {};
-
-
 export class apiCalls{
     
     setAccessToken(at){
@@ -11,9 +8,9 @@ export class apiCalls{
     }
 
     login(){
-        const redirect_uri = "http://127.0.0.1:5500/EverythingsConnected/index.html";
+        const url = String(window.location)
         const scopes = ['user-library-read', 'playlist-read-private', 'playlist-read-collaborative'];
-        window.open(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopes}&show_dialog=true`, '_self');
+        window.open(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${url}&scope=${scopes}&show_dialog=true`, '_self');
     }
 
     parseForToken(url){
