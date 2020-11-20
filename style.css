@@ -80,11 +80,26 @@
     margin-right: 10px;
   }
 
+  #loading {
+    position: fixed;
+    top: 5px;
+    right: 5px;
+    width: 60px;
+    height: 60px;
+    object-fit: none;
+  }
+
   #infoLabel {
     margin-left: 10px;
     margin-right: 10px;
     margin-bottom: 0px;
     font-size: larger;
+  }
+
+  #degreeLabel {
+    color: #cccccc;
+    font-size: larger;
+    font-weight: bolder;
   }
   
   #ib-d3-graph-div {

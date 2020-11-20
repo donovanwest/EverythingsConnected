@@ -139,7 +139,14 @@ export class D3ForceGraph {
     const text = d3.selectAll("#label_" + d.id);
     const textLength = text.node().getComputedTextLength();
     const diameter = 2 * this.getRadius(d);
-    const padding = diameter*0.2
+    let padding; 
+    if(d.name.length <= 7){
+      padding = diameter*0.4
+    }
+    else{
+      padding = diameter*0.25
+    }
+    
     return Math.min(diameter, (diameter-padding)/textLength) + "em";
   }
 

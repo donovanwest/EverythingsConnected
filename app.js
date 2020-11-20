@@ -12,11 +12,10 @@ const searchArtistButton = document.getElementById("searchArtist");
 const artistEntry = document.getElementById("artistEntry");
 const totalArtists = document.getElementById("totalArtists")
 const infoLabel = document.getElementById("infoLabel");
-const searchForm = document.getElementById("searchModeSelection")
-const displayForm = document.getElementById("displayModeSelection")
+const loading = document.getElementById("loading");
 
-
-
+loading.hidden = true;
+artistEntry.focus();
 
 let graphDiv = document.querySelector("#ib-d3-graph-div");
 let graph = new D3ForceGraph(graphDiv);
@@ -64,6 +63,7 @@ async function init(){
 }
 
 const runArtistSearch = async () => {
+    loading.hidden = false;
     while(queue.length > 0 && (queue.peek().priority < maxDegrees || oneAtATime)){
         const ap = queue.pop();
         nonLeafArtists.add(ap.artistId);
@@ -92,8 +92,6 @@ const runArtistSearch = async () => {
         });
         console.log("addingArtists time: " + (new Date() - timeStart) + "ms");
         totalArtists.textContent = "Total Artists: " + checkedArtists.size;
-
-
     }
     queue = new TinyQueue([], (a,b) => a.priority - b.priority);
     if(slider.value != maxDegrees)
@@ -102,6 +100,7 @@ const runArtistSearch = async () => {
       console.log("Checked artists: " + checkedArtists.size);
       console.log("Size of queue to check: " + queue.length);
     }
+    loading.hidden = true;
     console.log(graph);
 }
 
@@ -129,7 +128,9 @@ function queueArtist(event){
 }
 
 slider.oninput = function() {
+  const colors = ["#0bdb00", "#0bdb00", "#bfff00", "#e88f00", "#e82e00", "#a80000"]
   degreeLabel.textContent = slider.value;
+  degreeLabel.style.color = colors[slider.value];
   maxDegrees = slider.value;
 }
 
@@ -141,11 +142,12 @@ oaatRadio.oninput = function() {
 }
 
 fullRadio.oninput = function() {
+  const colors = ["#0bdb00", "#0bdb00", "#bfff00", "#e88f00", "#e82e00", "#a80000"]
   oneAtATime = false;
   console.log(oneAtATime);
   slider.disabled = false;
   degreeLabel.disabled = false;
-  degreeLabel.style.color = "#000";
+  degreeLabel.style.color = colors[slider.value];
 }
 
 loginButton.onclick = function(){

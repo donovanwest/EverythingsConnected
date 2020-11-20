@@ -134,7 +134,6 @@ export class apiCalls{
                 tasks.push(this.getSeveralAlbums(albumIds.slice(lower, upper), artistId));              
             }
             const results = await Promise.all(tasks);
-            console.log(results)
             results.forEach(group => {
                 group.forEach(dataPoint => {
                     if(!connectedArtists.has(dataPoint.artistId)){
