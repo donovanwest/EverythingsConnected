@@ -1,5 +1,7 @@
 const spotifyApi = new SpotifyWebApi();
 const clientId = "e6bf2e305d98443190c472ee318fd511";
+const apiRateExcededError = 429;
+
 export const dict = {};
 export class apiCalls{
     
@@ -43,8 +45,16 @@ export class apiCalls{
 
     getAlbumsOffset(artistId, offset){
         return new Promise((resolve) => {
+            let t = this;
             spotifyApi.getArtistAlbums(artistId, {"limit" : "50", "include_groups" : "album,single,appears_on", "offset" : offset}, function (err, artistAlbumData) {
-                if (err) console.error(err);
+                if (err) {
+                    console.error(err);
+                    if(err.status === apiRateExcededError){
+                        setTimeout(async function () {
+                            resolve(await t.getAlbumsOffset(artistId, offset))
+                        }, (err.readyState+1)*1000);
+                    }
+                }
                 else{
                     const albumIds = artistAlbumData.items.map(d => d.id);
                     resolve([albumIds, artistAlbumData.total]);
@@ -78,8 +88,17 @@ export class apiCalls{
         return new Promise((resolve) => {
             let connectedArtistsData = [];
             let connectedArtists = new Set();
+            let t = this
             spotifyApi.getAlbums(albumIds, function (err, albumsData){
-                if (err) console.error(err);
+                if (err) {
+                    console.error(err);
+                    if(err.status === apiRateExcededError){
+                        //console.log(this);
+                        setTimeout(async function () {
+                            resolve(await t.getSeveralAlbums(albumIds, artistId))
+                        }, (err.readyState+1)*1000);
+                    }
+                }
                 else{
                     albumsData.albums.forEach(album => {
                         album.tracks.items.forEach(track => {
@@ -115,6 +134,7 @@ export class apiCalls{
                 tasks.push(this.getSeveralAlbums(albumIds.slice(lower, upper), artistId));              
             }
             const results = await Promise.all(tasks);
+            console.log(results)
             results.forEach(group => {
                 group.forEach(dataPoint => {
                     if(!connectedArtists.has(dataPoint.artistId)){
@@ -131,8 +151,16 @@ export class apiCalls{
 
     getArtists(artistIds){
         return new Promise(async (resolve) => {
+            let t = this;
             spotifyApi.getArtists(artistIds, function(err, rawData){
-                if (err) console.error(err);
+                if (err) {
+                    console.error(err);
+                    if(err.status === apiRateExcededError){
+                        setTimeout(async function () {
+                            resolve(await t.getArtists(artistIds))
+                        }, (err.readyState+1)*1000);
+                    }
+                }
                 else{
                     const artistData = rawData.artists.map(d => {
                         let o = new Object();
