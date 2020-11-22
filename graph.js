@@ -106,14 +106,7 @@ export class D3ForceGraph {
 
     return result;
   }
-/*
-  getRadius(priority) {
-    if(priority <= 0)
-        return 40;
-    else 
-        return this.getRadius(priority-1) * (4/5)
-  }
-  */
+
   getRadius(d) {
     if(popBasedSize){
       return Math.max(d.popularity, 5) ;
@@ -192,7 +185,7 @@ export class D3ForceGraph {
     let graphNodesData =
       graphNodesGroup
         .selectAll("g")
-        .data(nodes, d => d.id);
+        .data(nodes);
     let graphNodesEnter =
       graphNodesData
         .enter()
@@ -236,16 +229,14 @@ export class D3ForceGraph {
     let graphNodeLabels =
       graphNodesEnter
         .append("text")
-        .text(d => `${d.name}`)
+        .text(d => `${d.name} ${d.degree}`)
         .attr("id", d => "label_" + d.id)
         .style("font-family", "Rubik Mono One", "monospace")
         .style("font-size", d => t.getComputedTextLength(d))
         .attr("text-anchor", "middle")
         .attr("fill", "#FFFFFF")
         .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black");
-        
-        
-
+    
     // merge
     graphNodesData =
       graphNodesEnter.merge(graphNodesData);
@@ -261,24 +252,6 @@ export class D3ForceGraph {
         songNameLabel.textContent = d.label
       });
     
-/*
-    let linkLabel = graphLinksGroup.selectAll(".link-label").data(links);
-
-
-    linkLabel.enter().append("svg:text")
-    .attr("text-anchor", "middle")
-    .attr("class","link-label")
-    .attr("x", "70vw")
-    .attr("y", "70vw")
-    .append("svg:textPath")
-    .attr("startOffset", "50%")
-    .attr("xlink:href", d =>  "#" + d.source + "," + d.target)
-    .text(d => d.label);
-
-    linkLabel.exit().remove();
-    console.log(linkLabel);
-
-*/
     let graphLinksExit =
       graphLinksData
         .exit()
@@ -315,10 +288,21 @@ export class D3ForceGraph {
     let t = this;
 
     if (nodesToAdd) {
-      nodesToAdd.forEach(n => t.graphData.nodes.push(n));
+      //nodesToAdd.forEach(n => t.graphData.nodes.push(n));
+
+      for (let i = 0; i < nodesToAdd.length; i++){
+        setTimeout(t.graphData.nodes.push(nodesToAdd[i]), 0);
+      }
+      
+      
     }
     if (linksToAdd) {
-      linksToAdd.forEach(l => t.graphData.links.push(l));
+      //linksToAdd.forEach(l => t.graphData.links.push(l));
+      
+      for (let i = 0; i < linksToAdd.length; i++){
+        setTimeout(t.graphData.links.push(linksToAdd[i]), 0);
+      }
+      
     }
 
     // update();
@@ -360,6 +344,10 @@ export class D3ForceGraph {
 
   handleEnd() {
     //console.log("end yo");
+  }
+
+  lookupNode(id){
+    return this.graphData.nodes.filter(d => d.id === id)[0];
   }
 }
 

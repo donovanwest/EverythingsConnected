@@ -40,12 +40,14 @@ let maxDegrees = 2;
 
 async function init(){
   let queryName = artistEntry.value;
-  console.log(queryName);
   const artist = await api.searchForArtist(queryName);
+  if(artist === undefined){
+    alert("Artist Not Found");
+  }
   dict[artist.id] = artist.name;
   if(!checkedArtists.has(artist.id)){
     graph.add([{"id" : artist.id, "name" : artist.name, "priority" : 0, 
-    "popularity" : artist.popularity, "image" : artist.images[0].url, "width" : artist.images[0].width, "height" : artist.images[0].heigth}], []);
+    "popularity" : artist.popularity, "image" : artist.images[0].url, "width" : artist.images[0].width, "height" : artist.images[0].height, "degree" : 0}], []);
     queue.push(new artistPriority(artist.id, 0))
   } else {
     let priority;
@@ -80,15 +82,18 @@ const runArtistSearch = async () => {
         console.log("getArtistsData time: " + (new Date() - timeStart) + "ms");
         let index = 0;
         timeStart = new Date();
+        let a = graph.lookupNode(ap.artistId);
         connectedArtistsData.forEach(artistConnection => {
           if(!checkedArtists.has(artistConnection.artistId)){
             checkedArtists.add(artistConnection.artistId);
             if(!oneAtATime) queue.push(new artistPriority(artistConnection.artistId, ap.priority+1));
             graph.add([{"id" : artistConnection.artistId, "name" : artistConnection.artistName, "priority" : ap.priority+1, 
-            "popularity" : artistData[index].popularity, "image" : artistData[index].image, "width" : artistData[index].width, "height" : artistData[index].height}], []);
+            "popularity" : artistData[index].popularity, "image" : artistData[index].image, "width" : artistData[index].width, "height" : artistData[index].height, "degree" : 0}], []);
           }
           index++;
           graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName}]);
+          graph.lookupNode(artistConnection.artistId).degree+=1;
+          a.degree+=1;
         });
         console.log("addingArtists time: " + (new Date() - timeStart) + "ms");
         totalArtists.textContent = "Total Artists: " + checkedArtists.size;
@@ -102,6 +107,7 @@ const runArtistSearch = async () => {
     }
     loading.hidden = true;
     console.log(graph);
+
 }
 
 const url = String(window.location)
@@ -118,6 +124,7 @@ if(url.search('#') === -1){
   const accessToken = api.parseForToken(url);
   api.setAccessToken(accessToken);
 }
+
 
 function queueArtist(event){
   console.log("Node clicked with name " + event.detail.name + " and priority " + event.detail.priority);
