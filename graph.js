@@ -1,3 +1,4 @@
+
 /*
 The code for d3 and graphs was largely written by oldwnenzi at https://bl.ocks.org/sgcc/7ad094c9acd1877785ee39cde67eb6c7
 Edited by Donovan West
@@ -125,12 +126,11 @@ export class D3ForceGraph {
       return "#000";
     else
       return colors[d.priority%colors.length];    
-    //return "#1DB954"; 
   }
 
   getComputedTextLength(d){
     const text = d3.selectAll("#label_" + d.id);
-    const textLength = text.node().getComputedTextLength();
+    const textLength = text.node().getComputedTextLength() + 19.8;
     const diameter = 2 * this.getRadius(d);
     let padding; 
     if(d.name.length <= 7){
@@ -226,7 +226,7 @@ export class D3ForceGraph {
           .attr("width", d => t.getRadius(d) * 2)
           .attr("clip-path", "url(#clipCircle" + t.clipPathId + ")")
     }
-    let graphNodeLabels =
+    let graphNodesLabels =
       graphNodesEnter
         .append("text")
         .text(d => `${d.name} ${d.degree}`)
@@ -236,6 +236,8 @@ export class D3ForceGraph {
         .attr("text-anchor", "middle")
         .attr("fill", "#FFFFFF")
         .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black");
+
+    //graphNodesLabels = graphNodesEnter.merge(graphNodesLabels)
     
     // merge
     graphNodesData =
@@ -249,7 +251,7 @@ export class D3ForceGraph {
       .attr("id", d => d.source + "," + d.target)
       .on("click", d => {
         document.getElementById("nameOfSongLabel").hidden = false;
-        songNameLabel.textContent = d.label
+        songNameLabel.textContent = d.label;
       });
     
     let graphLinksExit =

@@ -70,33 +70,31 @@ const runArtistSearch = async () => {
         const ap = queue.pop();
         nonLeafArtists.add(ap.artistId);
         console.log("Artist: " + dict[ap.artistId] + " Priority: " + ap.priority);
-        let timeStart = new Date();
         const albumIds = await api.getAlbums(ap.artistId);
-        console.log("getAlbums time: " + (new Date() - timeStart) + "ms");
-        timeStart = new Date();
         const connectedArtistsData = await api.getConnectedArtists(albumIds, ap.artistId);
-        console.log("getConnectedArtists time: " + (new Date() - timeStart) + "ms");
-        console.log("Number of connected Artists: " + connectedArtistsData.length);
-        timeStart = new Date();
         const artistData = await api.getArtistsData(connectedArtistsData.map(d => d.artistId));
-        console.log("getArtistsData time: " + (new Date() - timeStart) + "ms");
         let index = 0;
-        timeStart = new Date();
-        let a = graph.lookupNode(ap.artistId);
+        let sourceNode = graph.lookupNode(ap.artistId);
+        let sourceLabel = document.getElementById("label_" + ap.artistId);
         connectedArtistsData.forEach(artistConnection => {
           if(!checkedArtists.has(artistConnection.artistId)){
             checkedArtists.add(artistConnection.artistId);
+            totalArtists.textContent = "Total Artists: " + checkedArtists.size;
             if(!oneAtATime) queue.push(new artistPriority(artistConnection.artistId, ap.priority+1));
             graph.add([{"id" : artistConnection.artistId, "name" : artistConnection.artistName, "priority" : ap.priority+1, 
             "popularity" : artistData[index].popularity, "image" : artistData[index].image, "width" : artistData[index].width, "height" : artistData[index].height, "degree" : 0}], []);
           }
           index++;
           graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName}]);
-          graph.lookupNode(artistConnection.artistId).degree+=1;
-          a.degree+=1;
+          if(!nonLeafArtists.has(artistConnection.artistId)){
+            let targetNode = graph.lookupNode(artistConnection.artistId);
+            targetNode.degree+=1;
+            let targetLabel = document.getElementById("label_" + artistConnection.artistId);
+            targetLabel.textContent = `${targetNode.name} ${targetNode.degree}`;
+            sourceNode.degree+=1;
+            sourceLabel.textContent = `${sourceNode.name} ${sourceNode.degree}`;
+          }
         });
-        console.log("addingArtists time: " + (new Date() - timeStart) + "ms");
-        totalArtists.textContent = "Total Artists: " + checkedArtists.size;
     }
     queue = new TinyQueue([], (a,b) => a.priority - b.priority);
     if(slider.value != maxDegrees)
@@ -162,9 +160,7 @@ loginButton.onclick = function(){
 }
 
 searchArtistButton.onclick = async function(){
-  let timeStart = new Date();
   await init();
-  console.log("init time: " + (new Date() - timeStart) + "ms");
   runArtistSearch();
 }
 
