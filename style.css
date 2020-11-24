@@ -17,8 +17,6 @@
     stroke-width: 0.5px;
   }
 
- 
-
   #sidebar {
       background-color: #fafafa;
       border: #666;
@@ -32,10 +30,9 @@
 
   }
 
-
-
   .tooltip .tooltiptext {
     visibility: hidden;
+    opacity: 0;
     width: min-content;
     min-width: fit-content;
     background-color: rgb(237, 255, 73);
@@ -44,6 +41,7 @@
     padding: 3px;
     border-radius: 6px;
     font-size: small;
+    border: 1px solid black;
 
     position: absolute;
     z-index: 1;
@@ -60,6 +58,8 @@
 
   .tooltip:hover .tooltiptext{
     visibility: visible;
+    opacity: 1;
+    transition: opacity 0.2s;
   }
 
   #loginButton {
@@ -132,6 +132,49 @@
     color: #cccccc;
     font-size: larger;
     font-weight: bolder;
+  }
+
+  .controls {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    margin-top: 70px;
+  }
+
+  #deleteButton {
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
+  }
+
+  #zoomIn, #zoomOut{
+    height: 30px;
+    width: 30px;
+    margin-right: 5px;
+    font-size: 20px;
+    text-align: center;
+    font-weight: bolder;
+  }
+
+  #moveSidebarLeft {
+    position: absolute;
+    top: -3px;
+    left: 253px;
+    height: 30px;
+    font-size: larger;
+  }
+
+  #links {
+    position: fixed;
+    margin-top: -50px;
+    display: flex;
+    justify-content: space-between;  
+  }
+
+  #githubLink {  
+    margin-left: -3px;
+    width: 30px;
+    height: 30px;
   }
   
   #ib-d3-graph-div {

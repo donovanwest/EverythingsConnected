@@ -112,11 +112,12 @@ export class D3ForceGraph {
     if(popBasedSize){
       return Math.max(d.popularity, 5) ;
     } else {
-      let radius = 40;
+      /*let radius = 40;
       for(let k = 0; k < d.priority; k++){
         radius *= 4/5;
       }
-      return radius;
+      return radius;*/
+      return 40;
     }
   }
 

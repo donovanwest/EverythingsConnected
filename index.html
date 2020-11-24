@@ -13,7 +13,15 @@
 </head>
 <body>
   <img id="loading" src="loading.gif">
+  
+  
   <div id="sidebar">
+    <div id="links">
+      <button id="githubLink">G</button>
+      <button id="guide">Guide</button>
+      <button id="aboutLink">About</button>
+    </div>
+    <button id="moveSidebarLeft"><<<</button> 
     <p id="infoLabel">You must log in to Spotify to use this app. <a href="learnMore.html">Learn more</a></p>
     <button id="loginButton">Login to Spotify</button>
     <input id="artistEntry" type="text">
@@ -54,7 +62,6 @@
         <lable for="popBasedSize">Base Circle Size on Popularity</lable><br>
       </div>
     </form>
-    <br><br>
     
     <div class="tooltip">
       <span class=tooltiptext>The total number of artists displayed/within a certain degree of connection</span>
@@ -66,6 +73,23 @@
     <p id="nameOfSongLabel" class="label">Name of song connecting them:</p>
     </div>
     <p id="songName"><p>
+    
+    <div class="controls">
+      <div class="tooltip">
+        <span class=tooltiptext>Delete entire graph and start over</span>
+        <button id="deleteButton">D</button>
+      </div>
+
+      <div class="tooltip">
+        <span class=tooltiptext>Zoom In</span>
+        <button id="zoomIn">+</button>
+      </div>
+
+      <div class="tooltip">
+        <span class=tooltiptext>Zoom Out</span>
+        <button id="zoomOut">-</button>
+      </div>
+    </div>
   </div>
 
   <div id="ib-d3-graph-div"></div>

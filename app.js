@@ -13,6 +13,8 @@ const artistEntry = document.getElementById("artistEntry");
 const totalArtists = document.getElementById("totalArtists")
 const infoLabel = document.getElementById("infoLabel");
 const loading = document.getElementById("loading");
+const deleteButton = document.getElementById("deleteButton");
+const moveSidebar = document.getElementById("moveSidebarLeft");
 
 loading.hidden = true;
 artistEntry.focus();
@@ -169,6 +171,16 @@ artistEntry.onkeyup = async function(e){
     await init();
     runArtistSearch();
   }
+}
+
+deleteButton.onclick = function(){
+  location.reload();
+}
+
+moveSidebar.onclick = function(){
+  const sidebar = document.getElementById("sidebar");
+  sidebar.style.visibility = "hidden";
+  console.log("clicked");
 }
 
 
