@@ -6,7 +6,7 @@ Edited by Donovan West
 const showImagesElement = document.getElementById("showImages");
 const popBasedSizeElement = document.getElementById("popBasedSize");
 const songNameLabel = document.getElementById("songName");
-document.getElementById("nameOfSongLabel").hidden = true;
+//document.getElementById("nameOfSongLabel").hidden = true;
 
 let showImages = showImagesElement.checked;
 let popBasedSize = popBasedSizeElement.checked;

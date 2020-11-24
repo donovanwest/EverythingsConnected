@@ -17,6 +17,8 @@
     stroke-width: 0.5px;
   }
 
+ 
+
   #sidebar {
       background-color: #fafafa;
       border: #666;
@@ -28,6 +30,36 @@
       width: 250px;
       position: fixed;
 
+  }
+
+
+
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: min-content;
+    min-width: fit-content;
+    background-color: rgb(237, 255, 73);
+    color: #222;
+    text-align: center;
+    padding: 3px;
+    border-radius: 6px;
+    font-size: small;
+
+    position: absolute;
+    z-index: 1;
+    bottom: 25px;
+
+    pointer-events: none;
+  }
+
+  .tooltip {
+    position: relative;
+    width: min-content;
+    min-width: fit-content;
+  }
+
+  .tooltip:hover .tooltiptext{
+    visibility: visible;
   }
 
   #loginButton {
