@@ -6,7 +6,7 @@ Edited by Donovan West
 const showImagesElement = document.getElementById("showImages");
 const popBasedSizeElement = document.getElementById("popBasedSize");
 const songNameLabel = document.getElementById("songName");
-//document.getElementById("nameOfSongLabel").hidden = true;
+
 
 let showImages = showImagesElement.checked;
 let popBasedSize = popBasedSizeElement.checked;
@@ -24,8 +24,10 @@ export class D3ForceGraph {
     t.svgId = "graph";
     t.updateRefCount = 0;
     t.clipPathId = 0;
-
     
+    t.zoomX = 0;
+    t.zoomY = 0;
+    t.zoomK = 0;
   }
 
   init() {
@@ -42,6 +44,7 @@ export class D3ForceGraph {
 
     // Needs to be second, just after the svg itself.
     let background = t.initBackground(t, svg);
+    t.background = background;
     // background
 
     // Holds child components (nodes, links), i.e. all but the background
@@ -67,6 +70,7 @@ export class D3ForceGraph {
     let zoom =
       d3.zoom()
         .on("zoom", () => t.handleZoom(svgGroup));
+    this.zoom = zoom;
     background.call(zoom);
 
 
@@ -166,6 +170,12 @@ export class D3ForceGraph {
   }
 
   handleZoom(svgGroup) {
+    this.zoomX = d3.event.transform.x;
+    this.zoomY = d3.event.transform.y;
+    this.zoomK = d3.event.transform.k;
+    //console.log(d3.event);
+    //console.log(document.getElementById("svgGroup"));
+    //console.log(d3.event.transform.x, d3.event.transform.y, d3.event.transform.k);
     svgGroup
       .attr("transform",
       `translate(${d3.event.transform.x}, ${d3.event.transform.y})` + " " +
@@ -352,6 +362,25 @@ export class D3ForceGraph {
   lookupNode(id){
     return this.graphData.nodes.filter(d => d.id === id)[0];
   }
+
+  zoomIn(){
+    this.svgGroup
+      .attr("transform",
+      `translate(${this.zoomX + 1}, ${this.zoomY + 1})` + " " +
+      `scale(${this.zoomK*=1.2})`);   
+    // const event = new Event("zoom", {target: {name: "g"}, transform: {x: this.zoomX, y: this.zoomY, k: this.zoomK }});
+    // this.svgGroup.dispatchEvent(event);
+  }
+
+  zoomOut(){
+    this.svgGroup
+      .attr("transform",
+      `translate(${this.zoomX + 1}, ${this.zoomY + 1})` + " " +
+      `scale(${this.zoomK*=0.8})`);   
+    // const event = new Event("zoom", {target: {name: "g"}, transform: {x: this.zoomX, y: this.zoomY, k: this.zoomK }});
+    // this.svgGroup.dispatchEvent(event);
+  }
+
 }
 
 showImagesElement.oninput = function(){

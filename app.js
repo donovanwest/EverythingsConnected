@@ -15,6 +15,8 @@ const infoLabel = document.getElementById("infoLabel");
 const loading = document.getElementById("loading");
 const deleteButton = document.getElementById("deleteButton");
 const moveSidebar = document.getElementById("moveSidebarLeft");
+const zoomIn = document.getElementById("zoomIn");
+const zoomOut = document.getElementById("zoomOut");
 
 loading.hidden = true;
 artistEntry.focus();
@@ -43,13 +45,15 @@ let maxDegrees = 2;
 async function init(){
   let queryName = artistEntry.value;
   const artist = await api.searchForArtist(queryName);
+  console.log(artist);
   if(artist === undefined){
     alert("Artist Not Found");
   }
   dict[artist.id] = artist.name;
   if(!checkedArtists.has(artist.id)){
     graph.add([{"id" : artist.id, "name" : artist.name, "priority" : 0, 
-    "popularity" : artist.popularity, "image" : artist.images[0].url, "width" : artist.images[0].width, "height" : artist.images[0].height, "degree" : 0}], []);
+    "popularity" : artist.popularity, "image" : artist.images.length > 0 ? artist.images[0].url : null, 
+    "width" : artist.images.length > 0 ? artist.images[0].width : null, "height" : artist.images.length > 0 ? artist.images[0].height : null, "degree" : 0}], []);
     queue.push(new artistPriority(artist.id, 0))
   } else {
     let priority;
@@ -179,8 +183,21 @@ deleteButton.onclick = function(){
 
 moveSidebar.onclick = function(){
   const sidebar = document.getElementById("sidebar");
-  sidebar.style.visibility = "hidden";
+  if(moveSidebar.textContent === "<<<"){
+    sidebar.style.marginLeft = "-260px";
+    moveSidebar.textContent = ">>>";
+  } else {
+    sidebar.style.marginLeft = "10px";
+    moveSidebar.textContent = "<<<";
+  }
+  
+  //sidebar.style.visibility = "hidden";
   console.log("clicked");
 }
 
+document.getElementById("githubLink").onclick = () => window.open("https://github.com/donovanwest/EverythingsConnected", "_blank");
+document.getElementById("aboutLink").onclick = () => window.open("about.html", "_blank");
+document.getElementById("guideLink").onclick = () => window.open("guide.html", "_blank");
 
+zoomIn.onclick = () => graph.zoomIn();
+zoomOut.onclick = () => graph.zoomOut();

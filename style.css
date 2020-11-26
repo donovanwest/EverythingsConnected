@@ -12,10 +12,10 @@
     stroke-width: 4.0px;
   }
   
-  .nodes circle {
-    stroke: green;
-    stroke-width: 0.5px;
-  }
+.nodes circle {
+  stroke: green;
+  stroke-width: 0.5px;
+}
 
   #sidebar {
       background-color: #fafafa;
@@ -27,6 +27,7 @@
       margin-left: 10px;
       width: 250px;
       position: fixed;
+      transition: margin-left 0.5s;
 
   }
 
@@ -136,15 +137,21 @@
 
   .controls {
     display: flex;
-    position: relative;
+    position: absolute;
     justify-content: center;
-    margin-top: 70px;
+    margin-left: -3px;
+    top: 510px;
   }
 
   #deleteButton {
     width: 30px;
     height: 30px;
     margin-right: 5px;
+    background-image: url("images/trashCan.png");
+    background-position: center;
+    background-size: contain;
+    border-width: 0px;
+    background-color: white;
   }
 
   #zoomIn, #zoomOut{
@@ -175,6 +182,17 @@
     margin-left: -3px;
     width: 30px;
     height: 30px;
+    margin-right: 5px;
+    background-image: url("images/githubLogo.png");
+    background-position: center;
+    background-size: contain;
+    border-width: 0px;
+    background-repeat: no-repeat;
+  }
+
+  #aboutLink, #guideLink {
+    margin-right: 5px;
+    width: min-content;
   }
   
   #ib-d3-graph-div {
