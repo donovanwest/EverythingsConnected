@@ -116,21 +116,16 @@ export class D3ForceGraph {
     if(popBasedSize){
       return Math.max(d.popularity, 5) ;
     } else {
-      /*let radius = 40;
-      for(let k = 0; k < d.priority; k++){
-        radius *= 4/5;
-      }
-      return radius;*/
       return 40;
     }
   }
 
-  getColor(d) { 
+  getColor(p, image) { 
     const colors = ["#1DB954", "#8A2BE2", "#00FFFF", "#FF8C00",  "#1E90FF", "#FF69B4", "#FFFF00"];
-    if(showImages)
+    if(image)
       return "#000";
     else
-      return colors[d.priority%colors.length];    
+      return colors[p%colors.length];    
   }
 
   getComputedTextLength(d){
@@ -173,9 +168,6 @@ export class D3ForceGraph {
     this.zoomX = d3.event.transform.x;
     this.zoomY = d3.event.transform.y;
     this.zoomK = d3.event.transform.k;
-    //console.log(d3.event);
-    //console.log(document.getElementById("svgGroup"));
-    //console.log(d3.event.transform.x, d3.event.transform.y, d3.event.transform.k);
     svgGroup
       .attr("transform",
       `translate(${d3.event.transform.x}, ${d3.event.transform.y})` + " " +
@@ -218,25 +210,28 @@ export class D3ForceGraph {
         .classed('node', true)
         .attr("cursor", "pointer")
         .attr("r", d => t.getRadius(d))
-        .attr("fill", d => t.getColor(d))
+        .attr("fill", d => t.getColor(d.priority, showImages))
+        .attr("data-alt-color", d => t.getColor(d.priority, !showImages));
 
-    if(showImages){
-      t.clipPathId++;
-        graphNodesEnter.append("clipPath")
-          .attr("id", "clipCircle" + t.clipPathId)
-              .append("circle")
-              .attr("r", d => t.getRadius(d));
-      
-      let images = 
-        graphNodesEnter
-          .append("svg:image")
-          .attr("xlink:href", d => d.image)
-          .attr("x", d => t.getRadius(d) * -1)
-          .attr("y", d => t.getRadius(d) * -1)
-          .attr("height", d => t.getRadius(d) * 2)
-          .attr("width", d => t.getRadius(d) * 2)
-          .attr("clip-path", "url(#clipCircle" + t.clipPathId + ")")
-    }
+    
+    t.clipPathId++;
+      graphNodesEnter.append("clipPath")
+        .attr("id", "clipCircle" + t.clipPathId)
+            .append("circle")
+            .attr("r", d => t.getRadius(d));
+    
+    let images = 
+      graphNodesEnter
+        .append("svg:image")
+        .attr("class", "nodeImage")
+        .attr("xlink:href", d => d.image)
+        .attr("x", d => t.getRadius(d) * -1)
+        .attr("y", d => t.getRadius(d) * -1)
+        .attr("height", d => t.getRadius(d) * 2)
+        .attr("width", d => t.getRadius(d) * 2)
+        .attr("clip-path", "url(#clipCircle" + t.clipPathId + ")")
+        .attr("visibility", showImages ? "visible" : "hidden");
+    
     let graphNodesLabels =
       graphNodesEnter
         .append("text")
@@ -248,7 +243,6 @@ export class D3ForceGraph {
         .attr("fill", "#FFFFFF")
         .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black");
 
-    //graphNodesLabels = graphNodesEnter.merge(graphNodesLabels)
     
     // merge
     graphNodesData =
@@ -385,6 +379,23 @@ export class D3ForceGraph {
 
 showImagesElement.oninput = function(){
   showImages = showImagesElement.checked;
+  let nodeImages = document.getElementsByClassName("nodeImage");
+  if(!showImages){
+    for (let i = 0; i < nodeImages.length; i++){
+      nodeImages[i].style.visibility = "hidden";
+    }
+  } else {
+    for (let i = 0; i < nodeImages.length; i++){
+      nodeImages[i].style.visibility = "visible";  
+    }
+  }
+
+  let circles = document.getElementsByClassName("node")
+  for (let i  = 0; i < circles.length; i++){
+    const temp = circles[i].dataset.altColor;
+    circles[i].dataset.altColor = circles[i].style.fill;
+    circles[i].style.fill = temp;
+  }
 }
 
 popBasedSizeElement.oninput = function(){

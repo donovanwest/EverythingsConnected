@@ -45,7 +45,6 @@ let maxDegrees = 2;
 async function init(){
   let queryName = artistEntry.value;
   const artist = await api.searchForArtist(queryName);
-  console.log(artist);
   if(artist === undefined){
     alert("Artist Not Found");
   }
@@ -155,7 +154,6 @@ oaatRadio.oninput = function() {
 fullRadio.oninput = function() {
   const colors = ["#0bdb00", "#0bdb00", "#bfff00", "#e88f00", "#e82e00", "#a80000"]
   oneAtATime = false;
-  console.log(oneAtATime);
   slider.disabled = false;
   degreeLabel.disabled = false;
   degreeLabel.style.color = colors[slider.value];
