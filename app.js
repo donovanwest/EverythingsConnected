@@ -193,6 +193,8 @@ moveSidebar.onclick = function(){
   console.log("clicked");
 }
 
+document.getElementById("popBasedSize").oninput = () => graph.popBasedSizeInput();
+
 document.getElementById("githubLink").onclick = () => window.open("https://github.com/donovanwest/EverythingsConnected", "_blank");
 document.getElementById("aboutLink").onclick = () => window.open("about.html", "_blank");
 document.getElementById("guideLink").onclick = () => window.open("guide.html", "_blank");

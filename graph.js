@@ -218,6 +218,7 @@ export class D3ForceGraph {
       graphNodesEnter.append("clipPath")
         .attr("id", "clipCircle" + t.clipPathId)
             .append("circle")
+            .attr("class", "clipPath")
             .attr("r", d => t.getRadius(d));
     
     let images = 
@@ -235,6 +236,7 @@ export class D3ForceGraph {
     let graphNodesLabels =
       graphNodesEnter
         .append("text")
+        .attr("class", "nodeLabel")
         .text(d => `${d.name} ${d.degree}`)
         .attr("id", d => "label_" + d.id)
         .style("font-family", "Rubik Mono One", "monospace")
@@ -375,6 +377,31 @@ export class D3ForceGraph {
     // this.svgGroup.dispatchEvent(event);
   }
 
+  popBasedSizeInput(){
+    popBasedSize = popBasedSizeElement.checked;
+    let nodeImages = document.getElementsByClassName("nodeImage");
+    let circles = document.getElementsByClassName("node");
+    let nodeLabels = document.getElementsByClassName("nodeLabel");
+    let clipPaths = document.getElementsByClassName("clipPath");
+
+    for(let i = 0; i < nodeImages.length; i++){
+      const id = circles[i].parentNode.id;
+      const node = this.lookupNode(id);
+
+      //nodeImages.style.r = this.getRadius(node);
+      circles[i].style.r = this.getRadius(node);
+
+      nodeImages[i].style.x = this.getRadius(node) * -1;
+      nodeImages[i].style.y = this.getRadius(node) * -1;
+      nodeImages[i].style.height = this.getRadius(node) * 2;
+      nodeImages[i].style.width = this.getRadius(node) * 2;
+
+      clipPaths[i].style.r = this.getRadius(node);
+      nodeLabels[i].style.fontSize = "small";
+      nodeLabels[i].style.fontSize = this.getComputedTextLength(node);
+    }
+  }
+
 }
 
 showImagesElement.oninput = function(){
@@ -396,8 +423,4 @@ showImagesElement.oninput = function(){
     circles[i].dataset.altColor = circles[i].style.fill;
     circles[i].style.fill = temp;
   }
-}
-
-popBasedSizeElement.oninput = function(){
-  popBasedSize = popBasedSizeElement.checked;
 }

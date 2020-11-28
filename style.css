@@ -4,219 +4,232 @@
   font-size: 15px;
 }
 .container{
-    display:grid;
+  display:grid;
 }
 
 .links line {
-    stroke: #191414;
-    stroke-width: 2.0px;
-  }
+  stroke: #191414;
+  stroke-width: 2.0px;
+}
   
 .nodes circle {
   stroke: green;
   stroke-width: 0.5px;
+  transition: r 0.1s;
 }
 
-  #sidebar {
-      background-color: #fafafa;
-      border: #666;
-      border-style: solid;
-      border-width: 3px;
-      height: 500px;
-      margin-top: 50px;
-      margin-left: 10px;
-      width: 250px;
-      position: fixed;
-      transition: margin-left 0.5s;
+.nodes image {
+  transition: x 0.05s;
+  transition: y 0.05s;
+  transition: height 0.05s;
+  transition: width 0.05s;
+}
 
-  }
+.nodes clipPath {
+  transition: 0.1s;
+}
 
-  .tooltip .tooltiptext {
-    visibility: hidden;
-    opacity: 0;
-    width: min-content;
-    min-width: fit-content;
-    background-color: rgb(237, 255, 73);
-    color: #222;
-    text-align: center;
-    padding: 3px;
-    border-radius: 6px;
-    font-size: small;
-    border: 1px solid black;
 
-    position: absolute;
-    z-index: 1;
-    bottom: 25px;
 
-    pointer-events: none;
-  }
+#sidebar {
+  background-color: #fafafa;
+  border: #666;
+  border-style: solid;
+  border-width: 3px;
+  height: 500px;
+  margin-top: 50px;
+  margin-left: 10px;
+  width: 250px;
+  position: fixed;
+  transition: margin-left 0.5s;
+}
 
-  .tooltip {
-    position: relative;
-    width: min-content;
-    min-width: fit-content;
-  }
+.tooltip .tooltiptext {
+  visibility: hidden;
+  opacity: 0;
+  width: min-content;
+  min-width: fit-content;
+  background-color: rgb(237, 255, 73);
+  color: #222;
+  text-align: center;
+  padding: 3px;
+  border-radius: 6px;
+  font-size: small;
+  border: 1px solid black;
 
-  .tooltip:hover .tooltiptext{
-    visibility: visible;
-    opacity: 1;
-    transition: opacity 0.2s;
-  }
+  position: absolute;
+  z-index: 1;
+  bottom: 25px;
 
-  #loginButton {
-    size: 200px;
-    background-color: #1ed760; 
-    border-radius: 100px;
-    margin: 10px;
-    width: 90%;
-    height: 30px;
-    color: white;
-    font-size: larger;
-    font-family: Helvetica;
-    border-width: 0px;
-  }
+  pointer-events: none;
+}
 
-  #loginButton:hover {
-    background-color: #1DB954;
-  }
+.tooltip {
+  position: relative;
+  width: min-content;
+  min-width: fit-content;
+}
 
-  #loginButton:disabled {
-    background-color: #eee;
-    color: lightgray;
-    border-color: lightgray;
+.tooltip:hover .tooltiptext{
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
 
-  }
+#loginButton {
+  size: 200px;
+  background-color: #1ed760; 
+  border-radius: 100px;
+  margin: 10px;
+  width: 90%;
+  height: 30px;
+  color: white;
+  font-size: larger;
+  font-family: Helvetica;
+  border-width: 0px;
+}
 
-  #artistEntry {
-      margin-left: 10px;
-      width: 87%;
-  }
+#loginButton:hover {
+  background-color: #1DB954;
+}
 
-  #searchArtist {
-      margin-top: 7px;
-      margin-left: 10px;
-      width: 90%;
-  }
+#loginButton:disabled {
+  background-color: #eee;
+  color: lightgray;
+  border-color: lightgray;
 
-  #searchModeSelection {
-      margin-left: 10px;
-      margin-top: 10px;
-  }
+}
 
-  #displayModeSelection {
-      margin-left: 10px;
-      margin-top: 20px;
-  }
+#artistEntry {
+  margin-left: 10px;
+  width: 87%;
+}
 
-  #sidebar p {
-    margin-left: 10px;
-    margin-right: 10px;
-  }
+#searchArtist {
+  margin-top: 7px;
+  margin-left: 10px;
+  width: 90%;
+}
 
-  #loading {
-    position: fixed;
-    top: 5px;
-    right: 5px;
-    width: 60px;
-    height: 60px;
-    object-fit: none;
-  }
+#searchModeSelection {
+  margin-left: 10px;
+  margin-top: 10px;
+}
 
-  #infoLabel {
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-bottom: 0px;
-    font-size: larger;
-  }
+#displayModeSelection {
+  margin-left: 10px;
+  margin-top: 20px;
+}
 
-  #degreeLabel {
-    color: #cccccc;
-    font-size: larger;
-    font-weight: bolder;
-  }
+#sidebar p {
+  margin-left: 10px;
+  margin-right: 10px;
+}
 
-  .controls {
-    display: flex;
-    position: absolute;
-    justify-content: center;
-    margin-left: -3px;
-    top: 510px;
-  }
+#loading {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  width: 60px;
+  height: 60px;
+  object-fit: none;
+}
 
-  #deleteButton {
-    width: 30px;
-    height: 30px;
-    margin-right: 5px;
-    background-image: url("images/trashCan.png");
-    background-position: center;
-    background-size: contain;
-    border-width: 0px;
-    background-color: white;
-  }
+#infoLabel {
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 0px;
+  font-size: larger;
+}
 
-  #zoomIn, #zoomOut{
-    height: 30px;
-    width: 30px;
-    margin-right: 5px;
-    font-size: 20px;
-    text-align: center;
-    font-weight: bolder;
-  }
+#degreeLabel {
+  color: #cccccc;
+  font-size: larger;
+  font-weight: bolder;
+}
 
-  #moveSidebarLeft {
-    position: absolute;
-    top: -3px;
-    left: 253px;
-    height: 30px;
-    font-size: larger;
-  }
+.controls {
+  display: flex;
+  position: absolute;
+  justify-content: center;
+  margin-left: -3px;
+  top: 510px;
+}
 
-  #links {
-    position: fixed;
-    margin-top: -50px;
-    display: flex;
-    justify-content: space-between;  
-  }
+#deleteButton {
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
+  background-image: url("images/trashCan.png");
+  background-position: center;
+  background-size: contain;
+  border-width: 0px;
+  background-color: white;
+}
 
-  #githubLink {  
-    margin-left: -3px;
-    width: 30px;
-    height: 30px;
-    margin-right: 5px;
-    background-image: url("images/githubLogo.png");
-    background-position: center;
-    background-size: contain;
-    border-width: 0px;
-    background-repeat: no-repeat;
-  }
+#zoomIn, #zoomOut{
+  height: 30px;
+  width: 30px;
+  margin-right: 5px;
+  font-size: 20px;
+  text-align: center;
+  font-weight: bolder;
+}
 
-  #aboutLink, #guideLink {
-    margin-right: 5px;
-    width: min-content;
-  }
+#moveSidebarLeft {
+  position: absolute;
+  top: -3px;
+  left: 253px;
+  height: 30px;
+  font-size: larger;
+}
+
+#links {
+  position: fixed;
+  margin-top: -50px;
+  display: flex;
+  justify-content: space-between;  
+}
+
+#githubLink {  
+  margin-left: -3px;
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
+  background-image: url("images/githubLogo.png");
+  background-position: center;
+  background-size: contain;
+  border-width: 0px;
+  background-repeat: no-repeat;
+}
+
+#aboutLink, #guideLink {
+  margin-right: 5px;
+  width: min-content;
+}
+
+#ib-d3-graph-div {
+  height: 100vh;
+}
   
-  #ib-d3-graph-div {
-    height: 100vh;
-  }
-    
-  #testSvgId {
-    height: 100vh;
-  }
-    
-  #backgroundId {
-    height: 100vh;
-  }
+#testSvgId {
+  height: 100vh;
+}
   
-  .label {
-    font-weight: bolder;
-  }
-  
-  text {
-    font: bold 12px monospace;
-  }
-  
-  body {
-    margin: 0px;
-    padding: 0px;
-    height: 100%;
-  }
+#backgroundId {
+  height: 100vh;
+}
+
+.label {
+  font-weight: bolder;
+}
+
+text {
+  font: bold 12px monospace;
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+}
