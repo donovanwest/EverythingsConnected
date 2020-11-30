@@ -29,8 +29,6 @@
   transition: 0.1s;
 }
 
-
-
 #sidebar {
   background-color: #fafafa;
   border: #666;
@@ -40,7 +38,7 @@
   margin-top: 50px;
   margin-left: 10px;
   width: 250px;
-  position: fixed;
+  position: absolute;
   transition: margin-left 0.5s;
 }
 
@@ -59,14 +57,13 @@
 
   position: absolute;
   z-index: 1;
-  bottom: 25px;
+  bottom: 100%;
 
   pointer-events: none;
 }
 
 .tooltip {
   position: relative;
-  width: min-content;
   min-width: fit-content;
 }
 
@@ -77,12 +74,11 @@
 }
 
 #loginButton {
-  size: 200px;
   background-color: #1ed760; 
-  border-radius: 100px;
-  margin: 10px;
-  width: 90%;
-  height: 30px;
+  border-radius: 200px;
+  margin: 4%;
+  width: 93%;
+  height: 6%;
   color: white;
   font-size: larger;
   font-family: Helvetica;
@@ -97,49 +93,46 @@
   background-color: #eee;
   color: lightgray;
   border-color: lightgray;
-
 }
 
 #artistEntry {
-  margin-left: 10px;
-  width: 87%;
+  width: 90%;
+  margin-left: 4%;
+  margin-right: auto;
 }
 
 #searchArtist {
-  margin-top: 7px;
-  margin-left: 10px;
-  width: 90%;
+  margin-top: 0.5em;
+  width: 93%;
+  margin-left: 4%;
+  
 }
 
-#searchModeSelection {
-  margin-left: 10px;
-  margin-top: 10px;
-}
-
-#displayModeSelection {
-  margin-left: 10px;
-  margin-top: 20px;
+#searchModeSelection, #displayModeSelection {
+  margin-left: 4%;
+  margin-top: 4%;
+  width: 100%;
 }
 
 #sidebar p {
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 4%;
+  margin-right: 4%;
+  width: 90%;
+  font-weight: bolder;
+  font-size: 11pt;
+}
+
+#songName {
+  font-weight: normal !important;
 }
 
 #loading {
   position: fixed;
-  top: 5px;
-  right: 5px;
+  top: 0.5%;
+  right: 0.5%;
   width: 60px;
   height: 60px;
   object-fit: none;
-}
-
-#infoLabel {
-  margin-left: 10px;
-  margin-right: 10px;
-  margin-bottom: 0px;
-  font-size: larger;
 }
 
 #degreeLabel {
@@ -153,7 +146,7 @@
   position: absolute;
   justify-content: center;
   margin-left: -3px;
-  top: 510px;
+  top: 102%;
 }
 
 #deleteButton {
@@ -179,14 +172,15 @@
 #moveSidebarLeft {
   position: absolute;
   top: -3px;
-  left: 253px;
-  height: 30px;
+  left: 101%;
+  height: 5%;
   font-size: larger;
+  width: min-content;
 }
 
 #links {
-  position: fixed;
-  margin-top: -50px;
+  position: absolute;
+  margin-top: -45px;
   display: flex;
   justify-content: space-between;  
 }
@@ -206,13 +200,10 @@
 #aboutLink, #guideLink {
   margin-right: 5px;
   width: min-content;
+  height: 30px;
 }
 
 #ib-d3-graph-div {
-  height: 100vh;
-}
-  
-#testSvgId {
   height: 100vh;
 }
   
@@ -220,16 +211,8 @@
   height: 100vh;
 }
 
-.label {
-  font-weight: bolder;
-}
-
-text {
-  font: bold 12px monospace;
-}
-
 body {
   margin: 0px;
   padding: 0px;
-  height: 100%;
 }
+

@@ -182,7 +182,7 @@ deleteButton.onclick = function(){
 moveSidebar.onclick = function(){
   const sidebar = document.getElementById("sidebar");
   if(moveSidebar.textContent === "<<<"){
-    sidebar.style.marginLeft = "-260px";
+    sidebar.style.marginLeft = "-256px";
     moveSidebar.textContent = ">>>";
   } else {
     sidebar.style.marginLeft = "10px";
