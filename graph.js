@@ -24,10 +24,6 @@ export class D3ForceGraph {
     t.svgId = "graph";
     t.updateRefCount = 0;
     t.clipPathId = 0;
-    
-    t.zoomX = 0;
-    t.zoomY = 0;
-    t.zoomK = 0;
   }
 
   init() {
@@ -45,7 +41,6 @@ export class D3ForceGraph {
     // Needs to be second, just after the svg itself.
     let background = t.initBackground(t, svg);
     t.background = background;
-    // background
 
     // Holds child components (nodes, links), i.e. all but the background
     let svgGroup = svg
@@ -73,12 +68,9 @@ export class D3ForceGraph {
     this.zoom = zoom;
     background.call(zoom);
 
-
-
     let simulation = t.initSimulation();
     t.simulation = simulation;
 
-    // update();
     t.update(t, simulation, graphNodesGroup, graphLinksGroup);
   }
 
@@ -91,30 +83,25 @@ export class D3ForceGraph {
       .attr("x", 0.5)
       .attr("y", 0.5)
       .attr("width", t.width - 1)
-      .attr("height", t.height - 1)
-      .on("click", () => t.handleBackgroundClicked());
+      .attr("height", t.height - 1);
 
     return result;
   }
 
   initSimulation() {
     let t = this;
-
     let result = d3.forceSimulation()
       .velocityDecay(0.3)
-      .force("link", d3.forceLink()
-                        .distance(300)
-                        .id(d => d.id))
+      .force("link", d3.forceLink().distance(300).id(d => d.id))
       .force("charge", d3.forceManyBody().strength(-200).theta(0.5))
       .force("collide", d3.forceCollide(d => this.getRadius(d)+5))
       .force("center", d3.forceCenter(t.center.x, t.center.y));
-
     return result;
   }
 
   getRadius(d) {
     if(popBasedSize){
-      return Math.max(d.popularity, 5) ;
+      return Math.max(d.popularity, 5);
     } else {
       return 40;
     }
@@ -130,44 +117,36 @@ export class D3ForceGraph {
 
   getComputedTextLength(d){
     const text = d3.selectAll("#label_" + d.id);
-    const textLength = text.node().getComputedTextLength() + 19.8;
+    const textLength = text.node().getComputedTextLength() + 19.8; //19.8 is about enough space for three characters that accommodates the degree
     const diameter = 2 * this.getRadius(d);
     let padding; 
-    if(d.name.length <= 7){
+    if(d.name.length <= 7){  //short names get kinda messed up, so this compensates for that
       padding = diameter*0.4
     }
     else{
       padding = diameter*0.25
     }
-    
     return Math.min(diameter, (diameter-padding)/textLength) + "em";
   }
 
   handleDragStarted(d, simulation) {
     if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-
     d.fx = d.x;
     d.fy = d.y;
   }
+
   handleDragged(d) {
     d.fx = d3.event.x;
     d.fy = d3.event.y;
   }
+
   handleDragEnded(d, simulation) {
     if (!d3.event.active) simulation.alphaTarget(0);
-
     d.fx = undefined;
     d.fy = undefined;
   }
 
-  handleBackgroundClicked() {
-    console.log(`background clicked`);
-  }
-
   handleZoom(svgGroup) {
-    this.zoomX = d3.event.transform.x;
-    this.zoomY = d3.event.transform.y;
-    this.zoomK = d3.event.transform.k;
     svgGroup
       .attr("transform",
       `translate(${d3.event.transform.x}, ${d3.event.transform.y})` + " " +
@@ -189,20 +168,15 @@ export class D3ForceGraph {
       graphNodesGroup
         .selectAll("g")
         .data(nodes);
+
     let graphNodesEnter =
       graphNodesData
         .enter()
           .append("g")
           .attr("id", d => d.id || null)
-          .on("contextmenu", (d, i)  => {
-              d3.event.preventDefault();
-          })
+          .on("contextmenu", (d, i)  => d3.event.preventDefault())
           .on("click", d => t.handleNodeClicked(d))
           .call(drag);
-    let graphNodesExit =
-      graphNodesData
-        .exit()
-        .remove();
 
     let graphNodeCircles =
       graphNodesEnter
@@ -215,11 +189,11 @@ export class D3ForceGraph {
 
     
     t.clipPathId++;
-      graphNodesEnter.append("clipPath")
-        .attr("id", "clipCircle" + t.clipPathId)
-            .append("circle")
-            .attr("class", "clipPath")
-            .attr("r", d => t.getRadius(d));
+    graphNodesEnter.append("clipPath")
+      .attr("id", "clipCircle_" + t.clipPathId)
+      .append("circle")
+      .attr("class", "clipPath")
+      .attr("r", d => t.getRadius(d));
     
     let images = 
       graphNodesEnter
@@ -230,18 +204,31 @@ export class D3ForceGraph {
         .attr("y", d => t.getRadius(d) * -1)
         .attr("height", d => t.getRadius(d) * 2)
         .attr("width", d => t.getRadius(d) * 2)
-        .attr("clip-path", "url(#clipCircle" + t.clipPathId + ")")
+        .attr("clip-path", "url(#clipCircle_" + t.clipPathId + ")")
         .attr("visibility", showImages ? "visible" : "hidden");
     
     let graphNodesLabels =
       graphNodesEnter
         .append("text")
         .attr("class", "nodeLabel")
-        .text(d => `${d.name} ${d.degree}`)
+        .text(d => d.name)
         .attr("id", d => "label_" + d.id)
         .style("font-family", "Rubik Mono One", "monospace")
         .style("font-size", d => t.getComputedTextLength(d))
         .attr("text-anchor", "middle")
+        .attr("fill", "#FFFFFF")
+        .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black");
+
+    let graphDegreeLabels =
+      graphNodesEnter
+        .append("text")
+        .attr("class", "degreeLabel")
+        .text(d => d.degree)
+        .attr("id", d => "degreeLabel_" + d.id)
+        .style("font-family", "Rubik Mono One", "monospace")
+        .style("font-size", d => document.getElementById("label_" + d.id).style.fontSize)
+        .attr("text-anchor", "middle")
+        .attr("y", "1.3em")
         .attr("fill", "#FFFFFF")
         .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black");
 
@@ -383,12 +370,12 @@ export class D3ForceGraph {
     let circles = document.getElementsByClassName("node");
     let nodeLabels = document.getElementsByClassName("nodeLabel");
     let clipPaths = document.getElementsByClassName("clipPath");
+    let degreeLabels = document.getElementsByClassName("degreeLabel");
 
     for(let i = 0; i < nodeImages.length; i++){
       const id = circles[i].parentNode.id;
       const node = this.lookupNode(id);
 
-      //nodeImages.style.r = this.getRadius(node);
       circles[i].style.r = this.getRadius(node);
 
       nodeImages[i].style.x = this.getRadius(node) * -1;
@@ -399,6 +386,10 @@ export class D3ForceGraph {
       clipPaths[i].style.r = this.getRadius(node);
       nodeLabels[i].style.fontSize = "small";
       nodeLabels[i].style.fontSize = this.getComputedTextLength(node);
+
+      degreeLabels[i].style.fontSize = "small";
+      degreeLabels[i].style.fontSize = this.getComputedTextLength(node);
+      degreeLabels[i].style.y = "1.3em";
     }
   }
 

@@ -1,5 +1,5 @@
 import {D3ForceGraph} from "./graph.js";
-import {apiCalls, dict} from "./api.js";
+import {apiCalls} from "./api.js";
 
 document.addEventListener("queueArtist", queueArtist);
 
@@ -15,30 +15,24 @@ const infoLabel = document.getElementById("infoLabel");
 const loading = document.getElementById("loading");
 const deleteButton = document.getElementById("deleteButton");
 const moveSidebar = document.getElementById("moveSidebarLeft");
+/*
 const zoomIn = document.getElementById("zoomIn");
 const zoomOut = document.getElementById("zoomOut");
-
+*/
 loading.hidden = true;
 artistEntry.focus();
 
 let graphDiv = document.querySelector("#ib-d3-graph-div");
 let graph = new D3ForceGraph(graphDiv);
 graph.init();
+
 const api = new apiCalls();
-
-
-class artistPriority{
-    constructor(artistId, priority){
-      this.artistId = artistId;
-      this.priority = priority;
-    }
-}
 
 let queue = new TinyQueue([], (a,b) => a.priority - b.priority);
 
-
 const checkedArtists = new Set();
 const nonLeafArtists = new Set();
+
 let oneAtATime = true; 
 let maxDegrees = 2;
 
@@ -48,12 +42,10 @@ async function init(){
   if(artist === undefined){
     alert("Artist Not Found");
   }
-  dict[artist.id] = artist.name;
   if(!checkedArtists.has(artist.id)){
     graph.add([{"id" : artist.id, "name" : artist.name, "priority" : 0, 
-    "popularity" : artist.popularity, "image" : artist.images.length > 0 ? artist.images[0].url : null, 
-    "width" : artist.images.length > 0 ? artist.images[0].width : null, "height" : artist.images.length > 0 ? artist.images[0].height : null, "degree" : 0}], []);
-    queue.push(new artistPriority(artist.id, 0))
+    "popularity" : artist.popularity, "image" : artist.images.length > 0 ? artist.images[0].url : null, "degree" : 0}], []);
+    queue.push({"artistId" : artist.id, "priority" : 0});
   } else {
     let priority;
     graph.graphData.nodes.forEach(node => {
@@ -62,7 +54,7 @@ async function init(){
       }
     });
     maxDegrees += priority - 1;
-    queue.push(new artistPriority(artist.id, priority))
+    queue.push({"artistId" : artist.id, "priority" : priority})
   }
 
   checkedArtists.add(artist.id);
@@ -74,30 +66,29 @@ const runArtistSearch = async () => {
     while(queue.length > 0 && (queue.peek().priority < maxDegrees || oneAtATime)){
         const ap = queue.pop();
         nonLeafArtists.add(ap.artistId);
-        console.log("Artist: " + dict[ap.artistId] + " Priority: " + ap.priority);
         const albumIds = await api.getAlbums(ap.artistId);
         const connectedArtistsData = await api.getConnectedArtists(albumIds, ap.artistId);
         const artistData = await api.getArtistsData(connectedArtistsData.map(d => d.artistId));
         let index = 0;
         let sourceNode = graph.lookupNode(ap.artistId);
-        let sourceLabel = document.getElementById("label_" + ap.artistId);
+        let sourceDegreeLabel = document.getElementById("degreeLabel_" + ap.artistId);
         connectedArtistsData.forEach(artistConnection => {
           if(!checkedArtists.has(artistConnection.artistId)){
             checkedArtists.add(artistConnection.artistId);
             totalArtists.textContent = "Total Artists: " + checkedArtists.size;
-            if(!oneAtATime) queue.push(new artistPriority(artistConnection.artistId, ap.priority+1));
+            if(!oneAtATime) queue.push({"artistId" : artistConnection.artistId, "priority": ap.priority+1});
             graph.add([{"id" : artistConnection.artistId, "name" : artistConnection.artistName, "priority" : ap.priority+1, 
-            "popularity" : artistData[index].popularity, "image" : artistData[index].image, "width" : artistData[index].width, "height" : artistData[index].height, "degree" : 0}], []);
+            "popularity" : artistData[index].popularity, "image" : artistData[index].image, "degree" : 0}], []);
           }
           index++;
           graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName}]);
           if(!nonLeafArtists.has(artistConnection.artistId)){
             let targetNode = graph.lookupNode(artistConnection.artistId);
             targetNode.degree+=1;
-            let targetLabel = document.getElementById("label_" + artistConnection.artistId);
-            targetLabel.textContent = `${targetNode.name} ${targetNode.degree}`;
+            let targetDegreeLabel = document.getElementById("degreeLabel_" + artistConnection.artistId);
+            targetDegreeLabel.textContent = targetNode.degree;
             sourceNode.degree+=1;
-            sourceLabel.textContent = `${sourceNode.name} ${sourceNode.degree}`;
+            sourceDegreeLabel.textContent = sourceNode.degree;
           }
         });
     }
@@ -124,15 +115,14 @@ if(url.search('#') === -1){
 } else {
   infoLabel.hidden = true;
   loginButton.disabled = true;
-  const accessToken = api.parseForToken(url);
-  api.setAccessToken(accessToken);
+  api.parseForToken(url);
 }
 
 
 function queueArtist(event){
   console.log("Node clicked with name " + event.detail.name + " and priority " + event.detail.priority);
   if(!nonLeafArtists.has(event.detail.id)){
-    queue.push(new artistPriority(event.detail.id, event.detail.priority));
+    queue.push({"artistId" : event.detail.id, "priority": event.detail.priority});
     runArtistSearch();
   }
 }
@@ -198,6 +188,7 @@ document.getElementById("popBasedSize").oninput = () => graph.popBasedSizeInput(
 document.getElementById("githubLink").onclick = () => window.open("https://github.com/donovanwest/EverythingsConnected", "_blank");
 document.getElementById("aboutLink").onclick = () => window.open("about.html", "_blank");
 document.getElementById("guideLink").onclick = () => window.open("guide.html", "_blank");
-
+/*
 zoomIn.onclick = () => graph.zoomIn();
 zoomOut.onclick = () => graph.zoomOut();
+*/

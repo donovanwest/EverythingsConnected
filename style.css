@@ -216,3 +216,7 @@ body {
   padding: 0px;
 }
 
+.degreeLabel {
+  transition: font-size 0.1s;
+}
+
