@@ -81,7 +81,7 @@ const runArtistSearch = async () => {
             "popularity" : artistData[index].popularity, "image" : artistData[index].image, "degree" : 0}], []);
           }
           index++;
-          graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName}]);
+          graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName, "trackURL" : artistConnection.trackURL}]);
           if(!nonLeafArtists.has(artistConnection.artistId)){
             let targetNode = graph.lookupNode(artistConnection.artistId);
             targetNode.degree+=1;

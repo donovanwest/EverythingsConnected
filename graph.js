@@ -6,7 +6,10 @@ Edited by Donovan West
 const showImagesElement = document.getElementById("showImages");
 const popBasedSizeElement = document.getElementById("popBasedSize");
 const songNameLabel = document.getElementById("songName");
+const muteButton = document.getElementById("mute");
 
+let muted = false;
+let audio = new Audio();
 
 let showImages = showImagesElement.checked;
 let popBasedSize = popBasedSizeElement.checked;
@@ -246,6 +249,9 @@ export class D3ForceGraph {
       .on("click", d => {
         document.getElementById("nameOfSongLabel").hidden = false;
         songNameLabel.textContent = d.label;
+        audio.pause();
+        audio = new Audio(d.trackURL);
+        audio.play();
       });
     
     let graphLinksExit =
@@ -413,5 +419,17 @@ showImagesElement.oninput = function(){
     const temp = circles[i].dataset.altColor;
     circles[i].dataset.altColor = circles[i].style.fill;
     circles[i].style.fill = temp;
+  }
+}
+
+muteButton.onclick = () => {
+  muted = !muted;
+  if(muted){
+    muteButton.style.backgroundImage = "url(images/mute.jpg)";
+    audio.pause();
+    audio.volume = 0;
+  } else {
+    muteButton.style.backgroundImage = "url(images/playing.jpg)";
+    audio.volume = 1;
   }
 }

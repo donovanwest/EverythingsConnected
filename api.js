@@ -88,7 +88,7 @@ export class apiCalls{
                                 artistList.forEach((newArtistId) => {
                                     if(!(newArtistId === artistId) && !(connectedArtists.has(newArtistId))){
                                         connectedArtists.add(newArtistId);
-                                        connectedArtistsData.push({"artistId" : newArtistId, "artistName" : track.artists[index].name, "trackName" : track.name + " by " + album.artists[0].name});
+                                        connectedArtistsData.push({"artistId" : newArtistId, "artistName" : track.artists[index].name, "trackName" : track.name + " by " + album.artists[0].name, "trackURL" : track.preview_url});
                                     }
                                     index++;
                                 })
