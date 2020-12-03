@@ -156,7 +156,8 @@
   background-image: url("images/trashCan.png");
   background-position: center;
   background-size: contain;
-  border-width: 0px;
+  border: 2px solid #333;
+  border-radius: 5px;
   background-color: white;
 }
 
@@ -167,7 +168,8 @@
   background-image: url("images/playing.jpg");
   background-size: contain;
   background-position: center;
-  border-width: 0px;
+  border: 2px solid #333;
+  border-radius: 5px;
   background-color: white;
   background-repeat: no-repeat;
 }

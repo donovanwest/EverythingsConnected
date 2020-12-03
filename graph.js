@@ -265,7 +265,6 @@ export class D3ForceGraph {
     simulation
       .nodes(nodes)
       .on("tick", handleTicked)
-      .on("end", () => t.handleEnd());
 
     simulation
       .force("link")
@@ -290,17 +289,13 @@ export class D3ForceGraph {
     let t = this;
 
     if (nodesToAdd) {
-      //nodesToAdd.forEach(n => t.graphData.nodes.push(n));
-
       for (let i = 0; i < nodesToAdd.length; i++){
         setTimeout(t.graphData.nodes.push(nodesToAdd[i]), 0);
       }
       
       
     }
-    if (linksToAdd) {
-      //linksToAdd.forEach(l => t.graphData.links.push(l));
-      
+    if (linksToAdd) {      
       for (let i = 0; i < linksToAdd.length; i++){
         setTimeout(t.graphData.links.push(linksToAdd[i]), 0);
       }
@@ -313,45 +308,16 @@ export class D3ForceGraph {
     t.simulation.alpha(1);
   }
 
-  remove(dToRemove) {
-    console.log(`dToRemove: ${JSON.stringify(dToRemove)}`)
-
-    let t = this;
-
-    let currentNodes = t.graphData.nodes;
-    let currentLinks = t.graphData.links;
-    let nIndex = currentNodes.indexOf(dToRemove);
-    if (nIndex > -1) {
-      currentNodes.splice(nIndex, 1);
-    }
-
-    let toRemoveLinks = currentLinks.filter(l => {
-      return l.source.id === dToRemove.id || l.target.id === dToRemove.id;
-    });
-    toRemoveLinks.forEach(l => {
-      let lIndex = currentLinks.indexOf(l);
-      currentLinks.splice(lIndex, 1);
-    })
-
-    t.update(t, t.simulation, t.graphNodesGroup, t.graphLinksGroup)
-    t.simulation.restart();
-    t.simulation.alpha(1);
-  }
-
   handleNodeClicked(d) {
     //console.log(`node clicked: ${JSON.stringify(d)}`);
     const event = new CustomEvent("queueArtist", {"detail" : d});
     document.dispatchEvent(event);
   }
 
-  handleEnd() {
-    //console.log("end yo");
-  }
-
   lookupNode(id){
     return this.graphData.nodes.filter(d => d.id === id)[0];
   }
-
+/*
   zoomIn(){
     this.svgGroup
       .attr("transform",
@@ -369,7 +335,7 @@ export class D3ForceGraph {
     // const event = new Event("zoom", {target: {name: "g"}, transform: {x: this.zoomX, y: this.zoomY, k: this.zoomK }});
     // this.svgGroup.dispatchEvent(event);
   }
-
+*/
   popBasedSizeInput(){
     popBasedSize = popBasedSizeElement.checked;
     let nodeImages = document.getElementsByClassName("nodeImage");

@@ -1,6 +1,6 @@
 const spotifyApi = new SpotifyWebApi();
 const clientId = "e6bf2e305d98443190c472ee318fd511";
-const apiRateExcededError = 429;
+const apiRateExceededError = 429;
 
 export class apiCalls{
 
@@ -32,7 +32,7 @@ export class apiCalls{
             spotifyApi.getArtistAlbums(artistId, {"limit" : "50", "include_groups" : "album,single,appears_on", "offset" : offset}, function (err, artistAlbumData) {
                 if (err) {
                     console.error(err);
-                    if(err.status === apiRateExcededError){
+                    if(err.status === apiRateExceededError){
                         setTimeout(async function () {
                             resolve(await t.getAlbumsOffset(artistId, offset))
                         }, (err.readyState+1)*1000);
@@ -48,9 +48,9 @@ export class apiCalls{
     
     getAlbums(artistId){
         return new Promise(async (resolve) => {
-            const initalData = await this.getAlbumsOffset(artistId, 0);
-            let albumIds = initalData[0];
-            let total = initalData[1];
+            const initialData = await this.getAlbumsOffset(artistId, 0);
+            let albumIds = initialData[0];
+            let total = initialData[1];
             let tasks = [];
             let offset = albumIds.length;
             while(offset < total){   
@@ -69,11 +69,11 @@ export class apiCalls{
         return new Promise((resolve) => {
             let connectedArtistsData = [];
             let connectedArtists = new Set();
-            let t = this
+            let t = this;
             spotifyApi.getAlbums(albumIds, function (err, albumsData){
                 if (err) {
                     console.error(err);
-                    if(err.status === apiRateExcededError){
+                    if(err.status === apiRateExceededError){
                         setTimeout(async function () {
                             resolve(await t.getSeveralAlbums(albumIds, artistId))
                         }, (err.readyState+1)*1000);
@@ -125,7 +125,7 @@ export class apiCalls{
             spotifyApi.getArtists(artistIds, function(err, rawData){
                 if (err) {
                     console.error(err);
-                    if(err.status === apiRateExcededError){
+                    if(err.status === apiRateExceededError){
                         setTimeout(async function () {
                             resolve(await t.getArtists(artistIds))
                         }, (err.readyState+1)*1000);

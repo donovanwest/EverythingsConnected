@@ -3,68 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Guide for Everything's Connected</title>
 </head>
 <body>
+    <h1>Guide to Everything's Connected</h1>
     <h2>What it Does</h2>
     <p>
         This app allows you to find all the artists that someone has collaborated with on Spotify.
         It uses the Spotify API (the part of their database the public can see), to scan through all 
         of an artist's songs and pull out every artist that was featured on them. You then have to ability to
         do the same thing to any those artists, and create a big network showing how a lot of artists have
-        some connection to another. It's kinda like the famous Kevin Bacon Number. You have to log in 
-        to spotify use the app. For more information on why check <a href="learnMore.hmtl">here</a>
+        some connection to another. It's kinda like the famous <a href="https://en.wikipedia.org/wiki/Six_Degrees_of_Kevin_Bacon">Kevin Bacon Number</a> 
+        thing. You have to log in to spotify use the app. For more information on why check <a href="learnMore.html">here</a>.
+        If you want to learn more about me or app itself you can look <a href="about.html">here</a>.
     </p>
     <h2>Controls</h2>
     <p>
         There are a few ways to use this app. After you've logged in you type in any artist's name 
-        and their bubble will appear, then it will do it's search for all of their collaborators. Depending
+        and their circle will appear, then it will do a search for all of their collaborators. Depending
         on how prolific the artist is, this might take a few seconds.
     </p>
     <h3>One at a Time Mode</h3>
     <p>
-        This will only show the artists within 1 degree of separation from the typed artist, then you can
-        click on any of those artists to expand how many degrees of separation they have. It's my recommneded
-        mode since it runs faster and it's easier to see the information
+        This will only show the artists within 1 degree of separation from the artist you type, then you can
+        click on any of those artists to run the same search on them to create another layer. This is my recommended
+        mode since it runs faster and it's easier to see the information.
     </p>
     <h3>Full Search Mode</h3>
     <p>
         This will keep doing a recursive search on every artist found up to a certain degrees of separation.
-        This can be cool to see the shear number of artists in the network, but it takes a 
-        while and it's hard to see what's going on when there's a couple thousand nodes. You can set the limit
-        with the slide. I only recommend going to two degrees unless your willing to wait a while 
+        You can set the degree limit with the slider right below it.
+        This can be cool to see the shear number of artists in the network, but it can take a while to load them all,
+        and it's hard to see what's going on when there's a couple thousand artists shown.  
+        I only recommend going to two degrees unless you know what you're doing or you're willing to wait a while.
     </p>
     <h3>Show Images</h3>
     <p>
         Pretty simple. Shows images of the artist in their node. It looks better, but at a high
-        volume it can drastically lower the framerate. When this is off each node will be a unique
-        color based on it's degrees of separation
+        volume it can cause a lot off lag. When this is off each node will be a unique
+        color based on it's degrees of separation.
     </p>
     <h3>Base Circle Size on Popularity</h3>
     <p>
-        Spotify assigns every artist a popularity score between 0 and 100. With this on the radius of
+        Spotify assigns every artist a popularity score between 0 and 100. With this setting on, the radius of
         each circle will be equal to that popularity. This can help you pick out the more
         famous artists. If you want equal representation then you can turn this off and 
-        each circle will be the same size
+        each circle will be the same size.
     </p>
-    <h3>Name of song connecting them</h3>
+    <h3>Song connecting the artists</h3>
     <p>
         If you click on the line between two artists, it will show the name of the song they collaborated on
         in the sidebar. It will also play a 30 second sample of that song. It's quite possible they collaborated on more than one song, but this just shows 
-        the first instance that Spotify returns.
+        the first instance that is found.
     </p>
     <h3>Delete</h3>
     <p>
-        The trash can icon. Will delete the entire network and start over
+        The trash can icon. Will delete the entire network and start over.
     </p>
-    <h3>mute</h3>
+    <h3>Mute</h3>
     <p>
-        Mutes the audio from playing songs.
+        Mutes the audio when you click on a link.
     </p>
     <!--
     <h3>Zoom In/Out</h3>
     <p>
-        (Currently doens't work properly, but it might still help a bit). You can zoom in and out by scrolling with a mouse or trackpad, but it can be a little
+        (Currently doesn't work properly, but it might still help a bit). You can zoom in and out by scrolling with a mouse or trackpad, but it can be a little
         finicky since you can't scroll while hovering over a node or line. These buttons can help
         get you out of a bind if you're two zoomed in and can find any white space.
     </p>
@@ -75,15 +78,15 @@
         disparate artists. You'd be amazed at some of the connections you can make with only
         a few degrees.
         <br><br>
-        Typically you can go functionally forever expading nodes until you reach a point where 
+        Theoretically with most artists you can go functionally forever expanding nodes until you reach a point where 
         you have virtually every artist represented, but you're browser would probably crash 
         before that happened. I want to put a challenge out there to find the artist with the 
         largest network you can with no more connections to be found. This means expanding every artist 
-        until there's no more. I bet you can't find an artist with more than 5 initial connections that
-        satisfies this.
+        until there's no more. If you can find a network complete network with more than 7 artists then 
+        tweet at me <a href="https://twitter.com/donovan_west">@donovan_west</a>
         <br><br>
-        Kevin Bacon hasn't released any of his own songs on Spotify as of now, but he's appeared on a few. This means
-        that you can use this app to find a musician's Bacon Number, though it's a bit tricky since he hasn't collaborated with a lot.
+        Kevin Bacon hasn't released any songs under his own name on Spotify as of now, but he's appeared on a few. This means
+        that you can use this app to find a musician's Bacon Number, though it's a bit tricky since he doesn't have a massive starting pool.
     </p>
 </body>
 </html>

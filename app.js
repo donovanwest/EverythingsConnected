@@ -178,9 +178,6 @@ moveSidebar.onclick = function(){
     sidebar.style.marginLeft = "10px";
     moveSidebar.textContent = "<<<";
   }
-  
-  //sidebar.style.visibility = "hidden";
-  console.log("clicked");
 }
 
 document.getElementById("popBasedSize").oninput = () => graph.popBasedSizeInput();
