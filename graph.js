@@ -27,6 +27,8 @@ export class D3ForceGraph {
     t.svgId = "graph";
     t.updateRefCount = 0;
     t.clipPathId = 0;
+
+    t.scrollTime = 0;
   }
 
   init() {
@@ -179,6 +181,7 @@ export class D3ForceGraph {
           .attr("id", d => d.id || null)
           .on("contextmenu", (d, i)  => d3.event.preventDefault())
           .on("click", d => t.handleNodeClicked(d))
+          .on("mousewheel", d => t.handleScroll())
           .call(drag);
 
     let graphNodeCircles =
@@ -314,6 +317,17 @@ export class D3ForceGraph {
     document.dispatchEvent(event);
   }
 
+  handleScroll(){
+    d3.event.preventDefault();
+    console.log("can't zoom");
+    const zoomWarning = document.getElementById("zoomWarning");
+    this.scrollTime = new Date();
+    zoomWarning.style.opacity = 1;
+    setTimeout(() => {
+      if(new Date() - this.scrollTime > 2900)
+        zoomWarning.style.opacity = 0;
+    }, 3000);
+  }
   lookupNode(id){
     return this.graphData.nodes.filter(d => d.id === id)[0];
   }

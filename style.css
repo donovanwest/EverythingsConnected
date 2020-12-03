@@ -47,7 +47,7 @@
   opacity: 0;
   width: min-content;
   min-width: fit-content;
-  background-color: rgb(237, 255, 73);
+  background-color: yellow;
   color: #222;
   text-align: center;
   padding: 3px;
@@ -232,5 +232,19 @@ body {
 
 .degreeLabel {
   transition: font-size 0.1s;
+}
+
+#zoomWarning {
+  position: absolute;
+  margin-top: 40px;
+  margin-left: 40%;
+  font-size: x-large;
+  text-align: center;
+  width: 20%;
+  background-color: yellow;
+  border: 2px solid black;
+  border-radius: 3%;
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
