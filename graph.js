@@ -319,7 +319,6 @@ export class D3ForceGraph {
 
   handleScroll(){
     d3.event.preventDefault();
-    console.log("can't zoom");
     const zoomWarning = document.getElementById("zoomWarning");
     this.scrollTime = new Date();
     zoomWarning.style.opacity = 1;

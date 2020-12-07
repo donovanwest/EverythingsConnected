@@ -92,13 +92,11 @@ const runArtistSearch = async () => {
           }
         });
     }
+    oaatRadio.checked = true;
+    oneAtATime = true;
     queue = new TinyQueue([], (a,b) => a.priority - b.priority);
     if(slider.value != maxDegrees)
       maxDegrees = slider.value;
-    if(!oneAtATime){
-      console.log("Checked artists: " + checkedArtists.size);
-      console.log("Size of queue to check: " + queue.length);
-    }
     loading.hidden = true;
     console.log(graph);
 
