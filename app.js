@@ -81,8 +81,8 @@ const runArtistSearch = async () => {
             "popularity" : artistData[index].popularity, "image" : artistData[index].image, "degree" : 0}], []);
           }
           index++;
-          graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName, "trackURL" : artistConnection.trackURL}]);
-          if(!nonLeafArtists.has(artistConnection.artistId)){
+          if(graph.lookupLink(ap.artistId, artistConnection.artistId) == undefined){
+            graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName, "trackURL" : artistConnection.trackURL}]);
             let targetNode = graph.lookupNode(artistConnection.artistId);
             targetNode.degree+=1;
             let targetDegreeLabel = document.getElementById("degreeLabel_" + artistConnection.artistId);
@@ -93,6 +93,8 @@ const runArtistSearch = async () => {
         });
     }
     oaatRadio.checked = true;
+    slider.disabled = true;
+    degreeLabel.style.color = "#ccc";
     oneAtATime = true;
     queue = new TinyQueue([], (a,b) => a.priority - b.priority);
     if(slider.value != maxDegrees)

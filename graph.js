@@ -98,7 +98,7 @@ export class D3ForceGraph {
     let result = d3.forceSimulation()
       .velocityDecay(0.3)
       .force("link", d3.forceLink().distance(300).id(d => d.id))
-      .force("charge", d3.forceManyBody().strength(-200).theta(0.5))
+      .force("charge", d3.forceManyBody().strength(-200).theta(0.1))
       .force("collide", d3.forceCollide(d => this.getRadius(d)+5))
       .force("center", d3.forceCenter(t.center.x, t.center.y));
     return result;
@@ -327,8 +327,13 @@ export class D3ForceGraph {
         zoomWarning.style.opacity = 0;
     }, 3000);
   }
+
   lookupNode(id){
     return this.graphData.nodes.filter(d => d.id === id)[0];
+  }
+
+  lookupLink(source, target){
+    return this.graphData.links.filter(d => d.source.id === source && d.target.id === target)[0];
   }
 /*
   zoomIn(){
