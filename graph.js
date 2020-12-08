@@ -253,8 +253,10 @@ export class D3ForceGraph {
         document.getElementById("nameOfSongLabel").hidden = false;
         songNameLabel.textContent = d.label;
         audio.pause();
-        audio = new Audio(d.trackURL);
-        audio.play();
+        if(!muted){
+          audio = new Audio(d.trackURL);
+          audio.play();
+        }
       });
     
     let graphLinksExit =
@@ -407,12 +409,13 @@ showImagesElement.oninput = function(){
 }
 
 muteButton.onclick = () => {
-  muted = !muted;
-  if(muted){
+  if(!muted){
+    muted = true;
     muteButton.style.backgroundImage = "url(images/mute.jpg)";
     audio.pause();
     audio.volume = 0;
   } else {
+    muted = false;
     muteButton.style.backgroundImage = "url(images/playing.jpg)";
     audio.volume = 1;
   }
