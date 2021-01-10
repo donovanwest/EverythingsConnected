@@ -81,7 +81,7 @@ const runArtistSearch = async () => {
             "popularity" : artistData[index].popularity, "image" : artistData[index].image, "degree" : 0}], []);
           }
           index++;
-          if(graph.lookupLink(ap.artistId, artistConnection.artistId) == undefined){
+          if(graph.lookupLink(ap.artistId, artistConnection.artistId) == undefined && graph.lookupLink(artistConnection.artistId, ap.artistId) == undefined){
             graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName, "trackURL" : artistConnection.trackURL}]);
             let targetNode = graph.lookupNode(artistConnection.artistId);
             targetNode.degree+=1;
