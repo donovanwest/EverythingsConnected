@@ -15,6 +15,8 @@ const infoLabel = document.getElementById("infoLabel");
 const loading = document.getElementById("loading");
 const deleteButton = document.getElementById("deleteButton");
 const moveSidebar = document.getElementById("moveSidebarLeft");
+const showLeavesCheckBox = document.getElementById("showLeaves");
+const addFollowedArtistsButton = document.getElementById("addFollowedArtists");
 /*
 const zoomIn = document.getElementById("zoomIn");
 const zoomOut = document.getElementById("zoomOut");
@@ -91,6 +93,7 @@ const runArtistSearch = async () => {
             sourceDegreeLabel.textContent = sourceNode.degree;
           }
         });
+        graph.changeLeaves();
     }
     oaatRadio.checked = true;
     slider.disabled = true;
@@ -101,7 +104,7 @@ const runArtistSearch = async () => {
       maxDegrees = slider.value;
     loading.hidden = true;
     console.log(graph);
-
+   
 }
 
 const url = String(window.location)
@@ -126,6 +129,8 @@ function queueArtist(event){
     runArtistSearch();
   }
 }
+
+showLeavesCheckBox.onclick = () => graph.changeLeaves();
 
 slider.oninput = function() {
   const colors = ["#0bdb00", "#0bdb00", "#bfff00", "#e88f00", "#e82e00", "#a80000"]
@@ -157,6 +162,27 @@ searchArtistButton.onclick = async function(){
   await init();
   runArtistSearch();
 }
+
+addFollowedArtistsButton.onclick = async function(){
+  const followedArtists = await api.getFollowedArtists();
+  if(followedArtists.length === 0){
+    alert("You haven't followed any artists!");
+  } else {
+    followedArtists.forEach(artist => {
+      if(!checkedArtists.has(artist.id)){
+        graph.add([{"id" : artist.id, "name" : artist.name, "priority" : 0, 
+          "popularity" : artist.popularity, "image" : artist.images.length > 0 ? artist.images[0].url : null, "degree" : 0}], []);
+        if(!oneAtATime)
+          queue.push({"artistId" : artist.id, "priority" : 0});
+      } 
+      //checkedArtists.add(artist.id);
+      //nonLeafArtists.add(artist.id);
+    });
+  }
+  graph.changeLeaves();
+  runArtistSearch();
+}
+
 
 artistEntry.onkeyup = async function(e){
   if(e.keyCode == '13'){

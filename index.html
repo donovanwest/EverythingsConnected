@@ -24,7 +24,15 @@
     <p id="infoLabel">You must log in to Spotify to use this app. <a href="learnMore.html">Learn more</a></p>
     <button id="loginButton">Login to Spotify</button>
     <input id="artistEntry" type="text">
-    <button id="searchArtist">Search for Artist</button>
+    <div class="tooltip">
+    <span class=tooltiptext>Search for artist or playlist</span>
+      <button id="searchArtist" class="searchButton">Search for Artist or playlist</button>
+    </div>
+    <div class="tooltip">
+      <span class=tooltiptext>Add followed artists</span>
+      <button id="addFollowedArtists" class="searchButton">Add Followed Artists</button>
+    </div>
+
     <p class="label">Search Options</p>
     <form id="searchModeSelection">
       <div class="tooltip">
@@ -59,6 +67,12 @@
         <span class=tooltiptext>Spotify assigns artists a popularity between 0 and 100. Basing circle size on that number will help to emphasize more well known artists</span>
         <input type="checkbox" id="popBasedSize" value="popBasedSize" checked>
         <lable for="popBasedSize">Base Circle Size on Popularity</lable><br>
+      </div>
+
+      <div class="tooltip">
+        <span class=tooltiptext>Only show artists with a degree greater than 1. Shows the connecting artists and reduces lag</span>
+        <input type="checkbox" id="showLeaves" value="showLeaves" checked>
+        <lable for="showLeaves">Show leaves</lable><br>
       </div>
     </form>
     

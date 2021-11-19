@@ -29,6 +29,14 @@
   transition: 0.1s;
 }
 
+.nodeLabel {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 #sidebar {
   background-color: #fafafa;
   border: #666;
@@ -101,11 +109,10 @@
   margin-right: auto;
 }
 
-#searchArtist {
+.searchButton {
   margin-top: 0.5em;
   width: 93%;
   margin-left: 4%;
-  
 }
 
 #searchModeSelection, #displayModeSelection {
@@ -136,9 +143,15 @@
 }
 
 #degreeLabel {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   color: #cccccc;
   font-size: larger;
   font-weight: bolder;
+  
 }
 
 .controls {

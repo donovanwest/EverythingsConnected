@@ -6,7 +6,7 @@ export class apiCalls{
 
     login(){
         const url = String(window.location)
-        const scopes = [];//['user-library-read', 'playlist-read-private', 'playlist-read-collaborative']; In case I need to use it, but for now I don't
+        const scopes = ['user-library-read', 'playlist-read-private', 'playlist-read-collaborative', 'user-follow-read'];
         window.open(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${url}&scope=${scopes}&show_dialog=true`, '_self');
     }
 
@@ -75,7 +75,7 @@ export class apiCalls{
                     console.error(err);
                     if(err.status === apiRateExceededError){
                         setTimeout(async function () {
-                            resolve(await t.getSeveralAlbums(albumIds, artistId))
+                            resolve(await t.getArtistsFromAlbums(albumIds, artistId))
                         }, (err.readyState+1)*1000);
                     }
                 }
@@ -156,4 +156,39 @@ export class apiCalls{
         })
     }
 
+    getFollowedArtistsOffset(offset){
+        return new Promise((resolve) => {
+            spotifyApi.getFollowedArtists({"limit": 50, "after": offset}, function(err, results){
+                if (err) {
+                    console.error(err);
+                    if(err.status === apiRateExceededError){
+                        setTimeout(async function () {
+                            resolve(await t.getArtists(artistIds))
+                        }, (err.readyState+1)*1000);
+                    }
+                } else {
+                    resolve([results.artists.items, results.artists.total]);
+                }
+            })
+        })
+    }
+
+    getFollowedArtists(){
+        return new Promise(async (resolve) => {
+            const initialData = await this.getFollowedArtistsOffset(0);
+            let followedArtists = initialData[0];
+            let total = initialData[1];
+            let tasks = [];
+            let offset = followedArtists.length;
+            while(offset < total){
+                tasks.push(this.getFollowedArtistsOffset(offset));
+                offset += 50;
+            }
+            let result = await Promise.all(tasks);
+            result.forEach(group => {
+                followedArtists = [...followedArtists, ...group[0]];
+            })
+            resolve(followedArtists);
+        })
+    }
 }

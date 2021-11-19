@@ -7,12 +7,14 @@ const showImagesElement = document.getElementById("showImages");
 const popBasedSizeElement = document.getElementById("popBasedSize");
 const songNameLabel = document.getElementById("songName");
 const muteButton = document.getElementById("mute");
+const showLeavesCheckBox = document.getElementById("showLeaves");
 
 let muted = false;
 let audio = new Audio();
 
 let showImages = showImagesElement.checked;
 let popBasedSize = popBasedSizeElement.checked;
+let showLeaves = showLeavesCheckBox.checked;
 
 export class D3ForceGraph {
   constructor(graphDiv) {
@@ -29,6 +31,10 @@ export class D3ForceGraph {
     t.clipPathId = 0;
 
     t.scrollTime = 0;
+
+    t.collideForce = d3.forceCollide().radius(d => this.getRadius(d)+5);
+    t.chargeForce = d3.forceManyBody().strength(-100).theta(0.1);
+    //t.centerForce = d3.forceCenter().x(t.center.x).y(t.center.y).strength();
   }
 
   init() {
@@ -97,15 +103,19 @@ export class D3ForceGraph {
     let t = this;
     let result = d3.forceSimulation()
       .velocityDecay(0.3)
+      .alphaDecay(0.04)
+      .alphaTarget(0.001)
       .force("link", d3.forceLink().distance(300).id(d => d.id))
-      .force("charge", d3.forceManyBody().strength(-300).theta(0.01))
-      .force("collide", d3.forceCollide(d => this.getRadius(d)+5))
+      .force("charge", t.chargeForce)
+      .force("collide", t.collideForce)
       .force("center", d3.forceCenter(t.center.x, t.center.y));
     return result;
   }
 
   getRadius(d) {
-    if(popBasedSize){
+    if(!showLeaves && d.degree <= 1){
+      return 0;
+    } else if(popBasedSize){
       return Math.max(d.popularity, 5);
     } else {
       return 40;
@@ -135,7 +145,7 @@ export class D3ForceGraph {
   }
 
   handleDragStarted(d, simulation) {
-    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    if (!d3.event.active) simulation.alphaTarget(0.1).alpha(1).restart();
     d.fx = d.x;
     d.fy = d.y;
   }
@@ -179,6 +189,8 @@ export class D3ForceGraph {
         .enter()
           .append("g")
           .attr("id", d => d.id || null)
+          .classed("nodeParent", true)
+          .attr("visibility", d => !showLeaves && d.degree <= 1 ? "hidden" : "visible")
           .on("contextmenu", (d, i)  => d3.event.preventDefault())
           .on("click", d => t.handleNodeClicked(d))
           .on("mousewheel", d => t.handleScroll())
@@ -248,6 +260,8 @@ export class D3ForceGraph {
 
     let graphLinksEnter = graphLinksData.enter()
       .append("line")
+      .classed("link", true)
+      .attr("visibility", d => this.lookupNode(d.target).degree <= 1 && !showLeaves ? "hidden" : "visible")
       .attr("id", d => d.source + "," + d.target)
       .on("click", d => {
         document.getElementById("nameOfSongLabel").hidden = false;
@@ -383,6 +397,34 @@ export class D3ForceGraph {
       degreeLabels[i].style.fontSize = this.getComputedTextLength(node);
       degreeLabels[i].style.y = "1.3em";
     }
+    this.collideForce.radius(d => this.getRadius(d)+5);
+  }
+
+  changeLeaves = () => {
+    showLeaves = showLeavesCheckBox.checked;
+    const nodeParents = document.getElementsByClassName("nodeParent");
+    Array.from(nodeParents).forEach(nodeParent => {
+      if(!showLeaves && nodeParent.__data__.degree <= 1)
+        nodeParent.style.visibility = "hidden";
+      else 
+        nodeParent.style.visibility = "visible";
+    })
+    const links = document.getElementsByClassName("link");
+    Array.from(links).forEach(link => {
+      if(!showLeaves && (link.__data__.source.degree <= 1 || link.__data__.target.degree <= 1))
+        link.style.visibility = "hidden";
+      else 
+        link.style.visibility = "visible";
+    })
+    this.popBasedSizeInput();
+    this.updateChargeForce();
+    this.simulation.alpha(1);
+    this.simulation.alphaTarget(0.001);
+    this.simulation.restart();
+  }
+
+  updateChargeForce(){
+    this.chargeForce.strength(d => !showLeaves && d.degree <= 1 ? 0 : this.getRadius(d)*-3);
   }
 
 }
@@ -407,6 +449,7 @@ showImagesElement.oninput = function(){
     circles[i].style.fill = temp;
   }
 }
+
 
 muteButton.onclick = () => {
   if(!muted){
