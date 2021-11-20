@@ -40,27 +40,37 @@ let maxDegrees = 2;
 
 async function init(){
   let queryName = artistEntry.value;
-  const artist = await api.searchForArtist(queryName);
-  if(artist === undefined){
-    alert("Artist Not Found");
-  }
-  if(!checkedArtists.has(artist.id)){
-    graph.add([{"id" : artist.id, "name" : artist.name, "priority" : 0, 
-    "popularity" : artist.popularity, "image" : artist.images.length > 0 ? artist.images[0].url : null, "degree" : 0}], []);
-    queue.push({"artistId" : artist.id, "priority" : 0});
+  let artists = [];
+  if(queryName.search("https://open.spotify.com/playlist/") != -1)
+    artists = await api.getPlaylistArtists(queryName.substring(queryName.lastIndexOf("/")+1, queryName.lastIndexOf("?")));
+  else if(queryName.search("https://open.spotify.com/artist/") != -1)
+    artists = await api.getArtistsData([queryName.substring(queryName.lastIndexOf("/")+1, queryName.lastIndexOf("?"))]);
+  else
+    artists = [await api.searchForArtist(queryName)];
+  console.log(artists);
+  if(artists === undefined || artists[0] === undefined){
+    alert("Artist or Playlist Not Found");
   } else {
-    let priority;
-    graph.graphData.nodes.forEach(node => {
-      if(node.id === artist.id){
-        priority = node.priority;
+    artists.forEach(artist => {
+      if(!checkedArtists.has(artist.id)){
+        graph.add([{"id" : artist.id, "name" : artist.name, "priority" : 0, 
+        "popularity" : artist.popularity, "image" : artist.image ? artist.image : artist.images && artist.images.length > 0 ? artist.images[0].url : null, "degree" : 0}], []);
+        queue.push({"artistId" : artist.id, "priority" : 0});
+      } else {
+        let priority;
+        graph.graphData.nodes.forEach(node => {
+          if(node.id === artist.id){
+            priority = node.priority;
+          }
+        });
+        maxDegrees += priority - 1;
+        queue.push({"artistId" : artist.id, "priority" : priority})
       }
-    });
-    maxDegrees += priority - 1;
-    queue.push({"artistId" : artist.id, "priority" : priority})
+      checkedArtists.add(artist.id);
+      nonLeafArtists.add(artist.id);
+    })
+    
   }
-
-  checkedArtists.add(artist.id);
-  nonLeafArtists.add(artist.id);
 }
 
 const runArtistSearch = async () => {

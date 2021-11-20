@@ -132,7 +132,7 @@ export class apiCalls{
                     }
                 }
                 else{
-                    resolve(rawData.artists.map(d => {return {"popularity" : d.popularity, "image" : d.images.length == 0 ? null : d.images[0].url}}));
+                    resolve(rawData.artists.map(d => {return {"popularity" : d.popularity, "image" : d.images.length == 0 ? null : d.images[0].url, "name" : d.name, "id" : d.id}}));
                 }
             })
             
@@ -163,7 +163,7 @@ export class apiCalls{
                     console.error(err);
                     if(err.status === apiRateExceededError){
                         setTimeout(async function () {
-                            resolve(await t.getArtists(artistIds))
+                            resolve(await t.getFollowedArtistsOffset(offset))
                         }, (err.readyState+1)*1000);
                     }
                 } else {
@@ -189,6 +189,50 @@ export class apiCalls{
                 followedArtists = [...followedArtists, ...group[0]];
             })
             resolve(followedArtists);
+        })
+    }
+
+    getPlaylistTracks(playlistId, offset){
+        console.log(playlistId, offset);
+        return new Promise((resolve) => {
+            spotifyApi.getPlaylistTracks(playlistId, {"limit": 50, "offset": offset}, function(err, results){
+                if (err) {
+                    console.error(err);
+                    if(err.status === apiRateExceededError){
+                        setTimeout(async function () {
+                            resolve(await t.getPlaylistTracks(playlistId, offset))
+                        }, (err.readyState+1)*1000);
+                    }
+                } else {
+                    console.log(results);
+                    resolve([results.items, results.total]);
+                }
+            })
+        })
+    }
+
+    getPlaylistArtists(playlistId){
+        return new Promise(async (resolve) => {
+            const initialData = await this.getPlaylistTracks(playlistId, 0);
+            let playlistTracks = initialData[0];
+            let total = initialData[1];
+            let tasks = [];
+            let offset = playlistTracks.length;
+            while(offset < total){
+                tasks.push(this.getPlaylistTracks(playlistId, offset));
+                offset += 50;
+            }
+            let result = await Promise.all(tasks);
+            result.forEach(group => {
+                playlistTracks = [...playlistTracks, ...group[0]];
+            })
+            const playlistArtists = new Set();
+            playlistTracks.forEach(track => {
+                track.track.artists.forEach(artist => {
+                    playlistArtists.add(artist.id);
+                })
+            })
+            resolve(await this.getArtistsData(Array.from(playlistArtists)));
         })
     }
 }
