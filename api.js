@@ -1,6 +1,7 @@
 const spotifyApi = new SpotifyWebApi();
 const clientId = "e6bf2e305d98443190c472ee318fd511";
 const apiRateExceededError = 429;
+const serverError = 500;
 
 export class apiCalls{
 
@@ -36,6 +37,8 @@ export class apiCalls{
                         setTimeout(async function () {
                             resolve(await t.getAlbumsOffset(artistId, offset))
                         }, (err.readyState+1)*1000);
+                    } else if (err.status === serverError){
+                        resolve(t.getAlbumsOffset(artistId, offset));
                     }
                 }
                 else{
@@ -77,6 +80,8 @@ export class apiCalls{
                         setTimeout(async function () {
                             resolve(await t.getArtistsFromAlbums(albumIds, artistId))
                         }, (err.readyState+1)*1000);
+                    } else if (err.status === serverError){
+                        resolve(t.getArtistsFromAlbums(albumIds, artistId));
                     }
                 }
                 else{
@@ -129,6 +134,8 @@ export class apiCalls{
                         setTimeout(async function () {
                             resolve(await t.getArtists(artistIds))
                         }, (err.readyState+1)*1000);
+                    } else if (err.status === serverError){
+                        resolve(t.getArtists(artistIds))
                     }
                 }
                 else{
@@ -165,6 +172,8 @@ export class apiCalls{
                         setTimeout(async function () {
                             resolve(await t.getFollowedArtistsOffset(offset))
                         }, (err.readyState+1)*1000);
+                    } else if (err.status === serverError){
+                        resolve(t.getFollowedArtistsOffset(offset))
                     }
                 } else {
                     resolve([results.artists.items, results.artists.total]);
@@ -202,6 +211,8 @@ export class apiCalls{
                         setTimeout(async function () {
                             resolve(await t.getPlaylistTracks(playlistId, offset))
                         }, (err.readyState+1)*1000);
+                    } else if (err.status === serverError){
+                        resolve(t.getPlaylistTracks(playlistId, offset))
                     }
                 } else {
                     console.log(results);

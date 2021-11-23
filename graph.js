@@ -34,6 +34,7 @@ export class D3ForceGraph {
 
     t.collideForce = d3.forceCollide().radius(d => this.getRadius(d)+5);
     t.chargeForce = d3.forceManyBody().strength(-100).theta(0.1);
+    t.linkForce = d3.forceLink().distance(500).id(d => d.id);
     //t.centerForce = d3.forceCenter().x(t.center.x).y(t.center.y).strength();
   }
 
@@ -104,11 +105,13 @@ export class D3ForceGraph {
     let result = d3.forceSimulation()
       .velocityDecay(0.3)
       .alphaDecay(0.04)
-      .alphaTarget(0.001)
-      .force("link", d3.forceLink().distance(300).id(d => d.id))
+      .alphaTarget(0)
+      .force("link", t.linkForce)
       .force("charge", t.chargeForce)
       .force("collide", t.collideForce)
-      .force("center", d3.forceCenter(t.center.x, t.center.y));
+      .force("center", d3.forceCenter(t.center.x, t.center.y))
+      .force("y", d3.forceY(t.center.y).strength(0.001))
+      .force("x", d3.forceX(t.center.x).strength(0.001));
     return result;
   }
 
@@ -194,7 +197,7 @@ export class D3ForceGraph {
           .on("contextmenu", (d, i)  => d3.event.preventDefault())
           .on("click", d => t.handleNodeClicked(d))
           .on("mousewheel", d => t.handleScroll())
-          .call(drag);
+          .call(drag)
 
     let graphNodeCircles =
       graphNodesEnter
@@ -418,13 +421,20 @@ export class D3ForceGraph {
     })
     this.popBasedSizeInput();
     this.updateChargeForce();
+    this.updateLinkForce();
     this.simulation.alpha(1);
-    this.simulation.alphaTarget(0.001);
+    this.simulation.alphaTarget(0);
     this.simulation.restart();
   }
 
   updateChargeForce(){
-    this.chargeForce.strength(d => !showLeaves && d.degree <= 1 ? 0 : this.getRadius(d)*-3);
+    this.chargeForce.strength(d => {
+        return d.degree <= 1 ? 1 : this.getRadius(d)^2
+    });
+  }
+
+  updateLinkForce(){
+    this.linkForce.distance(d => (d.source.popularity + d.target.popularity + Math.min(d.target.degree, d.source.degree)*2)*3);
   }
 
 }
