@@ -268,7 +268,13 @@ export class D3ForceGraph {
       .attr("id", d => d.source + "," + d.target)
       .on("click", d => {
         document.getElementById("nameOfSongLabel").hidden = false;
-        songNameLabel.textContent = d.label;
+        while(songNameLabel.firstChild) songNameLabel.removeChild(songNameLabel.firstChild);
+        let a = document.createElement('a');
+        a.setAttribute('href', d.trackLink);
+        a.setAttribute('target', "_blank");
+        a.innerHTML = d.label;
+        songNameLabel.appendChild(a);
+        //songNameLabel.textContent = `<a href="${d.trackLink}" target="_blank">${d.label}</a>`;
         audio.pause();
         if(!muted){
           audio = new Audio(d.trackURL);

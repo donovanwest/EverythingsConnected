@@ -1,3 +1,11 @@
+/*To Do
+Some kind of smart search
+fix forces
+make the nodes pop in farther away
+
+
+*/
+
 import {D3ForceGraph} from "./graph.js";
 import {apiCalls} from "./api.js";
 
@@ -17,6 +25,7 @@ const deleteButton = document.getElementById("deleteButton");
 const moveSidebar = document.getElementById("moveSidebarLeft");
 const showLeavesCheckBox = document.getElementById("showLeaves");
 const addFollowedArtistsButton = document.getElementById("addFollowedArtists");
+const smartFilterCheckBox = document.getElementById("smartFilter");
 /*
 const zoomIn = document.getElementById("zoomIn");
 const zoomOut = document.getElementById("zoomOut");
@@ -85,23 +94,28 @@ const runArtistSearch = async () => {
         let sourceNode = graph.lookupNode(ap.artistId);
         let sourceDegreeLabel = document.getElementById("degreeLabel_" + ap.artistId);
         connectedArtistsData.forEach(artistConnection => {
-          if(!checkedArtists.has(artistConnection.artistId)){
-            checkedArtists.add(artistConnection.artistId);
-            totalArtists.textContent = "Total Artists: " + checkedArtists.size;
-            if(!oneAtATime) queue.push({"artistId" : artistConnection.artistId, "priority": ap.priority+1});
-            graph.add([{"id" : artistConnection.artistId, "name" : artistConnection.artistName, "priority" : ap.priority+1, 
-            "popularity" : artistData[index].popularity, "image" : artistData[index].image, "degree" : 0}], []);
-          }
-          index++;
-          if(graph.lookupLink(ap.artistId, artistConnection.artistId) == undefined && graph.lookupLink(artistConnection.artistId, ap.artistId) == undefined){
-            graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName, "trackURL" : artistConnection.trackURL}]);
-            let targetNode = graph.lookupNode(artistConnection.artistId);
-            targetNode.degree+=1;
-            let targetDegreeLabel = document.getElementById("degreeLabel_" + artistConnection.artistId);
-            targetDegreeLabel.textContent = targetNode.degree;
-            sourceNode.degree+=1;
-            sourceDegreeLabel.textContent = sourceNode.degree;
-          }
+          if( !(smartFilterCheckBox.checked &&
+            (artistData[index].popularity < 10 ||
+            artistData[index].image == null))
+          ){
+            if(!checkedArtists.has(artistConnection.artistId)){
+              checkedArtists.add(artistConnection.artistId);
+              totalArtists.textContent = "Total Artists: " + checkedArtists.size;
+              if(!oneAtATime) queue.push({"artistId" : artistConnection.artistId, "priority": ap.priority+1});
+              graph.add([{"id" : artistConnection.artistId, "name" : artistConnection.artistName, "priority" : ap.priority+1, 
+              "popularity" : artistData[index].popularity, "image" : artistData[index].image, "degree" : 0}], []);
+            }
+            index++;
+            if(graph.lookupLink(ap.artistId, artistConnection.artistId) == undefined && graph.lookupLink(artistConnection.artistId, ap.artistId) == undefined){
+              graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName, "trackURL" : artistConnection.trackURL, "trackLink" : artistConnection.trackLink}]);
+              let targetNode = graph.lookupNode(artistConnection.artistId);
+              targetNode.degree+=1;
+              let targetDegreeLabel = document.getElementById("degreeLabel_" + artistConnection.artistId);
+              targetDegreeLabel.textContent = targetNode.degree;
+              sourceNode.degree+=1;
+              sourceDegreeLabel.textContent = sourceNode.degree;
+            }
+          } else {index++;}
         });
         graph.changeLeaves();
     }
@@ -120,6 +134,7 @@ const runArtistSearch = async () => {
 const url = String(window.location)
 if(url.search('#') === -1){
   searchArtistButton.disabled = true;
+  addFollowedArtistsButton.disabled = true;
   fullRadio.disabled = true;
   oaatRadio.disabled = true;
   artistEntry.disabled = true;

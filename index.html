@@ -25,11 +25,11 @@
     <button id="loginButton">Login to Spotify</button>
     <input id="artistEntry" type="text">
     <div class="tooltip">
-    <span class=tooltiptext>Search for artist or playlist</span>
+    <span class=tooltiptext>Searches Spotify for the top artist result or uses a link to an artist. Can also use a playlist link to add all artists in that playlist</span>
       <button id="searchArtist" class="searchButton">Search for Artist or playlist</button>
     </div>
     <div class="tooltip">
-      <span class=tooltiptext>Add followed artists</span>
+      <span class=tooltiptext>Adds all the artists you follow to the screen. You can use the Full Search to find out how many of them are connected or do it yourself with one at a time</span>
       <button id="addFollowedArtists" class="searchButton">Add Followed Artists</button>
     </div>
 
@@ -53,6 +53,12 @@
         <input type="range" min="0" max="5" value="2" id="degreeSlider" disabled>
         <label id="degreeLabel" disabled>2</label><br>
       </div>
+
+      <div class="tooltip">
+        <span class=tooltiptext>Filters junk artists</span>
+        <input type="checkbox" id="smartFilter" value="smartFilter">
+        <lable for="smartFilter">Smart Filter</lable><br>
+      </div>
       
     </form>
     <P class="label">Display Options</P>
@@ -70,9 +76,9 @@
       </div>
 
       <div class="tooltip">
-        <span class=tooltiptext>Only show artists with a degree greater than 1. Shows the connecting artists and reduces lag</span>
+        <span class=tooltiptext>Show artists with only one connection. Unselecting puts more focus on intersting connections and reduces lag</span>
         <input type="checkbox" id="showLeaves" value="showLeaves" checked>
-        <lable for="showLeaves">Show leaves</lable><br>
+        <lable for="showLeaves">Show Leaves</lable><br>
       </div>
     </form>
     
@@ -86,6 +92,7 @@
         It will also play a 30 second sample</span>
     <p id="nameOfSongLabel" class="label">Song connecting the artists:</p>
     </div>
+
     <p id="songName"><p>
     
     <div class="controls">

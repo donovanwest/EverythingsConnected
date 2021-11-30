@@ -10,38 +10,41 @@
     <h2>What it Does</h2>
     <p>
         This app allows you to find all the artists that someone has collaborated with on Spotify.
-        It uses the Spotify API (the part of their database the public can see), to scan through all 
+        It uses the Spotify API to scan through all 
         of an artist's songs and pull out every artist that was featured on them. You then have to ability to
         do the same thing to any those artists, and create a big network showing how a lot of artists have
         some connection to another. It's kinda like the famous <a href="https://en.wikipedia.org/wiki/Six_Degrees_of_Kevin_Bacon">Kevin Bacon Number</a> 
         thing. You have to log in to spotify use the app. For more information on why check <a href="learnMore.html">here</a>.
-        If you want to learn more about me or app itself you can look <a href="about.html">here</a>.
+        If you want to learn more about app or myself you can look <a href="about.html">here</a>.
     </p>
     <h2>Controls</h2>
     <p>
         There are a few ways to use this app. After you've logged in you type in any artist's name 
         and their circle will appear, then it will do a search for all of their collaborators. Depending
-        on how prolific the artist is, this might take a few seconds.
+        on how prolific the artist is, this might take a few seconds. Especially for smaller artists, their name might not
+        be the first result. In that case you can also enter a link to an artist copied from Spotify. Finally, you can also enter a link to 
+        a playlist, and every artist in that playlist will be added and searched depending on the settings below.
     </p>
     <h3>One at a Time Mode</h3>
     <p>
         This will only show the artists within 1 degree of separation from the artist you type, then you can
         click on any of those artists to run the same search on them to create another layer. This is my recommended
-        mode since it runs faster and it's easier to see the information.
+        mode since it runs faster and it's easier to see the information. There's also more fun in discovering it yourself.
     </p>
     <h3>Full Search Mode</h3>
     <p>
         This will keep doing a recursive search on every artist found up to a certain degrees of separation.
         You can set the degree limit with the slider right below it.
-        This can be cool to see the shear number of artists in the network, but it can take a while to load them all,
+        This can be cool to see the shear number of artists in the network, but it can take a while to load them all, 
+        that many artists causes massive lag, 
         and it's hard to see what's going on when there's a couple thousand artists shown.  
         I only recommend going to two degrees unless you know what you're doing or you're willing to wait a while.
     </p>
     <h3>Show Images</h3>
     <p>
         Pretty simple. Shows images of the artist in their node. It looks better, but at a high
-        volume it can cause a lot off lag. When this is off each node will be a unique
-        color based on it's degrees of separation.
+        volume it can cause a lot off lag. When this is off each node will be a
+        color based on it's degrees of separation from the root.
     </p>
     <h3>Base Circle Size on Popularity</h3>
     <p>
@@ -50,10 +53,17 @@
         famous artists. If you want equal representation then you can turn this off and 
         each circle will be the same size.
     </p>
+    <h3>Show Leaves</h3>
+    <p>
+        When this is unselected it will only show artists that have more than one connection. Usefull for condensing the information
+        to more relevent connections and reducing lag. I turn this off, set Full Search to 1 or 2 degrees, and add all followed artists
+        to show how many of your followed artists are connected with only a couple degrees
+    </p>
     <h3>Song connecting the artists</h3>
     <p>
         If you click on the line between two artists, it will show the name of the song they collaborated on
-        in the sidebar. It will also play a 30 second sample of that song. It's quite possible they collaborated on more than one song, but this just shows 
+        in the sidebar. It will also play a 30 second sample of that song and give a link to open it in Spotify. 
+        It's quite possible they collaborated on more than one song, but this just shows 
         the first instance that is found.
     </p>
     <h3>Delete</h3>
