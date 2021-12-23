@@ -115,6 +115,10 @@
   margin-left: 4%;
 }
 
+#searchArtist {
+  height: 3em;
+}
+
 #searchModeSelection, #displayModeSelection {
   margin-left: 4%;
   margin-top: 4%;

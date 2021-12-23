@@ -186,6 +186,8 @@ export class apiCalls{
         return new Promise(async (resolve) => {
             const initialData = await this.getFollowedArtistsOffset(0);
             let followedArtists = initialData[0];
+            const followedArtistIds = new Set();
+            initialData[0].forEach(artist => followedArtistIds.add(artist.id));
             let total = initialData[1];
             let tasks = [];
             let offset = followedArtists.length;
@@ -195,27 +197,30 @@ export class apiCalls{
             }
             let result = await Promise.all(tasks);
             result.forEach(group => {
-                followedArtists = [...followedArtists, ...group[0]];
+                group[0].forEach(artist => {
+                    if (!followedArtistIds.has(artist.id)){
+                        followedArtistIds.add(artist.id);
+                        followedArtists = [...followedArtists, artist];
+                    }
+                });
             })
             resolve(followedArtists);
         })
     }
 
     getPlaylistTracks(playlistId, offset){
-        console.log(playlistId, offset);
         return new Promise((resolve) => {
             spotifyApi.getPlaylistTracks(playlistId, {"limit": 50, "offset": offset}, function(err, results){
                 if (err) {
                     console.error(err);
                     if(err.status === apiRateExceededError){
                         setTimeout(async function () {
-                            resolve(await t.getPlaylistTracks(playlistId, offset))
+                            resolve(await this.getPlaylistTracks(playlistId, offset))
                         }, (err.readyState+1)*1000);
                     } else if (err.status === serverError){
                         resolve(t.getPlaylistTracks(playlistId, offset))
                     }
                 } else {
-                    console.log(results);
                     resolve([results.items, results.total]);
                 }
             })
@@ -245,5 +250,54 @@ export class apiCalls{
             })
             resolve(await this.getArtistsData(Array.from(playlistArtists)));
         })
+    }
+
+    getRandomArtist(){
+        return new Promise(async (resolve) => {
+            const charcs = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+            const charc = charcs[Math.floor(Math.random() * charcs.length)];
+            const offset = Math.floor(Math.random() * 2000);
+            const searchString = '%' + charc + '%';
+            let t = this
+            //console.log(searchString);
+            //console.log(offset);
+            spotifyApi.searchArtists(searchString, {"offset": offset, "limit": 1}, async function(err, results){
+                if(err) {
+                    if(err.status === 404){
+                        resolve(await t.getRandomArtist());
+                    } else if (err.status === apiRateExceededError){
+                        setTimeout(async function () {
+                            resolve(await t.getRandomArtist())
+                        }, (err.readyState+1)*1000);
+                    } else {
+                        console.error(err);
+                    }
+                } else if (results){
+                    const artist = results.artists.items[0]
+                    let artistValid = true;
+                    //console.log(artist);
+                    if(artist.popularity < 10){
+                        artistValid = false;
+                        resolve(await t.getRandomArtist());
+                    }
+                    if(artistValid){
+                        const artistAlbums = await t.getAlbums(artist.id);
+                        const artistConnections = await t.getConnectedArtists(artistAlbums, artist.id);
+                        //console.log(artistConnections);
+                        //console.log(artistConnections.length);
+                        if(artistConnections.length < 5){
+                            //console.log("Not enough connections");
+                            artistValid = false;
+                            resolve(await t.getRandomArtist());
+                        } 
+                    }
+                    if(artistValid){
+                        //console.log("Resolving artist ", artist.name);
+                        resolve(artist);
+                    }
+                }
+            })
+        })
+            
     }
 }

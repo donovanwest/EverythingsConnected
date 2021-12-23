@@ -1,9 +1,5 @@
 /*To Do
-Some kind of smart search
-fix forces
-make the nodes pop in farther away
-
-
+Add random artist button
 */
 
 import {D3ForceGraph} from "./graph.js";
@@ -26,6 +22,7 @@ const moveSidebar = document.getElementById("moveSidebarLeft");
 const showLeavesCheckBox = document.getElementById("showLeaves");
 const addFollowedArtistsButton = document.getElementById("addFollowedArtists");
 const smartFilterCheckBox = document.getElementById("smartFilter");
+const addRandomArtistButton = document.getElementById("addRandomArtist");
 /*
 const zoomIn = document.getElementById("zoomIn");
 const zoomOut = document.getElementById("zoomOut");
@@ -149,10 +146,10 @@ if(url.search('#') === -1){
 
 function queueArtist(event){
   console.log("Node clicked with name " + event.detail.name + " and priority " + event.detail.priority);
-  if(!nonLeafArtists.has(event.detail.id)){
-    queue.push({"artistId" : event.detail.id, "priority": event.detail.priority});
-    runArtistSearch();
-  }
+  //if(!nonLeafArtists.has(event.detail.id)){
+  queue.push({"artistId" : event.detail.id, "priority": event.detail.priority});
+  runArtistSearch();
+  //}
 }
 
 showLeavesCheckBox.onclick = () => graph.changeLeaves();
@@ -189,6 +186,7 @@ searchArtistButton.onclick = async function(){
 }
 
 addFollowedArtistsButton.onclick = async function(){
+  addFollowedArtistsButton.disabled = true;
   const followedArtists = await api.getFollowedArtists();
   if(followedArtists.length === 0){
     alert("You haven't followed any artists!");
@@ -199,11 +197,25 @@ addFollowedArtistsButton.onclick = async function(){
           "popularity" : artist.popularity, "image" : artist.images.length > 0 ? artist.images[0].url : null, "degree" : 0}], []);
         if(!oneAtATime)
           queue.push({"artistId" : artist.id, "priority" : 0});
+        else 
+          checkedArtists.add(artist.id);
       } 
       //checkedArtists.add(artist.id);
       //nonLeafArtists.add(artist.id);
     });
   }
+  graph.changeLeaves();
+  runArtistSearch();
+}
+
+addRandomArtistButton.onclick = async function(){
+  loading.hidden = false;
+  const artist = await api.getRandomArtist();
+  console.log(artist);
+  graph.add([{"id" : artist.id, "name" : artist.name, "priority" : 0,
+    "popularity" : artist.popularity, "image" : artist.images.length > 0 ? artist.images[0].url : null, "degree" : 0}], []);
+  queue.push({"artistId" : artist.id, "priority" : 0});
+  checkedArtists.add(artist.id);
   graph.changeLeaves();
   runArtistSearch();
 }

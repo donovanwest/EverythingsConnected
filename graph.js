@@ -19,12 +19,13 @@ let showLeaves = showLeavesCheckBox.checked;
 export class D3ForceGraph {
   constructor(graphDiv) {
     let t = this;
-
+    
     t.graphDiv = graphDiv;
     t.rect = t.graphDiv.getBoundingClientRect();
     t.width = t.graphDiv.scrollWidth;
     t.height = t.graphDiv.scrollHeight;
     t.center = {x: t.width / 2, y: t.height / 2};
+    t.nodeClickedPosition = null;
 
     t.svgId = "graph";
     t.updateRefCount = 0;
@@ -110,8 +111,8 @@ export class D3ForceGraph {
       .force("charge", t.chargeForce)
       .force("collide", t.collideForce)
       .force("center", d3.forceCenter(t.center.x, t.center.y))
-      .force("y", d3.forceY(t.center.y).strength(0.001))
-      .force("x", d3.forceX(t.center.x).strength(0.001));
+      .force("y", d3.forceY(t.center.y).strength(0.00001))
+      .force("x", d3.forceX(t.center.x).strength(0.00001));
     return result;
   }
 
@@ -193,6 +194,7 @@ export class D3ForceGraph {
           .append("g")
           .attr("id", d => d.id || null)
           .classed("nodeParent", true)
+          .attr("cursor", "pointer")
           .attr("visibility", d => !showLeaves && d.degree <= 1 ? "hidden" : "visible")
           .on("contextmenu", (d, i)  => d3.event.preventDefault())
           .on("click", d => t.handleNodeClicked(d))
@@ -253,6 +255,19 @@ export class D3ForceGraph {
         .attr("fill", "#FFFFFF")
         .style("text-shadow", "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black");
 
+
+      let newX, newY;
+      if(t.nodeClickedPosition){
+        newX = Math.sqrt(t.nodeClickedPosition.x - t.center.x) * 5;
+        newY = Math.sqrt(t.nodeClickedPosition.y - t.center.y) * 5;
+      } else {
+        newX = nodes.length * 50 * (Math.random() - 0.5);
+        newY = nodes.length * 50 * (Math.random() - 0.5);
+      }
+      graphNodesData._enter.forEach(a => a.forEach(d => {
+        d.__data__.x = newX;
+        d.__data__.y = newY;
+      }));
     
     // merge
     graphNodesData =
@@ -337,7 +352,12 @@ export class D3ForceGraph {
   }
 
   handleNodeClicked(d) {
-    //console.log(`node clicked: ${JSON.stringify(d)}`);
+    console.log(`node clicked: ${JSON.stringify(d)}`);
+    let t = this;
+    t.nodeClickedPosition = {x: d.x, y: d.y};
+    console.log(t.nodeClickedPosition);
+    console.log(t.center);
+    console.log(t.nodeClickedPosition.x - t.center.x , " " , t.nodeClickedPosition.y - t.center.y);
     const event = new CustomEvent("queueArtist", {"detail" : d});
     document.dispatchEvent(event);
   }
@@ -407,6 +427,9 @@ export class D3ForceGraph {
       degreeLabels[i].style.y = "1.3em";
     }
     this.collideForce.radius(d => this.getRadius(d)+5);
+    this.simulation.alpha(0.1);
+    this.simulation.alphaTarget(0);
+    this.simulation.restart();
   }
 
   changeLeaves = () => {
@@ -435,7 +458,7 @@ export class D3ForceGraph {
 
   updateChargeForce(){
     this.chargeForce.strength(d => {
-        return d.degree <= 1 ? 1 : this.getRadius(d)^2
+        return d.degree <= 1 ? -10 : -10 * this.getRadius(d)^3
     });
   }
 
