@@ -2,3 +2,5 @@
 #spotify client ID and Secret. Later I plan to implement oauth stuff
 info.txt
 credentials.js
+.vscode
+.vscode/*

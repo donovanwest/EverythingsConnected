@@ -1,5 +1,5 @@
 /*To Do
-Add random artist button
+
 */
 
 import {D3ForceGraph} from "./graph.js";
@@ -48,9 +48,9 @@ async function init(){
   let queryName = artistEntry.value;
   let artists = [];
   if(queryName.search("https://open.spotify.com/playlist/") != -1)
-    artists = await api.getPlaylistArtists(queryName.substring(queryName.lastIndexOf("/")+1, queryName.lastIndexOf("?")));
+    artists = await api.getPlaylistArtists([getId(queryName)]);
   else if(queryName.search("https://open.spotify.com/artist/") != -1)
-    artists = await api.getArtistsData([queryName.substring(queryName.lastIndexOf("/")+1, queryName.lastIndexOf("?"))]);
+    artists = await api.getArtistsData([getId(queryName)]);
   else
     artists = [await api.searchForArtist(queryName)];
   console.log(artists);
@@ -132,9 +132,12 @@ const url = String(window.location)
 if(url.search('#') === -1){
   searchArtistButton.disabled = true;
   addFollowedArtistsButton.disabled = true;
+  addRandomArtistButton.disabled = true;
   fullRadio.disabled = true;
   oaatRadio.disabled = true;
   artistEntry.disabled = true;
+  smartFilterCheckBox.disabled = true;
+  showLeavesCheckBox.disabled = true;
   document.getElementById("showImages").disabled = true;
   document.getElementById("popBasedSize").disabled = true;
 } else {
@@ -150,6 +153,19 @@ function queueArtist(event){
   queue.push({"artistId" : event.detail.id, "priority": event.detail.priority});
   runArtistSearch();
   //}
+}
+
+const getId = (url) => {
+  console.log(url);
+  const start = url.lastIndexOf("/")+1;
+  let end = -1;
+  if(url.search("si=") != -1){
+    end = url.search("si=")-1;
+  } else {
+    end = url.length;
+  }
+  console.log(url.substring(start, end));
+  return url.substring(start, end);
 }
 
 showLeavesCheckBox.onclick = () => graph.changeLeaves();
