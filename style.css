@@ -85,10 +85,11 @@
   background-color: #1ed760; 
   border-radius: 200px;
   margin: 4%;
+  margin-bottom: 0%;
   width: 93%;
-  height: 6%;
+  height: 4%;
   color: white;
-  font-size: larger;
+  font-size: large;
   font-family: Helvetica;
   border-width: 0px;
 }
@@ -107,6 +108,7 @@
   width: 90%;
   margin-left: 4%;
   margin-right: auto;
+  margin-top: 4%;
 }
 
 .searchButton {

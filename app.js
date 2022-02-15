@@ -15,7 +15,6 @@ const loginButton = document.getElementById("loginButton");
 const searchArtistButton = document.getElementById("searchArtist");
 const artistEntry = document.getElementById("artistEntry");
 const totalArtists = document.getElementById("totalArtists")
-const infoLabel = document.getElementById("infoLabel");
 const loading = document.getElementById("loading");
 const deleteButton = document.getElementById("deleteButton");
 const moveSidebar = document.getElementById("moveSidebarLeft");
@@ -130,19 +129,32 @@ const runArtistSearch = async () => {
 
 const url = String(window.location)
 if(url.search('#') === -1){
-  searchArtistButton.disabled = true;
+  loading.hidden = false;
   addFollowedArtistsButton.disabled = true;
-  addRandomArtistButton.disabled = true;
-  fullRadio.disabled = true;
-  oaatRadio.disabled = true;
-  artistEntry.disabled = true;
-  smartFilterCheckBox.disabled = true;
-  showLeavesCheckBox.disabled = true;
-  document.getElementById("showImages").disabled = true;
-  document.getElementById("popBasedSize").disabled = true;
+  //Get the access token. It's in a private server so you can't yank my client secret ;)
+  fetch('http://spotifyaccesstoken.eba-bmjcbxdm.us-east-1.elasticbeanstalk.com/accessToken').then(response => {
+    loading.hidden = true;
+    if(response.status != 200){
+      alert("Error getting Spotify access token. Try refreshing the page or signing in.\n" + response.status + ": " + response.statusText);
+      searchArtistButton.disabled = true;
+      addFollowedArtistsButton.disabled = true;
+      addRandomArtistButton.disabled = true;
+      fullRadio.disabled = true;
+      oaatRadio.disabled = true;
+      artistEntry.disabled = true;
+      smartFilterCheckBox.disabled = true;
+      showLeavesCheckBox.disabled = true;
+      document.getElementById("showImages").disabled = true;
+      document.getElementById("popBasedSize").disabled = true;
+    }
+    response.text().then(token => {
+      console.log(token);
+      api.setAccessToken(token);
+    });
+  });
 } else {
-  infoLabel.hidden = true;
   loginButton.disabled = true;
+  loginButton.hidden = true;
   api.parseForToken(url);
 }
 

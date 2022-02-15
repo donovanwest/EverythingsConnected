@@ -7,14 +7,26 @@ export class apiCalls{
 
     login(){
         const url = String(window.location)
-        const scopes = ['user-library-read', 'playlist-read-private', 'playlist-read-collaborative', 'user-follow-read'];
+        const scopes = ['user-follow-read'];
         window.open(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${url}&scope=${scopes}&show_dialog=true`, '_self');
+    }
+
+    setAccessToken(accessToken){
+        spotifyApi.setAccessToken(accessToken);
     }
 
     parseForToken(url){
         const startIndex = url.indexOf('=');
         const endIndex = url.indexOf('&', startIndex+1);
-        const accessToken = url.substring(startIndex+1, endIndex);
+        let accessToken = url.substring(startIndex+1, endIndex);
+        //accessToken = "BQAiMpjGDZeHqwRwhGRYbr75MFpri9pX3yWNrFWYWkt7kTeQVxJ1juDVcB99claW_J8H86BX0A4IN8lLTaA";
+        // const request = new Request('127.0.0.1:3000/accessToken', {method: 'GET'});
+        // fetch('http://127.0.0.1:3000/accessToken').then(response => {
+        //     response.text().then(token => {
+        //         console.log(token);
+        //         spotifyApi.setAccessToken(token);
+        //     });
+        // });
         spotifyApi.setAccessToken(accessToken);
     }
     
