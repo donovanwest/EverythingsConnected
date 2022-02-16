@@ -132,7 +132,7 @@ if(url.search('#') === -1){
   loading.hidden = false;
   addFollowedArtistsButton.disabled = true;
   //Get the access token. It's in a private server so you can't yank my client secret ;)
-  fetch('http://spotifyaccesstoken.eba-bmjcbxdm.us-east-1.elasticbeanstalk.com/accessToken').then(response => {
+  fetch('https://access-token.everythings-connected.com/accessToken').then(response => {
     loading.hidden = true;
     if(response.status != 200){
       alert("Error getting Spotify access token. Try refreshing the page or signing in.\n" + response.status + ": " + response.statusText);
