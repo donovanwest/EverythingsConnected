@@ -127,7 +127,7 @@ export class D3ForceGraph {
   }
 
   getColor(p, image) { 
-    const colors = ["#1DB954", "#8A2BE2", "#00FFFF", "#FF8C00",  "#1E90FF", "#FF69B4", "#FFFF00"];
+    const colors = ["#e80000", "#ff9d00", "#f5e000", "#00c707",  "#004cff", "#b700ff", "#ff0099"];
     if(image)
       return "#000";
     else
@@ -289,9 +289,8 @@ export class D3ForceGraph {
         a.setAttribute('target', "_blank");
         a.innerHTML = d.label;
         songNameLabel.appendChild(a);
-        //songNameLabel.textContent = `<a href="${d.trackLink}" target="_blank">${d.label}</a>`;
         audio.pause();
-        if(!muted){
+        if(!muted && d.trackURL){
           audio = new Audio(d.trackURL);
           audio.play();
         }
@@ -355,9 +354,6 @@ export class D3ForceGraph {
     console.log(`node clicked: ${JSON.stringify(d)}`);
     let t = this;
     t.nodeClickedPosition = {x: d.x, y: d.y};
-    console.log(t.nodeClickedPosition);
-    console.log(t.center);
-    console.log(t.nodeClickedPosition.x - t.center.x , " " , t.nodeClickedPosition.y - t.center.y);
     const event = new CustomEvent("queueArtist", {"detail" : d});
     document.dispatchEvent(event);
   }
@@ -381,6 +377,8 @@ export class D3ForceGraph {
     return this.graphData.links.filter(d => d.source.id === source && d.target.id === target)[0];
   }
 /*
+  This doesn't really work. Gives very funky results. If someone has a solution I'd be very grateful
+
   zoomIn(){
     this.svgGroup
       .attr("transform",

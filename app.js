@@ -1,5 +1,6 @@
-/*To Do
-
+/*  App created by Donovan West
+    Created for KSU Senior Project Spring 2021
+    Last updated February 2022
 */
 
 import {D3ForceGraph} from "./graph.js";
@@ -22,10 +23,7 @@ const showLeavesCheckBox = document.getElementById("showLeaves");
 const addFollowedArtistsButton = document.getElementById("addFollowedArtists");
 const smartFilterCheckBox = document.getElementById("smartFilter");
 const addRandomArtistButton = document.getElementById("addRandomArtist");
-/*
-const zoomIn = document.getElementById("zoomIn");
-const zoomOut = document.getElementById("zoomOut");
-*/
+
 loading.hidden = true;
 artistEntry.focus();
 
@@ -52,7 +50,6 @@ async function init(){
     artists = await api.getArtistsData([getId(queryName)]);
   else
     artists = [await api.searchForArtist(queryName)];
-  console.log(artists);
   if(artists === undefined || artists[0] === undefined){
     alert("Artist or Playlist Not Found");
   } else {
@@ -148,7 +145,6 @@ if(url.search('#') === -1){
       document.getElementById("popBasedSize").disabled = true;
     }
     response.text().then(token => {
-      console.log(token);
       api.setAccessToken(token);
     });
   });
@@ -161,14 +157,11 @@ if(url.search('#') === -1){
 
 function queueArtist(event){
   console.log("Node clicked with name " + event.detail.name + " and priority " + event.detail.priority);
-  //if(!nonLeafArtists.has(event.detail.id)){
   queue.push({"artistId" : event.detail.id, "priority": event.detail.priority});
   runArtistSearch();
-  //}
 }
 
 const getId = (url) => {
-  console.log(url);
   const start = url.lastIndexOf("/")+1;
   let end = -1;
   if(url.search("si=") != -1){
@@ -176,7 +169,6 @@ const getId = (url) => {
   } else {
     end = url.length;
   }
-  console.log(url.substring(start, end));
   return url.substring(start, end);
 }
 
@@ -191,7 +183,6 @@ slider.oninput = function() {
 
 oaatRadio.oninput = function() {
   oneAtATime = true;
-  console.log(oneAtATime);
   slider.disabled = true;
   degreeLabel.style.color = "#ccc";
 }
@@ -228,8 +219,6 @@ addFollowedArtistsButton.onclick = async function(){
         else 
           checkedArtists.add(artist.id);
       } 
-      //checkedArtists.add(artist.id);
-      //nonLeafArtists.add(artist.id);
     });
   }
   graph.changeLeaves();

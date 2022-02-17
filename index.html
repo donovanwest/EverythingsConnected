@@ -1,7 +1,34 @@
 <!DOCTYPE html>
+<html lang="en-US">
 <meta charset="utf-8">
 <head>
-  <link rel="stylesheet" href="style.css">
+  <html lang="en-US">
+  <meta charset="utf-8">
+  <meta name="author" content="Donovan West">
+  <meta name="description" content = "This web-app uses the Spotify API to show how artists have collaborated
+    with each other by creating a big network graph">
+  <link rel="canonical" href="https://everythings-connected.com">
+
+  <meta property="og:title" content="Everything's Connected" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://everythings-connected.com" />
+  <meta property="og:image" content="https://everythings-connected.com/images/example.png" />
+  <meta property="og:image:alt" content="An example network created by the app">
+  <meta property="og:description" content="This web-app uses the Spotify API to show how artists have collaborated
+  with each other by creating a big network graph" />
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@donovan_west">
+  <meta name="twitter:creator" content="@donovan_west">
+  <meta name="twitter:title" content="Everything's Connected">
+  <meta name="twitter:description" content="This web-app uses the Spotify API to show how artists have collaborated
+  with each other by creating a big network graph">
+  <meta name="twitter:image" content="https://everythings-connected.com/images/example.png">
+  <meta content="#1db954" data-react-helmet="true" name="theme-color"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <title>Everything's Connected</title>
   <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
@@ -9,7 +36,8 @@
   <link rel="mask-icon" href="images/safari-pinned-tab.svg" color="#5bbad5">
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
-  <title>Everything's Connected</title>
+
+  <link rel="stylesheet" href="style.css">
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="spotify-web-api.js"></script>
   <script src="https://unpkg.com/tinyqueue@2.0.0/tinyqueue.min.js"></script>
@@ -18,7 +46,7 @@
   <script type = "module" src="app.js"></script>
 </head>
 <body>
-  <img id="loading" src="images/loading.gif">
+  <img id="loading" src="images/loading.gif" alt="loading">
   
   <label id="zoomWarning">Your mouse must be over white-space in order to zoom</label>
   <div id="sidebar">
@@ -34,7 +62,7 @@
       <button id="searchArtist" class="searchButton">Search for Artist or Playlist</button>
     </div>
     <div class="tooltip">
-      <span class=tooltiptext>Add a random artist to the screen. See if you can connect them to your existing network</span>
+      <span class=tooltiptext>Add a random artist to the screen. See if you can connect them to your existing network. Might take a few seconds to find a suitable one</span>
       <button id="addRandomArtist" class="searchButton">Add Random Artist</button>
     </div>
     <div class="tooltip">
@@ -67,8 +95,8 @@
       </div>
 
       <div class="tooltip">
-        <span class=tooltiptext>Filters out artists that are unpopular and don't have an image to reduce clutter and lag</span>
-        <input type="checkbox" id="smartFilter" value="smartFilter">
+        <span class=tooltiptext>Filters out artists that are very unpopular or don't have an image to reduce clutter and lag</span>
+        <input type="checkbox" id="smartFilter" value="smartFilter" checked>
         <label for="smartFilter">Smart Filter</label><br>
       </div>
       
@@ -76,7 +104,7 @@
     <P class="label">Display Options</P>
     <form id="displayModeSelection">
       <div class="tooltip">
-        <span class=tooltiptext>Shows images of the artists. At high numbers this will decrease the framerate</span>
+        <span class=tooltiptext>Shows images of the artists. At high numbers images can decrease the framerate</span>
         <input type="checkbox" id="showImages" value="showImages" checked>
         <label for="showImages">Show Images</label><br>
       </div>
@@ -88,20 +116,20 @@
       </div>
 
       <div class="tooltip">
-        <span class=tooltiptext>Show artists with only one connection. Unselecting puts more focus on interesting connections and reduces lag</span>
+        <span class=tooltiptext>Unselecting this hides artists with only one connection, putting more focus on interesting connections and reducing lag</span>
         <input type="checkbox" id="showLeaves" value="showLeaves" checked>
         <label for="showLeaves">Show Leaves</label><br>
       </div>
     </form>
     
     <div class="tooltip">
-      <span class=tooltiptext>The total number of artists displayed within a certain degree of connection</span>
+      <span class=tooltiptext>The total number of artists displayed</span>
       <p class="label" id="totalArtists">Total Artists: </p>
     </div>
 
     <div class="tooltip">
       <span class=tooltiptext>If you click the line between two artists, it will show the name of a song they collaborated on here. 
-        It will also play a 30 second sample</span>
+        It will also play a 30 second sample if available. Signing in increases availability.</span>
     <p id="nameOfSongLabel" class="label">Song connecting the artists:</p>
     </div>
 

@@ -19,14 +19,6 @@ export class apiCalls{
         const startIndex = url.indexOf('=');
         const endIndex = url.indexOf('&', startIndex+1);
         let accessToken = url.substring(startIndex+1, endIndex);
-        //accessToken = "BQAiMpjGDZeHqwRwhGRYbr75MFpri9pX3yWNrFWYWkt7kTeQVxJ1juDVcB99claW_J8H86BX0A4IN8lLTaA";
-        // const request = new Request('127.0.0.1:3000/accessToken', {method: 'GET'});
-        // fetch('http://127.0.0.1:3000/accessToken').then(response => {
-        //     response.text().then(token => {
-        //         console.log(token);
-        //         spotifyApi.setAccessToken(token);
-        //     });
-        // });
         spotifyApi.setAccessToken(accessToken);
     }
     
@@ -271,8 +263,6 @@ export class apiCalls{
             const offset = Math.floor(Math.random() * 2000);
             const searchString = '%' + charc + '%';
             let t = this
-            //console.log(searchString);
-            //console.log(offset);
             spotifyApi.searchArtists(searchString, {"offset": offset, "limit": 1}, async function(err, results){
                 if(err) {
                     if(err.status === 404){
@@ -287,7 +277,6 @@ export class apiCalls{
                 } else if (results){
                     const artist = results.artists.items[0]
                     let artistValid = true;
-                    //console.log(artist);
                     if(artist.popularity < 10){
                         artistValid = false;
                         resolve(await t.getRandomArtist());
@@ -295,16 +284,12 @@ export class apiCalls{
                     if(artistValid){
                         const artistAlbums = await t.getAlbums(artist.id);
                         const artistConnections = await t.getConnectedArtists(artistAlbums, artist.id);
-                        //console.log(artistConnections);
-                        //console.log(artistConnections.length);
-                        if(artistConnections.length < 5){
-                            //console.log("Not enough connections");
+                        if(artistConnections.length < 5 || artistConnections.length > 100){
                             artistValid = false;
                             resolve(await t.getRandomArtist());
                         } 
                     }
                     if(artistValid){
-                        //console.log("Resolving artist ", artist.name);
                         resolve(artist);
                     }
                 }
