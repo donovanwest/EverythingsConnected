@@ -1,10 +1,17 @@
 
 * {
-  font-family: Helvetica;
+  font-family: sans-serif, Helvetica;
   font-size: 15px;
 }
 .container{
   display:grid;
+}
+
+.textBlock {
+  margin-left: 10px;
+  width: 50%;
+  padding-top: 50px;
+  font-size: larger;
 }
 
 .links line {
@@ -42,12 +49,17 @@
   border: #666;
   border-style: solid;
   border-width: 3px;
-  height: 600px;
+  height: 620px;
   margin-top: 50px;
   margin-left: 10px;
   width: 250px;
   position: absolute;
   transition: margin-left 0.5s;
+  padding-left: 1%;
+}
+
+#sidebar > * {
+  margin-left: 0px;
 }
 
 .tooltip .tooltiptext {
@@ -87,14 +99,14 @@
 #loginButton {
   background-color: #1ed760; 
   border-radius: 200px;
-  margin: 4%;
   margin-bottom: 0%;
   width: 93%;
   height: 4%;
   color: white;
   font-size: large;
-  font-family: Helvetica;
+  font-family: sans-serif, Helvetica;
   border-width: 0px;
+  margin-top: 4%;
 }
 
 #loginButton:hover {
@@ -109,7 +121,6 @@
 
 #artistEntry {
   width: 90%;
-  margin-left: 4%;
   margin-right: auto;
   margin-top: 4%;
 }
@@ -117,7 +128,6 @@
 .searchButton {
   margin-top: 0.5em;
   width: 93%;
-  margin-left: 4%;
 }
 
 #searchArtist {
@@ -125,13 +135,11 @@
 }
 
 #searchModeSelection, #displayModeSelection {
-  margin-left: 4%;
   margin-top: 4%;
   width: 100%;
 }
 
 #sidebar p {
-  margin-left: 4%;
   margin-right: 4%;
   width: 90%;
   font-weight: bolder;
@@ -140,6 +148,10 @@
 
 #songName {
   font-weight: normal !important;
+}
+
+#nameOfSongLabel {
+  margin-left: -4%;
 }
 
 #loading {
@@ -167,20 +179,8 @@
   display: flex;
   position: absolute;
   justify-content: center;
-  margin-left: -3px;
+  margin-left: -15%;
   top: 102%;
-}
-
-#deleteButton {
-  width: 30px;
-  height: 30px;
-  margin-right: 5px;
-  background-image: url("images/trashCan.png");
-  background-position: center;
-  background-size: contain;
-  border: 2px solid #333;
-  border-radius: 5px;
-  background-color: white;
 }
 
 #mute {
@@ -216,9 +216,10 @@
 
 #links {
   position: absolute;
-  margin-top: -45px;
+  margin-top: 10px;
   display: flex;
-  justify-content: space-between;  
+  justify-content: space-between;
+  margin-left: 10px;  
 }
 
 #githubLink {  
@@ -233,9 +234,9 @@
   background-repeat: no-repeat;
 }
 
-#aboutLink, #guideLink {
+#aboutLink, #guideLink, #privacyPolicyLink, #homeLink {
   margin-right: 5px;
-  width: min-content;
+  width: max-content;
   height: 30px;
 }
 
@@ -270,3 +271,12 @@ body {
   transition: opacity 0.3s;
 }
 
+#songEmbed {
+  position: absolute;
+  width: 266px; 
+  height: 80px; 
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-bottom: -1px;
+}

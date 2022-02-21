@@ -96,8 +96,10 @@ export class apiCalls{
                             if(artistList.length > 1 && artistList.includes(artistId)){ 
                                 artistList.forEach((newArtistId) => {
                                     if(!(newArtistId === artistId) && !(connectedArtists.has(newArtistId))){
+                                        let trackParts = track.external_urls.spotify.split("/track/");
+                                        let embedURL = trackParts[0] + "/embed/track/" + trackParts[1];
                                         connectedArtists.add(newArtistId);
-                                        connectedArtistsData.push({"artistId" : newArtistId, "artistName" : track.artists[index].name, "trackName" : track.name + " by " + album.artists[0].name, "trackURL" : track.preview_url, "trackLink" : track.external_urls.spotify});
+                                        connectedArtistsData.push({"artistId" : newArtistId, "artistName" : track.artists[index].name, "trackName" : track.name + " by " + album.artists[0].name, "trackURL" : track.preview_url, "trackLink" : embedURL});
                                     }
                                     index++;
                                 })
@@ -276,6 +278,9 @@ export class apiCalls{
                     }
                 } else if (results){
                     const artist = results.artists.items[0]
+                    if(!artist){
+                        resolve(await t.getRandomArtist());
+                    }
                     let artistValid = true;
                     if(artist.popularity < 10){
                         artistValid = false;

@@ -252,7 +252,7 @@ deleteButton.onclick = function(){
 moveSidebar.onclick = function(){
   const sidebar = document.getElementById("sidebar");
   if(moveSidebar.textContent === "<<<"){
-    sidebar.style.marginLeft = "-256px";
+    sidebar.style.marginLeft = "-275px";
     moveSidebar.textContent = ">>>";
   } else {
     sidebar.style.marginLeft = "10px";
@@ -261,11 +261,8 @@ moveSidebar.onclick = function(){
 }
 
 document.getElementById("popBasedSize").oninput = () => graph.popBasedSizeInput();
-
 document.getElementById("githubLink").onclick = () => window.open("https://github.com/donovanwest/EverythingsConnected", "_blank");
-document.getElementById("aboutLink").onclick = () => window.open("about.html", "_blank");
-document.getElementById("guideLink").onclick = () => window.open("guide.html", "_blank");
-/*
-zoomIn.onclick = () => graph.zoomIn();
-zoomOut.onclick = () => graph.zoomOut();
-*/
+document.getElementById("aboutLink").onclick = () => window.open("about.html", "_self");
+document.getElementById("guideLink").onclick = () => window.open("guide.html", "_self");
+document.getElementById("privacyPolicyLink").onclick = () => window.open("privacyPolicy.html", "_self");
+document.getElementById("homeLink").onclick = () => window.open("index.html", "_self");

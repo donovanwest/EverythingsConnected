@@ -27,10 +27,6 @@
   <meta name="twitter:description" content="This web-app uses the Spotify API to show how artists have collaborated
   with each other by creating a big network graph">
   <meta name="twitter:image" content="https://everythings-connected.com/images/example.png">
-  <meta name="twitter:image" content="https://donovanwest.github.io/EverythingsConnected/images/example.png">
-  <meta content="#1db954" data-react-helmet="true" name="theme-color"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
 
   <title>Everything's Connected</title>
   <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
@@ -53,12 +49,14 @@
   <img id="loading" src="images/loading.gif" alt="loading">
   
   <label id="zoomWarning">Your mouse must be over white-space in order to zoom</label>
+  <div id="links">
+    <button id="homeLink">Home</button>
+    <button id="guideLink">Guide</button>
+    <button id="aboutLink">About</button>
+    <button id="privacyPolicyLink">Privacy Policy</button>
+    <button id="githubLink"></button>
+  </div>
   <div id="sidebar">
-    <div id="links">
-      <button id="githubLink"></button>
-      <button id="guideLink">Guide</button>
-      <button id="aboutLink">About</button>
-    </div>
     <button id="moveSidebarLeft"><<<</button> 
     <input id="artistEntry" type="text">
     <div class="tooltip">
@@ -76,6 +74,10 @@
     <div class="tooltip">
       <span class=tooltiptext>Optional, but you must do this to add all your followed artists. The only information it gives access too and uses is your followed artist list.</span>
       <button id="loginButton">Login to Spotify</button>
+    </div>
+    <div class="tooltip">
+      <span class=tooltiptext>Delete entire graph and start over</span>
+      <button id="deleteButton" class="searchButton">Reset</button>
     </div>
     <p class="label">Search Options</p>
     <form id="searchModeSelection">
@@ -105,7 +107,7 @@
       </div>
       
     </form>
-    <P class="label">Display Options</P>
+    <p class="label">Display Options</P>
     <form id="displayModeSelection">
       <div class="tooltip">
         <span class=tooltiptext>Shows images of the artists. At high numbers images can decrease the framerate</span>
@@ -134,35 +136,12 @@
     <div class="tooltip">
       <span class=tooltiptext>If you click the line between two artists, it will show the name of a song they collaborated on here. 
         It will also play a 30 second sample if available. Signing in increases availability.</span>
-    <p id="nameOfSongLabel" class="label">Song connecting the artists:</p>
+      <p id="nameOfSongLabel" class="label">Song connecting the artists:</p>
     </div>
+    <iframe id="songEmbed" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe> <br><br>
 
     <p id="songName"><p>
-    
-    <div class="controls">
-      <div class="tooltip">
-        <span class=tooltiptext>Delete entire graph and start over</span>
-        <button id="deleteButton"></button>
-      </div>
-
-      <div class="tooltip">
-          <span class="tooltiptext">Mutes playback audio</span>
-          <button id="mute"></button>
-      </div>
-<!--  These don't work, but I want to keep them around still in case I find a solution
-      <div class="tooltip">
-        <span class=tooltiptext>Zoom In</span>
-        <button id="zoomIn">+</button>
-      </div>
-
-      <div class="tooltip">
-        <span class=tooltiptext>Zoom Out</span>
-        <button id="zoomOut">-</button>
-      </div>
--->
-    </div>
   </div>
-
   <div id="ib-d3-graph-div"></div>
 </body>
 

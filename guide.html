@@ -8,109 +8,117 @@
     <meta name="description" content = "This web-app uses the Spotify API to show how artists have collaborated
         with each other by creating a big network graph">
     <link rel="canonical" href="https://everythings-connected.com">
-
+    <link rel="stylesheet" href="style.css">
     <title>Guide for Everything's Connected</title>
 </head>
 <body>
-    <h1>Guide to Everything's Connected</h1>
-    <p>
-        Go back to the app <a href="index.html">here</a>
-    </p>
-    <h2>What it Does</h2>
-    <p>
-        This app allows you to find all the artists that someone has collaborated with on Spotify.
-        It uses the Spotify API to scan through all 
-        of an artist's songs and pull out every artist that was featured on them. You then have to ability to
-        do the same thing to any those artists, and create a big network showing how a lot of artists have
-        some connection to another. It's kinda like the famous <a href="https://en.wikipedia.org/wiki/Six_Degrees_of_Kevin_Bacon">Kevin Bacon Number</a> 
-        thing. The only reason you should need to sign in is to add your followed artists.
-        If you want to learn more about the app or myself you can look <a href="about.html">here</a>.
-    </p>
-    <h3>Search for Artist or Playlist</h3>
-    <p>
-        Type any artist's name in the text box and press Enter 
-        or the search button. Their circle will appear, then it will do a search for all of their collaborators. Depending
-        on how prolific the artist is, this could take a few seconds. For smaller artists, their name might get
-        superseded by a more popular one. In that case you can also enter a link to an artist copied from Spotify. Finally, you can also enter a link to 
-        a playlist, and every artist in that playlist will be added and searched depending on the settings below.
-    </p>
-    <h3>Add Followed Artists</h3>
-    <p>
-        Requires signing in. Adds every artist you follow to the screen. By default none of them are expanded so you can try to connect them yourself.
-        If you put on Full Search with one degree and don't Show Leaves, then you can see how your followed artists are directly connected.
-    </p>
-    <h3>Add Random Artist</h3>
-    <p>
-        Adds a random artist to the screen. They will always have connections and have some popularity. Try to 
-        keep adding random artists and seeing if you can connect them to your existing network.
-    </p>
-    <h3>One at a Time Mode</h3>
-    <p>
-        This will only show the artists within 1 degree of separation from the artist you type, then you can
-        click on any of those artists to run the same search on them to expand the network. This is my recommended
-        mode since it runs faster and it's easier to see the information. There's also fun in discovering it yourself.
-    </p>
-    <h3>Full Search Mode</h3>
-    <p>
-        This will keep doing a recursive search on every artist found up to a certain degrees of separation.
-        You can set the degree limit with the slider right below it.
-        This can be cool to see the shear number of artists in the network, but it can take a while to load them all, 
-        that many artists causes massive lag, 
-        and it's hard to see what's going on when there's a couple thousand artists shown.  
-        I only recommend going to two degrees unless you know what you're doing or you're willing to wait a while.
-    </p>
-    <h3>Smart Filter</h3>
-    <p>
-        Filters out artists that have low popularity or have no image. This will help get rid of some unpopular artists that often times 
-        haven't even released their own music but are featured on a song.
-    </p>
-    <h3>Show Images</h3>
-    <p>
-        Shows images of the artist in their node. It looks better, but at a high
-        volume it can cause extra lag. When this is off each node will be a
-        color based on it's degrees of separation from the root.
-    </p>
-    <h3>Base Circle Size on Popularity</h3>
-    <p>
-        Spotify assigns every artist a popularity score between 0 and 100. With this setting on, the radius of
-        each circle will be equal to that popularity. This can help you pick out the more
-        famous artists. If you want equal representation then you can turn this off and 
-        each circle will be the same size.
-    </p>
-    <h3>Show Leaves</h3>
-    <p>
-        When this is unselected it will only show artists that have more than one connection. Useful for condensing the information
-        to more relevant connections and reducing lag. This combos well with a Full Search on an artist or all followed artists to 
-        see how dense of a network they create.
-    </p>
-    <h3>Song connecting the artists</h3>
-    <p>
-        If you click on the line between two artists, it will show the name of the song they collaborated on
-        in the sidebar. It will also play a 30 second sample of that song if it's available, and give a link to open it in Spotify. 
-        For some reason Spotify has it set so that preview tracks are more likely to be available if you're signed in.
-    </p>
-    <h3>Delete</h3>
-    <p>
-        The trash can icon. Will delete the entire network and start over. (It just refreshes the page shhhh)
-    </p>
-    <h3>Mute</h3>
-    <p>
-        Mutes the audio when you click on a link.
-    </p>
-    <h3>Games You Can Play</h3>
-    <p>
-        I have fun putting it on the one at a time mode, and trying to find a way to connect two
-        disparate artists. Using Random Artist helps for this You'd be amazed at some of the connections you can make with only
-        a few degrees.
-        <br><br>
-        Theoretically with most artists you can go functionally forever expanding nodes until you reach a point where 
-        you have virtually every artist represented, but you're browser would probably crash 
-        before that happened. I want to put a challenge out there to find the artist with the 
-        largest network you can with no more connections to be found. This means expanding every artist 
-        until there's no more.
-        <br><br>
-        Kevin Bacon has appeared on a few movie sound tracks and released music with his brother as The Bacon Brothers. This means
-        that you can use this app to find a musician's Bacon Number.
-    </p>
+    <div id="links">
+        <button id="homeLink">Home</button>
+        <button id="guideLink">Guide</button>
+        <button id="aboutLink">About</button>
+        <button id="privacyPolicyLink">Privacy Policy</button>
+        <button id="githubLink"></button>
+    </div>
+    <div class="textBlock">
+        <h1>Guide to Everything's Connected</h1>
+        <h2>What it Does</h2>
+        <p>
+            This app allows you to find all the artists that someone has collaborated with on Spotify.
+            It uses the Spotify API to scan through all 
+            of an artist's songs and pull out every artist that was featured on them. You then have to ability to
+            do the same thing to any those artists, and create a big network showing how a lot of artists have
+            some connection to another. It's kinda like the famous <a href="https://en.wikipedia.org/wiki/Six_Degrees_of_Kevin_Bacon">Kevin Bacon Number</a> 
+            thing. The only reason you should need to sign in is to add your followed artists.
+            If you want to learn more about the app or myself you can look <a href="about.html">here</a>.
+        </p>
+        <h3>Search for Artist or Playlist</h3>
+        <p>
+            Type any artist's name in the text box and press Enter 
+            or the search button. Their circle will appear, then it will do a search for all of their collaborators. Depending
+            on how prolific the artist is, this could take a few seconds. For smaller artists, their name might get
+            superseded by a more popular one. In that case you can also enter a link to an artist copied from Spotify. Finally, you can also enter a link to 
+            a playlist, and every artist in that playlist will be added and searched depending on the settings below.
+        </p>
+        <h3>Add Followed Artists</h3>
+        <p>
+            Requires signing in. Adds every artist you follow to the screen. By default none of them are expanded so you can try to connect them yourself.
+            If you put on Full Search with one degree and don't Show Leaves, then you can see how your followed artists are directly connected.
+        </p>
+        <h3>Add Random Artist</h3>
+        <p>
+            Adds a random artist to the screen. They will always have connections and have some popularity. Try to 
+            keep adding random artists and seeing if you can connect them to your existing network.
+        </p>
+        <h3>Reset</h3>
+        <p>
+            Resets the whole graph and starts over. Don't tell anyone, but it just refreshed the page.
+        </p>
+        <h3>One at a Time Mode</h3>
+        <p>
+            This will only show the artists within 1 degree of separation from the artist you type, then you can
+            click on any of those artists to run the same search on them to expand the network. This is my recommended
+            mode since it runs faster and it's easier to see the information. There's also fun in discovering it yourself.
+        </p>
+        <h3>Full Search Mode</h3>
+        <p>
+            This will keep doing a recursive search on every artist found up to a certain degrees of separation.
+            You can set the degree limit with the slider right below it.
+            This can be cool to see the shear number of artists in the network, but it can take a while to load them all, 
+            that many artists causes massive lag, 
+            and it's hard to see what's going on when there's a couple thousand artists shown.  
+            I only recommend going to two degrees unless you know what you're doing or you're willing to wait a while.
+        </p>
+        <h3>Smart Filter</h3>
+        <p>
+            Filters out artists that have low popularity or have no image. This will help get rid of some unpopular artists that often times 
+            haven't even released their own music but are featured on a song.
+        </p>
+        <h3>Show Images</h3>
+        <p>
+            Shows images of the artist in their node. It looks better, but at a high
+            volume it can cause extra lag. When this is off each node will be a
+            color based on it's degrees of separation from the root.
+        </p>
+        <h3>Base Circle Size on Popularity</h3>
+        <p>
+            Spotify assigns every artist a popularity score between 0 and 100. With this setting on, the radius of
+            each circle will be equal to that popularity. This can help you pick out the more
+            famous artists. If you want equal representation then you can turn this off and 
+            each circle will be the same size.
+        </p>
+        <h3>Show Leaves</h3>
+        <p>
+            When this is unselected it will only show artists that have more than one connection. Useful for condensing the information
+            to more relevant connections and reducing lag. This combos well with a Full Search on an artist or all followed artists to 
+            see how dense of a network they create.
+        </p>
+        <h3>Song connecting the artists</h3>
+        <p>
+            If you click on the line between two artists, it will show an embedded Spotify music player where
+            you can listen to the song and go to the album page in Spotify.
+        </p>
+        <h3>Games You Can Play</h3>
+        <p>
+            I have fun putting it on the one at a time mode, and trying to find a way to connect two
+            disparate artists. Using Random Artist helps for this You'd be amazed at some of the connections you can make with only
+            a few degrees.
+            <br><br>
+            Theoretically with most artists you can go functionally forever expanding nodes until you reach a point where 
+            you have virtually every artist represented, but you're browser would probably crash 
+            before that happened. I want to put a challenge out there to find the artist with the 
+            largest network you can with no more connections to be found. This means expanding every artist 
+            until there's no more.
+            <br><br>
+            Kevin Bacon has appeared on a few movie sound tracks and released music with his brother as The Bacon Brothers. This means
+            that you can use this app to find a musician's Bacon Number.
+        </p>
+    </div>
+    <script>
+        document.getElementById("githubLink").onclick = () => window.open("https://github.com/donovanwest/EverythingsConnected", "_blank");
+        document.getElementById("aboutLink").onclick = () => window.open("about.html", "_self");
+        document.getElementById("guideLink").onclick = () => window.open("guide.html", "_self");
+        document.getElementById("privacyPolicyLink").onclick = () => window.open("privacyPolicy.html", "_self");
+        document.getElementById("homeLink").onclick = () => window.open("index.html", "_self");
+    </script>
 </body>
 </html>

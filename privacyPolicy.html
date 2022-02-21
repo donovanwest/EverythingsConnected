@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <html lang="en-US">
+    <meta name="author" content="Donovan West">
+    <meta name="description" content = "This web-app uses the Spotify API to show how artists have collaborated
+        with each other by creating a big network graph">
+    <link rel="canonical" href="https://everythings-connected.com">
+    <link rel="stylesheet" href="style.css">
+    <title>Privacy Policy</title>
+</head>
+<body>
+    <div id="links">
+        <button id="homeLink">Home</button>
+        <button id="guideLink">Guide</button>
+        <button id="aboutLink">About</button>
+        <button id="privacyPolicyLink">Privacy Policy</button>
+        <button id="githubLink"></button>
+    </div>
+    <div class="textBlock">
+        <h1>Privacy Policy</h1>
+        <p>
+            This app does not store any user data. Signing in is purely optional. 
+            The only benefit to signing in is that you can add your followed artists and 
+            the mini song player is more likely to be able to play the song connecting two artists 
+            (this is because of some market region shenanigans). If you do sign in, it only gives access to
+            your followed artists, and your most basic account information like your 
+            email, profile pic, subscription tier, etc. I don't take any of that account info, just your followed
+            artists when you click the button.
+            <br><br>
+            You can view the source code for the 
+            client side app <a href="https://github.com/donovanwest/EverythingsConnected">here</a>. 
+            There is also a small api that is used to get a Spotify access token that has to be separate 
+            so that my client secret isn't exposed. There's not much to it, but you can find the code 
+            <a href="https://github.com/donovanwest/SpotifyAccessToken">here</a>.
+        </p>
+    </div>
+
+    <script>
+        document.getElementById("githubLink").onclick = () => window.open("https://github.com/donovanwest/EverythingsConnected", "_blank");
+        document.getElementById("aboutLink").onclick = () => window.open("about.html", "_self");
+        document.getElementById("guideLink").onclick = () => window.open("guide.html", "_self");
+        document.getElementById("privacyPolicyLink").onclick = () => window.open("privacyPolicy.html", "_self");
+        document.getElementById("homeLink").onclick = () => window.open("index.html", "_self");
+    </script>
+</body>
+</html>

@@ -6,11 +6,8 @@ Edited by Donovan West
 const showImagesElement = document.getElementById("showImages");
 const popBasedSizeElement = document.getElementById("popBasedSize");
 const songNameLabel = document.getElementById("songName");
-const muteButton = document.getElementById("mute");
 const showLeavesCheckBox = document.getElementById("showLeaves");
-
-let muted = false;
-let audio = new Audio();
+const songEmbed = document.getElementById("songEmbed");
 
 let showImages = showImagesElement.checked;
 let popBasedSize = popBasedSizeElement.checked;
@@ -284,16 +281,7 @@ export class D3ForceGraph {
       .on("click", d => {
         document.getElementById("nameOfSongLabel").hidden = false;
         while(songNameLabel.firstChild) songNameLabel.removeChild(songNameLabel.firstChild);
-        let a = document.createElement('a');
-        a.setAttribute('href', d.trackLink);
-        a.setAttribute('target', "_blank");
-        a.innerHTML = d.label;
-        songNameLabel.appendChild(a);
-        audio.pause();
-        if(!muted && d.trackURL){
-          audio = new Audio(d.trackURL);
-          audio.play();
-        }
+        songEmbed.setAttribute('src', d.trackLink);
       });
     
     let graphLinksExit =
@@ -484,19 +472,5 @@ showImagesElement.oninput = function(){
     const temp = circles[i].dataset.altColor;
     circles[i].dataset.altColor = circles[i].style.fill;
     circles[i].style.fill = temp;
-  }
-}
-
-
-muteButton.onclick = () => {
-  if(!muted){
-    muted = true;
-    muteButton.style.backgroundImage = "url(images/mute.jpg)";
-    audio.pause();
-    audio.volume = 0;
-  } else {
-    muted = false;
-    muteButton.style.backgroundImage = "url(images/playing.jpg)";
-    audio.volume = 1;
   }
 }
