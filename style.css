@@ -290,9 +290,9 @@ body {
 
 #getStarted{
   position: absolute;
-  width: 50vw;
-  left: 20vw;
-  top: 30vh;
+  left: 300px;
+  top: 20%;
+  width: 80% - 300px;
   font-size: xx-large;
   color: #bbb;
   text-align: center;

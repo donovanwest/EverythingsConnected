@@ -283,11 +283,13 @@ export class apiCalls{
                     }
                 } else if (results){
                     const artist = results.artists.items[0]
+                    let artistValid = true;
+                    console.log(artist);
                     if(!artist){
+                        artistValid = false;
                         resolve(await t.getRandomArtist());
                     }
-                    let artistValid = true;
-                    if(artist.popularity < 10){
+                    if(!artist.popularity || artist.popularity < 10){
                         artistValid = false;
                         resolve(await t.getRandomArtist());
                     }
