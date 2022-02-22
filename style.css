@@ -273,10 +273,25 @@ body {
 
 #songEmbed {
   position: absolute;
-  width: 266px; 
+  width: 100.1%; 
   height: 80px; 
   bottom: 0;
   left: 0;
   right: 0;
   margin-bottom: -1px;
+}
+
+#getStarted{
+  position: absolute;
+  width: 50vw;
+  left: 20vw;
+  top: 30vh;
+  font-size: xx-large;
+  color: #bbb;
+  text-align: center;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
