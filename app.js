@@ -162,7 +162,6 @@ const mobileAndTabletCheck = function() {
 };
 
 if(mobileAndTabletCheck()){
-  getStarted.hidden = true;
   if(!window.sessionStorage.getItem('mobileAlert')){
     window.sessionStorage.setItem('mobileAlert', true);
     alert("Mobile device or tablet detected. While this app works on mobile, it was designed for and is recommended for desktop use. " + 
