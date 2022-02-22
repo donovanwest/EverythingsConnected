@@ -63,10 +63,20 @@
   position: absolute;
   transition: margin-left 0.5s;
   padding-left: 1%;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 #sidebar > * {
   margin-left: 0px;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .tooltip .tooltiptext {
