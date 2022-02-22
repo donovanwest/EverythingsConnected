@@ -1,7 +1,9 @@
 
 /*
-The code for d3 and graphs was largely written by oldwnenzi at https://bl.ocks.org/sgcc/7ad094c9acd1877785ee39cde67eb6c7
-Edited by Donovan West
+  The code for d3 and graphs was largely written by oldwnenzi at https://bl.ocks.org/sgcc/7ad094c9acd1877785ee39cde67eb6c7
+  Edited by Donovan West
+  For KSU Senior Project Spring 2021
+  Last updated February 2022
 */
 const showImagesElement = document.getElementById("showImages");
 const popBasedSizeElement = document.getElementById("popBasedSize");

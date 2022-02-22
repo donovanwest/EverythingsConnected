@@ -1,3 +1,8 @@
+/*  App created by Donovan West
+    Created for KSU Senior Project Spring 2021
+    Last updated February 2022
+*/
+
 const spotifyApi = new SpotifyWebApi();
 const clientId = "e6bf2e305d98443190c472ee318fd511";
 const apiRateExceededError = 429;

@@ -9,9 +9,16 @@
 
 .textBlock {
   margin-left: 10px;
-  width: 50%;
+  width: min(100%, 1000px);
   padding-top: 50px;
-  font-size: larger;
+}
+
+.textBlock > p, a {
+  font-size: large;
+}
+
+.textBlock > h1, h2, h3 {
+  font-size:x-large;
 }
 
 .links line {

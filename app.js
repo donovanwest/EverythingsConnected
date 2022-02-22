@@ -165,7 +165,7 @@ if(mobileAndTabletCheck()){
   getStarted.hidden = true;
   if(!window.sessionStorage.getItem('mobileAlert')){
     window.sessionStorage.setItem('mobileAlert', true);
-    alert("Mobile device detected. While this app works on mobile, it was really designed and is recommended for desktop use. " + 
+    alert("Mobile device or tablet detected. While this app works on mobile, it was designed for and is recommended for desktop use. " + 
             "The controls and the main display operate on two separate planes so you must pinch to zoom each separately.")
   }
 }
