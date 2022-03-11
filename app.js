@@ -72,7 +72,7 @@ async function init(){
       checkedArtists.add(artist.id);
       nonLeafArtists.add(artist.id);
     })
-    
+    totalArtists.textContent = "Total Artists: " + checkedArtists.size;
   }
 }
 
@@ -126,6 +126,7 @@ const runArtistSearch = async () => {
 }
 
 const url = String(window.location)
+let args = "";
 if(url.search('#') === -1){
   loading.hidden = false;
   addFollowedArtistsButton.disabled = true;
@@ -150,6 +151,7 @@ if(url.search('#') === -1){
     });
   });
 } else {
+  args = url.substring(url.search('#'))
   loginButton.disabled = true;
   loginButton.hidden = true;
   api.parseForToken(url);
@@ -246,6 +248,7 @@ addFollowedArtistsButton.onclick = async function(){
       } 
     });
   }
+  totalArtists.textContent = "Total Artists: " + checkedArtists.size;
   graph.changeLeaves();
   runArtistSearch();
 }
@@ -259,6 +262,7 @@ addRandomArtistButton.onclick = async function(){
     "popularity" : artist.popularity, "image" : artist.images.length > 0 ? artist.images[0].url : null, "degree" : 0}], []);
   queue.push({"artistId" : artist.id, "priority" : 0});
   checkedArtists.add(artist.id);
+  totalArtists.textContent = "Total Artists: " + checkedArtists.size;
   graph.changeLeaves();
   runArtistSearch();
 }
@@ -269,18 +273,24 @@ deleteButton.onclick = function(){
 
 moveSidebar.onclick = function(){
   const sidebar = document.getElementById("sidebar");
+  const links = document.getElementById("links");
   if(moveSidebar.textContent === "<<<"){
     sidebar.style.marginLeft = "-275px";
+    links.style.marginLeft = "-350px";
     moveSidebar.textContent = ">>>";
   } else {
     sidebar.style.marginLeft = "10px";
+    links.style.marginLeft = "10px";
     moveSidebar.textContent = "<<<";
   }
 }
 
+
 document.getElementById("popBasedSize").oninput = () => graph.popBasedSizeInput();
+window.onresize = () => document.getElementById("graph").style.width = "100%";
+
 document.getElementById("githubLink").onclick = () => window.open("https://github.com/donovanwest/EverythingsConnected", "_blank");
-document.getElementById("aboutLink").onclick = () => window.open("about.html", "_self");
-document.getElementById("guideLink").onclick = () => window.open("guide.html", "_self");
-document.getElementById("privacyPolicyLink").onclick = () => window.open("privacyPolicy.html", "_self");
-document.getElementById("homeLink").onclick = () => window.open("index.html", "_self");
+document.getElementById("aboutLink").onclick = () => window.open("about.html" + args, "_self");
+document.getElementById("guideLink").onclick = () => window.open("guide.html" + args, "_self");
+document.getElementById("privacyPolicyLink").onclick = () => window.open("privacyPolicy.html" + args, "_self");
+document.getElementById("homeLink").onclick = () => location.reload();

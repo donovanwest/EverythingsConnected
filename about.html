@@ -10,6 +10,13 @@
     <link rel="canonical" href="https://everythings-connected.com">
     <link rel="stylesheet" href="style.css">
     <title>About Everything's Connected</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="manifest" href="images/site.webmanifest">
+    <link rel="mask-icon" href="images/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
 </head>
 <body>
     <div id="links">
@@ -68,11 +75,14 @@
         </p>
     </div>  
     <script>
+        const url = String(window.location);
+        let args = "";
+        if(url.search('#') != -1) args = url.substring(url.search('#'));
         document.getElementById("githubLink").onclick = () => window.open("https://github.com/donovanwest/EverythingsConnected", "_blank");
-        document.getElementById("aboutLink").onclick = () => window.open("about.html", "_self");
-        document.getElementById("guideLink").onclick = () => window.open("guide.html", "_self");
-        document.getElementById("privacyPolicyLink").onclick = () => window.open("privacyPolicy.html", "_self");
-        document.getElementById("homeLink").onclick = () => window.open("index.html", "_self");
+        document.getElementById("aboutLink").onclick = () => window.open("about.html" + args, "_self");
+        document.getElementById("guideLink").onclick = () => window.open("guide.html" + args, "_self");
+        document.getElementById("privacyPolicyLink").onclick = () => window.open("privacyPolicy.html" + args, "_self");
+        document.getElementById("homeLink").onclick = () => window.open("index.html" + args, "_self");
     </script>
 </body>
 </html>
