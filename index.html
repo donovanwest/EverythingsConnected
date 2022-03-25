@@ -104,16 +104,15 @@
         <input type="range" min="0" max="5" value="2" id="degreeSlider" disabled>
         <label id="degreeLabel" disabled>2</label><br>
       </div>
-
-      <div class="tooltip">
-        <span class=tooltiptext>Filters out artists that are very unpopular or don't have an image to reduce clutter and lag</span>
-        <input type="checkbox" id="smartFilter" value="smartFilter" checked>
-        <label for="smartFilter">Smart Filter</label><br>
-      </div>
       
     </form>
     <p class="label">Display Options</P>
     <form id="displayModeSelection">
+      <div class="tooltip">
+        <span class=tooltiptext>Filters out artists that are very unpopular or don't have an image to reduce clutter and lag</span>
+        <input type="checkbox" id="smartFilter" value="smartFilter" checked>
+        <label for="smartFilter">Filter Junk</label><br>
+      </div>
       <div class="tooltip">
         <span class=tooltiptext>Shows images of the artists. At high numbers images can decrease the framerate</span>
         <input type="checkbox" id="showImages" value="showImages" checked>
@@ -130,6 +129,13 @@
         <span class=tooltiptext>Unselecting this hides artists with only one connection, putting more focus on interesting connections and reducing lag</span>
         <input type="checkbox" id="showLeaves" value="showLeaves" checked>
         <label for="showLeaves">Show Leaves</label><br>
+      </div>
+
+      <div class="tooltip" id="maxConnectionsDiv">
+        <span class=tooltiptext>Max number of connections shown per artist. Prioritizes popular artists and non-leaves</span>
+        <label for="maxDegrees">Max connections shown: </label>
+        <input type="range" min="0" max="225" step="25" value="255" id="maxDegreesSlider">
+        <label id="maxDegreesLabel">No limit</label><br>
       </div>
     </form>
     

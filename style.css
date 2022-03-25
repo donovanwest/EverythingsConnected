@@ -181,10 +181,6 @@
   font-weight: normal !important;
 }
 
-#nameOfSongLabel {
-  margin-left: -4%;
-}
-
 #loading {
   position: fixed;
   top: 0.5%;

@@ -10,6 +10,10 @@ const popBasedSizeElement = document.getElementById("popBasedSize");
 const songNameLabel = document.getElementById("songName");
 const showLeavesCheckBox = document.getElementById("showLeaves");
 const songEmbed = document.getElementById("songEmbed");
+const maxDegreesSlider = document.getElementById("maxDegreesSlider");
+const smartFilterCheckBox = document.getElementById("smartFilter");
+
+
 
 let showImages = showImagesElement.checked;
 let popBasedSize = popBasedSizeElement.checked;
@@ -116,7 +120,9 @@ export class D3ForceGraph {
   }
 
   getRadius(d) {
-    if(!showLeaves && d.degree <= 1){
+    //if(!showLeaves && d.degree <= 1){
+    //  return 0;
+    if(document.getElementById(d.id).style.visibility === "hidden"){
       return 0;
     } else if(popBasedSize){
       return Math.max(d.popularity, 5);
@@ -194,7 +200,7 @@ export class D3ForceGraph {
           .attr("id", d => d.id || null)
           .classed("nodeParent", true)
           .attr("cursor", "pointer")
-          .attr("visibility", d => !showLeaves && d.degree <= 1 ? "hidden" : "visible")
+          //.attr("visibility", d => !showLeaves && d.degree <= 1 ? "hidden" : "visible")
           .on("contextmenu", (d, i)  => d3.event.preventDefault())
           .on("click", d => t.handleNodeClicked(d))
           .on("mousewheel", d => t.handleScroll())
@@ -278,7 +284,7 @@ export class D3ForceGraph {
     let graphLinksEnter = graphLinksData.enter()
       .append("line")
       .classed("link", true)
-      .attr("visibility", d => this.lookupNode(d.target).degree <= 1 && !showLeaves ? "hidden" : "visible")
+      //.attr("visibility", d => this.lookupNode(d.target).degree <= 1 && !showLeaves ? "hidden" : "visible")
       .attr("id", d => d.source + "," + d.target)
       .on("click", d => {
         document.getElementById("nameOfSongLabel").hidden = false;
@@ -341,7 +347,6 @@ export class D3ForceGraph {
   }
 
   handleNodeClicked(d) {
-    console.log(`node clicked: ${JSON.stringify(d)}`);
     let t = this;
     t.nodeClickedPosition = {x: d.x, y: d.y};
     const event = new CustomEvent("queueArtist", {"detail" : d});
@@ -365,6 +370,10 @@ export class D3ForceGraph {
 
   lookupLink(source, target){
     return this.graphData.links.filter(d => d.source.id === source && d.target.id === target)[0];
+  }
+
+  getConnectedNodes(id){
+    return this.graphData.links.filter(d => d.source.id === id).map(d => d.target.id);
   }
 /*
   This doesn't really work. Gives very funky results. If someone has a solution I'd be very grateful
@@ -420,21 +429,38 @@ export class D3ForceGraph {
     this.simulation.restart();
   }
 
-  changeLeaves = () => {
+  filterNodes = () => {
     showLeaves = showLeavesCheckBox.checked;
+    let limit = maxDegreesSlider.value; 
     const nodeParents = document.getElementsByClassName("nodeParent");
+    Array.from(nodeParents).forEach(nodeParent => nodeParent.style.visibility = "visible");
     Array.from(nodeParents).forEach(nodeParent => {
-      if(!showLeaves && nodeParent.__data__.degree <= 1)
+      if((!showLeaves && nodeParent.__data__.degree <= 1))
         nodeParent.style.visibility = "hidden";
-      else 
-        nodeParent.style.visibility = "visible";
+      else if(smartFilterCheckBox.checked && (nodeParent.__data__.popularity < 10 || nodeParent.__data__.image === null)){
+        nodeParent.style.visibility = "hidden";
+      }
+      else if(limit <= 200){
+        let total = 0;
+        this.getConnectedNodes(nodeParent.__data__.id).sort((a, b) => this.lookupNode(b).popularity - this.lookupNode(a).popularity).forEach(n => {
+          let node = document.getElementById(n)
+          if(total >= limit && node.__data__.degree <= 1){
+            node.style.visibility = "hidden";
+          } else {
+            total++;
+          }
+        })
+      } 
     })
     const links = document.getElementsByClassName("link");
     Array.from(links).forEach(link => {
-      if(!showLeaves && (link.__data__.source.degree <= 1 || link.__data__.target.degree <= 1))
+      if(document.getElementById(link.__data__.source.id).style.visibility === "hidden" ||
+        document.getElementById(link.__data__.target.id).style.visibility === "hidden") {
         link.style.visibility = "hidden";
-      else 
+      }
+      else {
         link.style.visibility = "visible";
+      }
     })
     this.popBasedSizeInput();
     this.updateChargeForce();
@@ -442,6 +468,17 @@ export class D3ForceGraph {
     this.simulation.alpha(1);
     this.simulation.alphaTarget(0);
     this.simulation.restart();
+  }
+
+  updateMaxConnections = () => {
+    console.log(maxDegreesSlider.value);
+    const nodeParents = document.getElementsByClassName("nodeParent");
+    Array.from(nodeParents).forEach(nodeParent => {
+      if(nodeParent.__data__.degree <= 1)
+        nodeParent.style.visibility = "hidden";
+      else 
+        nodeParent.style.visibility = "visible";
+    })
   }
 
   updateChargeForce(){
@@ -476,3 +513,4 @@ showImagesElement.oninput = function(){
     circles[i].style.fill = temp;
   }
 }
+

@@ -24,6 +24,8 @@ const addFollowedArtistsButton = document.getElementById("addFollowedArtists");
 const smartFilterCheckBox = document.getElementById("smartFilter");
 const addRandomArtistButton = document.getElementById("addRandomArtist");
 const getStarted = document.getElementById("getStarted");
+const maxDegreesSlider = document.getElementById("maxDegreesSlider");
+const maxDegreesLabel = document.getElementById("maxDegreesLabel");
 
 loading.hidden = true;
 artistEntry.focus();
@@ -37,7 +39,6 @@ const api = new apiCalls();
 let queue = new TinyQueue([], (a,b) => a.priority - b.priority);
 
 const checkedArtists = new Set();
-const nonLeafArtists = new Set();
 
 let oneAtATime = true; 
 let maxDegrees = 2;
@@ -70,7 +71,6 @@ async function init(){
         queue.push({"artistId" : artist.id, "priority" : priority})
       }
       checkedArtists.add(artist.id);
-      nonLeafArtists.add(artist.id);
     })
     totalArtists.textContent = "Total Artists: " + checkedArtists.size;
   }
@@ -80,7 +80,6 @@ const runArtistSearch = async () => {
     loading.hidden = false;
     while(queue.length > 0 && (queue.peek().priority < maxDegrees || oneAtATime)){
         const ap = queue.pop();
-        nonLeafArtists.add(ap.artistId);
         const albumIds = await api.getAlbums(ap.artistId);
         const connectedArtistsData = await api.getConnectedArtists(albumIds, ap.artistId);
         const artistData = await api.getArtistsData(connectedArtistsData.map(d => d.artistId));
@@ -88,30 +87,28 @@ const runArtistSearch = async () => {
         let sourceNode = graph.lookupNode(ap.artistId);
         let sourceDegreeLabel = document.getElementById("degreeLabel_" + ap.artistId);
         connectedArtistsData.forEach(artistConnection => {
-          if( !(smartFilterCheckBox.checked &&
-            (artistData[index].popularity < 10 ||
-            artistData[index].image == null))
-          ){
-            if(!checkedArtists.has(artistConnection.artistId)){
-              checkedArtists.add(artistConnection.artistId);
-              totalArtists.textContent = "Total Artists: " + checkedArtists.size;
-              if(!oneAtATime) queue.push({"artistId" : artistConnection.artistId, "priority": ap.priority+1});
-              graph.add([{"id" : artistConnection.artistId, "name" : artistConnection.artistName, "priority" : ap.priority+1, 
-              "popularity" : artistData[index].popularity, "image" : artistData[index].image, "degree" : 0}], []);
-            }
-            index++;
-            if(graph.lookupLink(ap.artistId, artistConnection.artistId) == undefined && graph.lookupLink(artistConnection.artistId, ap.artistId) == undefined){
-              graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName, "trackURL" : artistConnection.trackURL, "trackLink" : artistConnection.trackLink}]);
-              let targetNode = graph.lookupNode(artistConnection.artistId);
-              targetNode.degree+=1;
-              let targetDegreeLabel = document.getElementById("degreeLabel_" + artistConnection.artistId);
-              targetDegreeLabel.textContent = targetNode.degree;
-              sourceNode.degree+=1;
-              sourceDegreeLabel.textContent = sourceNode.degree;
-            }
-          } else {index++;}
+          if(!checkedArtists.has(artistConnection.artistId)){
+            checkedArtists.add(artistConnection.artistId);
+            totalArtists.textContent = "Total Artists: " + checkedArtists.size;
+            if(!oneAtATime) queue.push({"artistId" : artistConnection.artistId, "priority": ap.priority+1});
+            graph.add([{"id" : artistConnection.artistId, "name" : artistConnection.artistName, "priority" : ap.priority+1, 
+            "popularity" : artistData[index].popularity, "image" : artistData[index].image, "degree" : 0}], []);
+          }
+          index++;
+          if(graph.lookupLink(ap.artistId, artistConnection.artistId) == undefined && graph.lookupLink(artistConnection.artistId, ap.artistId) == undefined){
+            graph.add([], [{"source" : ap.artistId, "target" : artistConnection.artistId, "label" : artistConnection.trackName, "trackURL" : artistConnection.trackURL, "trackLink" : artistConnection.trackLink}]);
+            let targetNode = graph.lookupNode(artistConnection.artistId);
+            targetNode.degree+=1;
+            let targetDegreeLabel = document.getElementById("degreeLabel_" + artistConnection.artistId);
+            targetDegreeLabel.textContent = targetNode.degree;
+            sourceNode.degree+=1;
+            sourceDegreeLabel.textContent = sourceNode.degree;
+          }
         });
-        graph.changeLeaves();
+        if(sourceNode.degree > 150 && maxDegreesSlider.value === '225'){
+          flashMaxConnections();
+        }
+        graph.filterNodes();
     }
     oaatRadio.checked = true;
     slider.disabled = true;
@@ -143,6 +140,7 @@ if(url.search('#') === -1){
       artistEntry.disabled = true;
       smartFilterCheckBox.disabled = true;
       showLeavesCheckBox.disabled = true;
+      maxDegreesSlider.disabled = true;
       document.getElementById("showImages").disabled = true;
       document.getElementById("popBasedSize").disabled = true;
     }
@@ -189,13 +187,36 @@ const getId = (url) => {
   return url.substring(start, end);
 }
 
-showLeavesCheckBox.onclick = () => graph.changeLeaves();
+const flashMaxConnections = () => {
+  const maxConnectionsDiv = document.getElementById("maxConnectionsDiv");
+  setTimeout(() => maxConnectionsDiv.style.backgroundColor = "#1ed760", 0);
+  setTimeout(() => maxConnectionsDiv.style.backgroundColor = "#ffffff", 500);
+  setTimeout(() => maxConnectionsDiv.style.backgroundColor = "#1ed760", 1000);
+  setTimeout(() => maxConnectionsDiv.style.backgroundColor = "#ffffff", 1500);
+  setTimeout(() => maxConnectionsDiv.style.backgroundColor = "#1ed760", 2000);
+  setTimeout(() => maxConnectionsDiv.style.backgroundColor = "#ffffff", 2500);
+  setTimeout(() => maxConnectionsDiv.style.backgroundColor = "#1ed760", 3000);
+  setTimeout(() => maxConnectionsDiv.style.backgroundColor = "#ffffff", 3500);
+}
+
+showLeavesCheckBox.onclick = () => graph.filterNodes();
+smartFilterCheckBox.onclick = () => graph.filterNodes();
 
 slider.oninput = function() {
   const colors = ["#0bdb00", "#0bdb00", "#bfff00", "#e88f00", "#e82e00", "#a80000"]
   degreeLabel.textContent = slider.value;
   degreeLabel.style.color = colors[slider.value];
   maxDegrees = slider.value;
+}
+
+maxDegreesSlider.oninput = () => {
+  const limit = maxDegreesSlider.value
+  if(limit === '225'){
+    maxDegreesLabel.textContent = 'No Limit';
+  } else {
+    maxDegreesLabel.textContent = limit;
+  }
+  graph.filterNodes();
 }
 
 oaatRadio.oninput = function() {
@@ -249,7 +270,7 @@ addFollowedArtistsButton.onclick = async function(){
     });
   }
   totalArtists.textContent = "Total Artists: " + checkedArtists.size;
-  graph.changeLeaves();
+  graph.filterNodes();
   runArtistSearch();
 }
 
@@ -263,7 +284,7 @@ addRandomArtistButton.onclick = async function(){
   queue.push({"artistId" : artist.id, "priority" : 0});
   checkedArtists.add(artist.id);
   totalArtists.textContent = "Total Artists: " + checkedArtists.size;
-  graph.changeLeaves();
+  graph.filterNodes();
   runArtistSearch();
 }
 
@@ -284,7 +305,6 @@ moveSidebar.onclick = function(){
     moveSidebar.textContent = "<<<";
   }
 }
-
 
 document.getElementById("popBasedSize").oninput = () => graph.popBasedSizeInput();
 window.onresize = () => document.getElementById("graph").style.width = "100%";
