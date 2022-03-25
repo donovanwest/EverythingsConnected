@@ -127,7 +127,7 @@ export class D3ForceGraph {
     } else if(popBasedSize){
       return Math.max(d.popularity, 5);
     } else {
-      return 40;
+      return 50;
     }
   }
 
@@ -437,7 +437,7 @@ export class D3ForceGraph {
     Array.from(nodeParents).forEach(nodeParent => {
       if((!showLeaves && nodeParent.__data__.degree <= 1))
         nodeParent.style.visibility = "hidden";
-      else if(smartFilterCheckBox.checked && (nodeParent.__data__.popularity < 10 || nodeParent.__data__.image === null)){
+      else if(smartFilterCheckBox.checked && (nodeParent.__data__.popularity < 10 || nodeParent.__data__.image === null) && nodeParent.__data__.degree <= 1){
         nodeParent.style.visibility = "hidden";
       }
       else if(limit <= 200){
