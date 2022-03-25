@@ -70,7 +70,7 @@
   border: #666;
   border-style: solid;
   border-width: 3px;
-  height: 620px;
+  height: 600px;
   margin-top: 50px;
   margin-left: 10px;
   width: 250px;
@@ -298,6 +298,12 @@ body {
   border-radius: 3%;
   opacity: 0;
   transition: opacity 0.3s;
+}
+
+#nameOfSongDiv {
+  position: absolute;
+  bottom: 70px;
+  width: 100%;
 }
 
 #songEmbed {
