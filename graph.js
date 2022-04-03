@@ -375,6 +375,7 @@ export class D3ForceGraph {
   getConnectedNodes(id){
     return this.graphData.links.filter(d => d.source.id === id).map(d => d.target.id);
   }
+
 /*
   This doesn't really work. Gives very funky results. If someone has a solution I'd be very grateful
 
@@ -429,7 +430,7 @@ export class D3ForceGraph {
     this.simulation.restart();
   }
 
-  filterNodes = () => {
+  filterNodes() {
     showLeaves = showLeavesCheckBox.checked;
     let limit = maxDegreesSlider.value; 
     const nodeParents = document.getElementsByClassName("nodeParent");
@@ -470,7 +471,7 @@ export class D3ForceGraph {
     this.simulation.restart();
   }
 
-  updateMaxConnections = () => {
+  updateMaxConnections(){
     console.log(maxDegreesSlider.value);
     const nodeParents = document.getElementsByClassName("nodeParent");
     Array.from(nodeParents).forEach(nodeParent => {
@@ -513,4 +514,3 @@ showImagesElement.oninput = function(){
     circles[i].style.fill = temp;
   }
 }
-
