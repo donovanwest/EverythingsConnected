@@ -39,12 +39,15 @@ export class apiCalls{
         return new Promise((resolve) => {
             let t = this;
             spotifyApi.searchArtists(name, function(err, results){
-                if (err.status == tokenExpiredError){
-                    t.tokenExpired();
+                if(err){
+                    if (err.status == tokenExpiredError){
+                        t.tokenExpired();
+                    } else{
+                        console.error(err);
+                    } 
                 } else{
-                    console.error(err);
-                } 
-                resolve(results.artists.items[0]);
+                    resolve(results.artists.items[0]);
+                }
             })
         })
     }
