@@ -7,6 +7,7 @@ const spotifyApi = new SpotifyWebApi();
 const clientId = "e6bf2e305d98443190c472ee318fd511";
 const apiRateExceededError = 429;
 const serverError = 500;
+const tokenExpiredError = 401;
 
 export class apiCalls{
 
@@ -14,6 +15,13 @@ export class apiCalls{
         const url = String(window.location)
         const scopes = ['user-follow-read'];
         window.open(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${url}&scope=${scopes}&show_dialog=true`, '_self');
+    }
+
+    tokenExpired(){
+        alert("Spotify Access token expired. Refreshing the page");
+        let url = String(window.location);
+        if(url.search('#') != -1) url = url.substring(0, url.search('#'));
+        window.open(url, "_self");
     }
 
     setAccessToken(accessToken){
@@ -29,8 +37,13 @@ export class apiCalls{
     
     searchForArtist(name){
         return new Promise((resolve) => {
+            let t = this;
             spotifyApi.searchArtists(name, function(err, results){
-                if(err) console.error(err);
+                if (err.status == tokenExpiredError){
+                    t.tokenExpired();
+                } else{
+                    console.error(err);
+                } 
                 resolve(results.artists.items[0]);
             })
         })
@@ -48,6 +61,8 @@ export class apiCalls{
                         }, (err.readyState+1)*1000);
                     } else if (err.status === serverError){
                         resolve(t.getAlbumsOffset(artistId, offset));
+                    } else if (err.status == tokenExpiredError){
+                        t.tokenExpired();
                     }
                 }
                 else{
@@ -91,6 +106,8 @@ export class apiCalls{
                         }, (err.readyState+1)*1000);
                     } else if (err.status === serverError){
                         resolve(t.getArtistsFromAlbums(albumIds, artistId));
+                    } else if (err.status == tokenExpiredError){
+                        t.tokenExpired();
                     }
                 }
                 else{
@@ -147,6 +164,8 @@ export class apiCalls{
                         }, (err.readyState+1)*1000);
                     } else if (err.status === serverError){
                         resolve(t.getArtists(artistIds))
+                    } else if (err.status == tokenExpiredError){
+                        t.tokenExpired();
                     }
                 }
                 else{
@@ -176,6 +195,7 @@ export class apiCalls{
 
     getFollowedArtistsOffset(offset){
         return new Promise((resolve) => {
+            let t = this;
             spotifyApi.getFollowedArtists({"limit": 50, "after": offset}, function(err, results){
                 if (err) {
                     console.error(err);
@@ -185,6 +205,8 @@ export class apiCalls{
                         }, (err.readyState+1)*1000);
                     } else if (err.status === serverError){
                         resolve(t.getFollowedArtistsOffset(offset))
+                    } else if (err.status == tokenExpiredError){
+                        t.tokenExpired();
                     }
                 } else {
                     resolve([results.artists.items, results.artists.total]);
@@ -221,6 +243,7 @@ export class apiCalls{
 
     getPlaylistTracks(playlistId, offset){
         return new Promise((resolve) => {
+            let t = this;
             spotifyApi.getPlaylistTracks(playlistId, {"limit": 50, "offset": offset}, function(err, results){
                 if (err) {
                     console.error(err);
@@ -230,6 +253,8 @@ export class apiCalls{
                         }, (err.readyState+1)*1000);
                     } else if (err.status === serverError){
                         resolve(t.getPlaylistTracks(playlistId, offset))
+                    } else if (err.status == tokenExpiredError){
+                        t.tokenExpired();
                     }
                 } else {
                     resolve([results.items, results.total]);
@@ -265,6 +290,10 @@ export class apiCalls{
 
     getRandomArtist(){
         return new Promise(async (resolve) => {
+            const attempts = document.getElementById("attempts");
+            attempts.__data__ = (attempts.__data__ || 0) + 1;
+            attempts.textContent = "Attempts: " + attempts.__data__;
+            attempts.hidden = false;
             const charcs = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
             const charc = charcs[Math.floor(Math.random() * charcs.length)];
             const offset = Math.floor(Math.random() * 2000);
@@ -278,6 +307,8 @@ export class apiCalls{
                         setTimeout(async function () {
                             resolve(await t.getRandomArtist())
                         }, (err.readyState+1)*1000);
+                    } else if (err.status == tokenExpiredError){
+                        t.tokenExpired();
                     } else {
                         console.error(err);
                     }
@@ -302,6 +333,8 @@ export class apiCalls{
                         } 
                     }
                     if(artistValid){
+                        attempts.textContent = "Success!";
+                        attempts.__data__ = undefined;
                         resolve(artist);
                     }
                 }

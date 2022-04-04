@@ -195,6 +195,13 @@
   object-fit: none;
 }
 
+#attempts {
+  position: fixed;
+  top: 70px;
+  right: 0.5%;
+  font-size: large;
+}
+
 #degreeLabel {
   -moz-user-select: -moz-none;
   -khtml-user-select: none;

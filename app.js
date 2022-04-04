@@ -26,8 +26,10 @@ const addRandomArtistButton = document.getElementById("addRandomArtist");
 const getStarted = document.getElementById("getStarted");
 const maxDegreesSlider = document.getElementById("maxDegreesSlider");
 const maxDegreesLabel = document.getElementById("maxDegreesLabel");
+const attempts = document.getElementById("attempts");
 
 loading.hidden = true;
+attempts.hidden = true;
 artistEntry.focus();
 
 let graphDiv = document.querySelector("#ib-d3-graph-div");
@@ -118,6 +120,7 @@ const runArtistSearch = async () => {
     if(slider.value != maxDegrees)
       maxDegrees = slider.value;
     loading.hidden = true;
+    attempts.hidden = true;
     console.log(graph);
    
 }
