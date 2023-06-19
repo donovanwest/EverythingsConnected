@@ -107,7 +107,8 @@ const runArtistSearch = async () => {
             sourceDegreeLabel.textContent = sourceNode.degree;
           }
         });
-        if(sourceNode.degree > 150 && maxDegreesSlider.value === '225'){
+        if(sourceNode.degree > 150 && maxDegreesSlider.value === '225' 
+            || sourceNode.degree > maxDegreesLabel.value){
           flashMaxConnections();
         }
         graph.filterNodes();

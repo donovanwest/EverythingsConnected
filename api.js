@@ -299,8 +299,8 @@ export class apiCalls{
             attempts.hidden = false;
             const charcs = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
             const charc = charcs[Math.floor(Math.random() * charcs.length)];
-            const offset = Math.floor(Math.random() * 2000);
-            const searchString = '%' + charc + '%';
+            const offset = Math.floor(Math.random() * 999);
+            const searchString = `%${charc}%`;
             let t = this
             spotifyApi.searchArtists(searchString, {"offset": offset, "limit": 1}, async function(err, results){
                 if(err) {
